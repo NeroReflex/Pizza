@@ -10,7 +10,8 @@ Per compilare Pizza sono necessarie due dipendenze:
     - [jdk](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 	- [ant](http://ant.apache.org/bindownload.cgi)
 
-Vengono distribuiti i file progetto di [NetBeans](https://netbeans.org/) per comodità.
+Insieme a sorgente del progetto vengono distribuiti i file progetto di [NetBeans](https://netbeans.org/)
+per comodità verso chi usa lo stesso IDE.
 
 
 ## Licenza
