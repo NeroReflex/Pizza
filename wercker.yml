@@ -20,6 +20,7 @@ build:
           cd git-lfs-1.3.0
           ./install.sh
           git lfs install
+          cd ../
     - script:
         name: Downloading ant
         code: wget http://apache.panu.it//ant/binaries/apache-ant-1.9.7-bin.zip
@@ -28,6 +29,9 @@ build:
         code: |-
           unzip apache-ant-1.9.7-bin.zip
           chmod +x apache-ant-1.9.7/bin/ant
+    - script:
+        name: Getting lfs-stored Files
+        code: git pull
     - script:
         name: Building Project
         code: apache-ant-1.9.7/bin/ant -f nbbuild.xml -Dnb.internal.action.name=build jar
