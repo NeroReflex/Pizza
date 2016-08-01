@@ -1,8 +1,23 @@
 language: java
+
 install: ant deps
+
+sudo: false
+
 jdk:
   - oraclejdk8
   - oraclejdk7
   - openjdk6
+
 script:
   - ant -f nbbuild.xml -Dnb.internal.action.name=build jar
+  
+notifications:
+  irc:
+    channels:
+      - "irc.pierotofy.it:6669#pierotofy.it"
+    on_success: change
+    on_failure: always
+    template:
+      - "%{repository} (%{branch}:%{commit} by %{author}): %{message} (%{build_url})"
+    skip_join: true
