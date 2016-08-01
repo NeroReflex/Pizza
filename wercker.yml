@@ -12,7 +12,7 @@ build:
     - script:
         name: Extracting ant
         code: |-
-          unzip http://apache.panu.it//ant/binaries/apache-ant-1.9.7-bin.zip
+          unzip apache-ant-1.9.7-bin.zip
           chmod +x apache-ant-1.9.7/bin/ant
     - script:
         name: Building Project
