@@ -4,6 +4,16 @@ box: java
 # defining the dev pipeline
 build:
   steps:
+    - install-packages:
+        packages: git openssl pkg-config libssl-dev python wget zlib1g-dev unzip openssh-client unzip
     - script:
-      name: Building Project
-      code: ant -f nbbuild.xml -Dnb.internal.action.name=run run
+        name: Downloading ant
+        code: wget http://apache.panu.it//ant/binaries/apache-ant-1.9.7-bin.zip
+    - script:
+        name: Extracting ant
+        code: |-
+          unzip http://apache.panu.it//ant/binaries/apache-ant-1.9.7-bin.zip
+          chmod +x apache-ant-1.9.7/bin/ant
+    - script:
+        name: Building Project
+        code: apache-ant-1.9.7/bin/ant -f nbbuild.xml -Dnb.internal.action.name=run run
