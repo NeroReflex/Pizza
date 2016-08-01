@@ -18,8 +18,8 @@
 package pizza;
 
 import java.util.Vector;
-/*import org.python.util.PythonInterpreter; 
-import org.python.core.*; */
+import org.python.util.PythonInterpreter; 
+import org.python.core.*;
 
 /**
  * Un trancio creato da uno script in python
@@ -36,8 +36,8 @@ public class TrancioPython extends Trancio {
     
     protected String onCall(String user, Vector<String> args) {
         //crea l'interprete che eseguirà lo script
-        /*PythonInterpreter instance = new PythonInterpreter();
-        instance.compile(this.src);*/
+        PythonInterpreter instance = new PythonInterpreter();
+        instance.compile(this.src);
         
         
         return "";
