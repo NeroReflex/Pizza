@@ -29,9 +29,15 @@ build:
         code: |-
           unzip apache-ant-1.9.7-bin.zip
           chmod +x apache-ant-1.9.7/bin/ant
+#    - script:
+#        name: Getting lfs-stored Files
+#        code: git pull
     - script:
-        name: Getting lfs-stored Files
-        code: git pull
+        name: Check jar files
+        code: |-
+          ls -lh jython-standalone-2.7.0.jar
+          ls -lh pircbot.jar
+          ls -lh sqlite-jdbc-3.8.11.2.jar
     - script:
         name: Building Project
         code: apache-ant-1.9.7/bin/ant -f nbbuild.xml -Dnb.internal.action.name=build jar
