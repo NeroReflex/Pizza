@@ -1,0 +1,9 @@
+# docker box definition
+box: java
+
+# defining the dev pipeline
+build:
+  steps:
+    - script:
+      name: Building Project
+      code: ant -f nbbuild.xml -Dnb.internal.action.name=run run
