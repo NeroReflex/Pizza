@@ -17,6 +17,7 @@
  */
 package pizza;
 
+import java.io.IOException;
 import org.jibble.pircbot.*;
 
 /**
@@ -26,15 +27,38 @@ import org.jibble.pircbot.*;
  */
 public class Pizza extends PircBot {
 
-    public Pizza() {
-        this.setName("My Bot");
+    public Pizza(String botName) {
+        //set the name of the bot
+        this.setName(botName);
     }
     
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        try {
+            String botName = args[0];
+            String botServer = args[1];
+            String botChannel = args[2];
+        } catch (java.lang.IndexOutOfBoundsException ex) {
+            System.out.print("Usage: java -jar Pizza.jar BotName Server:Port #Channel");
+        }
+        
+        // Now start our bot up.
+        Pizza bot = new Pizza(args[0]);
+        
+        // Enable debugging output.
+        bot.setVerbose(true);
+        
+        try {
+            // Connect to the IRC server.
+            bot.connect("irc.pierotofy.it", 6669);
+
+            // Join the IRC channel.
+            bot.joinChannel("#pierotofy.it");
+        } catch (IOException ex) {
+            
+        }
     }
     
 }
