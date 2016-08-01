@@ -7,12 +7,18 @@ build:
     - install-packages:
         packages: git openssl pkg-config libssl-dev wget zlib1g-dev unzip openssh-client unzip tar
     - script:
-        name: Installing git-lfs
+        name: Fetching git-lfs
+        code: wget https://github.com/github/git-lfs/releases/download/v1.3.0/git-lfs-linux-amd64-1.3.0.tar.gz
+    - script:
+        name: Extracting git-lfs
         code: |-
-          wget https://github.com/github/git-lfs/releases/download/v1.3.0/git-lfs-linux-amd64-1.3.0.tar.gz
           tar -xf git-lfs-linux-amd64-1.3.0.tar.gz
           chmod +x git-lfs-1.3.0/install.sh
-          ./git-lfs-1.3.0/install.sh
+    - script:
+        name: Installing git-lfs
+        code: |-
+          cd git-lfs-1.3.0
+          ./install.sh
           git lfs install
     - script:
         name: Downloading ant
