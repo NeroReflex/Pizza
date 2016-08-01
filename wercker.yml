@@ -7,6 +7,9 @@ build:
     - install-packages:
         packages: git openssl pkg-config libssl-dev python wget zlib1g-dev unzip openssh-client unzip
     - script:
+        name: Setting up git LFS
+        code: git lfs install
+    - script:
         name: Downloading ant
         code: wget http://apache.panu.it//ant/binaries/apache-ant-1.9.7-bin.zip
     - script:
