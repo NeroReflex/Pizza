@@ -17,12 +17,19 @@
  */
 package pizza;
 
-/**
- *
- * @author benat
- */
-public class Pizza {
+import org.jibble.pircbot.*;
 
+/**
+ * The main bot class
+ * 
+ * @author Benato Denis <benato.denis96@gmail.com>
+ */
+public class Pizza extends PircBot {
+
+    public Pizza() {
+        this.setName("My Bot");
+    }
+    
     /**
      * @param args the command line arguments
      */
