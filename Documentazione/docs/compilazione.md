@@ -2,7 +2,7 @@
 
 La compilazione di Pizza richiede 3 semplicissime fasi descritte di seguito.
 
-Paradossalmente la fase più complicata e' la preparazione dell'ambiente di lavoro!
+Paradossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro!
 
 
 ## Preparazione
@@ -36,4 +36,4 @@ Il proecsso di compilazione e' descritto nel file nbbuild.xml:
 ant -f nbbuild.xml -Dnb.internal.action.name=build jar
 ```
 
-Una corretta compilazione produrrà una directory "dist" contenente un file chiamato "Pizza.jar" e una directory "lib".
+Una corretta compilazione produrra' una directory "dist" contenente un file chiamato "Pizza.jar" e una directory "lib".
