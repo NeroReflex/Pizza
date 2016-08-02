@@ -17,25 +17,101 @@
  */
 package pizza;
 
-import java.sql.*;
 import java.io.IOException;
 import java.lang.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jibble.pircbot.*;
 import java.util.regex.*;
+import java.security.SecureRandom;
+import java.math.BigInteger;
+
 
 /**
  * La classe che, una volta istanziata identificherà un bot connesso ad un server
  * 
  * @author Benato Denis <benato.denis96@gmail.com>
  */
-public class Pizza extends PircBot {
+public class Pizza extends PircBot implements Runnable {
     
-    protected Connection sqliteDriver;
+    /**
+     * L'ID del bot (SOLO USO INTERNO)
+     */
+    private final String botID;
     
-    protected HashMap<String, Trancio> Tranci;
+    /**
+     * La coda di messaggi da scrivere nel server attualmente connesso
+     */
+    private final Vector<Message> messages;
+    
+    protected HashMap<String, Trancio> tranci;
+    
+    /**
+     * Il database usato per memorizzare certe operazioni
+     */
+    protected Scatola scatola;
+    
+    /**
+     * Il thread che si occupa di scrivere i messaggi in coda
+     */
+    private final Thread messageWriter;
+    
+    /**
+     * Ottieni l'ID interno del bot (usato solo all'interno del programma). 
+     * 
+     * @return ID del bot
+     */
+    public final String getBotID() {
+        return this.botID;
+    }
+    
+    /**
+     * Usato da MessageQueue per inserire nella lista un messaggio da scrivere
+     * nel server occupato dal bot.
+     * 
+     * @param msg il messaggio da inserire nella coda dei messaggi da scrivere 
+     */
+    protected final synchronized void queueMessage(Message msg) {
+        // Aggiungi il messaggio da scrivere
+        this.messages.add(msg);
+    }
+    
+    /**
+     * Usato dal thread dedicato alla sola scrittura dei messaggi
+     */
+    protected final synchronized void dequeueMessage() {
+        // Se almeno un messaggio è in coda....
+        if (this.messages.size() > 0) {
+            // Scrivi il primo messaggio della coda
+            Message toWrite = this.messages.firstElement();
+            this.sendMessage(toWrite.getChannel(), toWrite.getMessage());
+            
+            // Rimuovi il messaggio appena scritto
+            this.messages.remove(0);
+        }
+    }
+    
+    @Override
+    protected void onMessage(String channel, String sender, String login, String hostname, String message) {
+        // Analizza il messaggio per identificare richieste fatte al bot
+        Pattern invokeRegex = Pattern.compile(this.getNick() + "([\\s]+)([\\w]+)([\\s]*)([\\s\\S]*)");
+        Matcher invokeMatcher = invokeRegex.matcher(message);
+        if (invokeMatcher.matches()) {
+            // Ottieni il nome del comando
+            String command = invokeMatcher.group(2);
+            
+            // E' richiesta l'installazione di un plugin?
+            if (command.compareTo("install") == 0) {
+                
+            } else if (this.tranci.containsKey(command)) {
+                
+            } else {
+                this.queueMessage(new Message(channel, "Dovrei fare qualcosa.... Ma non so cosa fare alla richiesta '" + command + "' :("));
+            }
+        }
+    }
     
     /**
      * Registra un trancio per essere utilizzato nel bot attuale
@@ -45,71 +121,39 @@ public class Pizza extends PircBot {
      */
     public void RegistraTrancio(String nomeTrancio, Trancio istanzaTrancio) {
         // Registra il nuovo trancio
-        this.Tranci.put(nomeTrancio, istanzaTrancio);
+        this.tranci.put(nomeTrancio, istanzaTrancio);
         
-        // Inizializza il plugin
-        this.Tranci.get(nomeTrancio).Initialize(nomeTrancio);
+        // Chiama l'inizializzatore del trancio
+        this.tranci.get(nomeTrancio).Initialize(nomeTrancio);
     }
     
+    /**
+     * Usato internamente per scrivere la lista di messaggi in maniera asincrona
+     */
     @Override
-    protected void onMessage(String channel, String sender, String login, String hostname, String message) {
-        if (message.compareTo(this.getNick()) == 0) {
-            this.sendMessage(channel, "Sono il vostro amichevole robottino mangione :)");
-            return;
-        }
-
-        // Analizza il messaggio per identificare richieste fatte al bot
-        Pattern invokeRegex = Pattern.compile(this.getNick() + "([\\s]+)([\\S]+)([\\s\\S]+)");
-        Matcher invokeMatcher = invokeRegex.matcher(message);
-        if (invokeMatcher.matches()) {
-            //get the command name
-            String command = invokeMatcher.group(2);
-            
-            this.sendMessage(channel, "Dovrei fare qualcosa.... Ma non so cosa significa '" + command + "' :(");
-        }
-        
+    public final void run() {
+        // Scrivi continuamente il primo messaggio della lista
+        while (this.isConnected()) this.dequeueMessage();
     }
     
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        
-        // Chiudi la connessione al database interno
-        if (!this.sqliteDriver.isClosed()) {
-            try {
-                this.sqliteDriver.close();
-            } catch (SQLException ex) {
-                
-            }
-        }
-    }
-    
+    /**
+     * Inizializza una nuova istanza del bot e la connette al server dato.
+     * 
+     * @param botName il nome del bot
+     * @param botServer l'indirizzo ip o DNS del server
+     * @param botPort la porta sulla quale il server e' in ascolto
+     * @param botParams i parametri passati al bot al momento dell'avvio
+     */
     public Pizza(String botName, String botServer, int botPort, HashMap<String, String> botParams) {
-        // Set the name of the bot
+        // Imposta il nome del bot
         this.setName(botName);
         
-        // Open the database that holds the enabled plugins
-        try {
-            this.sqliteDriver = DriverManager.getConnection("jdbc:sqlite:" + this.getName() + ".db");
-            this.sqliteDriver.setAutoCommit(true);
-            
-            // Crea (se non esiste) la tabella dei plugin utilizzabili
-            Statement stmt = this.sqliteDriver.createStatement();
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS plugins ("
-                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + "level INTEGER,"
-                    + "url TEXT,"
-                    + "date TEXT"
-                    + ");");
-            stmt.close();
-            
-            //this.sqliteDriver.commit();
-            
-            //this.sqliteDriver.close();
-        } catch (Exception e) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
-        }
+        // Apri il database
+        this.scatola = new Scatola(this.getName());
+        
+        // Inizializza lo spammer di messaggi in coda
+        messages = new Vector<>();
+        this.messageWriter = new Thread(this);
         
         // Abilita l'output di debug (se richiesto), spento di default
         String verbose = botParams.get("--verbose");
@@ -117,9 +161,6 @@ public class Pizza extends PircBot {
             this.setVerbose(true);
         } else if (verbose.compareTo("off") == 0) {
             this.setVerbose(false);
-        } else {
-            System.out.println("Il valore del parametro --verbose non e' riconosciuto");
-            System.exit(-1);
         }
         
         try {
@@ -131,20 +172,49 @@ public class Pizza extends PircBot {
             if (password.length() > 0)
                 this.identify(password);
         } catch (IOException ex) {
-            System.out.println("Errore nella connessione al server IRC: " + ex);
+            System.err.println("Errore nella connessione al server IRC: " + ex);
             System.exit(-2);
         } catch (IrcException ex) {
-            System.out.println("Errore nella connessione al server IRC: " + ex);
+            System.err.println("Errore nella connessione al server IRC: " + ex);
             System.exit(-3);
+        }
+        
+        // Ottieni un ID univoco per il bot attuale
+        SecureRandom random = new SecureRandom();
+        this.botID = new BigInteger(130, random).toString(32);
+        MessageQueue.addBot(this.getBotID(), this);
+        
+        // Apri lo scrittore di messaggi in coda
+        this.messageWriter.start();
+    }
+    
+    /**
+     * Chiudi la connessione al server e deinizializza il bot
+     * 
+     * @throws Throwable 
+     */
+    @Override
+    public void finalize() throws Throwable {
+        try {
+            // Disconnettiti dal server
+            this.disconnect();
+            
+            // Smetti di scrivere messaggi!
+            this.messageWriter.interrupt();
+            
+            // Disattiva la coda di messaggi per il bot
+            MessageQueue.removeBot(this.getBotID());
+        } finally {
+            super.finalize();
         }
     }
     
     @Override
     protected void onJoin(String channel, String sender, String login, String hostname) {
         if (sender.compareTo(this.getNick()) != 0) {
-            this.sendMessage(channel, "Benvenuto " + sender + " :)");
+            this.queueMessage(new Message(channel, "Benvenuto " + sender + " :)"));
         } else {
-            this.sendMessage(channel, "Buongiorno ragazzi, sono PizzaBot: https://github.com/NeroReflex/Pizza :D");
+            this.queueMessage(new Message(channel, "Buongiorno ragazzi, sono PizzaBot: https://github.com/NeroReflex/Pizza :D"));
         }
     }
     
@@ -152,6 +222,10 @@ public class Pizza extends PircBot {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        // Inizializza la coda di messaggi
+        MessageQueue.Init();
+        
+        // Inizializza il driver sqlite
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException ex) {
@@ -193,12 +267,12 @@ public class Pizza extends PircBot {
         Matcher serverMatcher = serverRegex.matcher(botServer);
         int portSeparator = botServer.indexOf(":");
         if (!serverMatcher.matches()) {
-            System.out.println("Il server specificato non e' valido");
+            System.err.println("Il server specificato non e' valido");
             System.exit(-1);
         } else if (portSeparator <= -1) {
             botServer = botServer + ":6667";
         } else if (portSeparator == 0) {
-            System.out.println("Il nome del server e' errato");
+            System.err.println("Il nome del server e' errato");
             System.exit(-1);
         }
         server = botServer.substring(0, portSeparator);
@@ -208,13 +282,16 @@ public class Pizza extends PircBot {
         Pattern channelRegex = Pattern.compile("\\#(([\\w]?)([\\d]?)([\\-]?)([\\_]?)([\\.]?))+");
         Matcher channelMatcher = channelRegex.matcher(botChannel);
         if (!channelMatcher.matches()) {
-            System.out.println("Il nome del canale specificato non e' valido");
+            System.err.println("Il nome del canale specificato non e' valido");
             System.exit(-1);
         }
             
         if (!botParams.containsKey("--verbose")) {
             System.out.println("Puoi aggiungere output aggiuntivo utilizzando il parametro --verbose on");
             botParams.put("--verbose", "off");
+        } else if ((botParams.get("--verbose").compareTo("off") != 0) && (botParams.get("--verbose").compareTo("on") != 0)) {
+            System.err.println("Il valore del parametro --verbose non e' riconosciuto");
+            System.exit(-1);
         }
             
         if (!botParams.containsKey("--identify")) {
@@ -227,5 +304,6 @@ public class Pizza extends PircBot {
             
         // E unisciti al canale
         bot.joinChannel(botChannel);
-    }    
+        
+    }
 }

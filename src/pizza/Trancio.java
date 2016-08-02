@@ -19,6 +19,9 @@ package pizza;
 
 import java.lang.*;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Per aggiungere funzionalità al bot è necessario estendere questa classe
