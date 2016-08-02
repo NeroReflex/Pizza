@@ -153,6 +153,9 @@ public class Pizza extends PircBot implements Runnable {
      * @param botParams i parametri passati al bot al momento dell'avvio
      */
     public Pizza(String botName, String botServer, int botPort, HashMap<String, String> botParams) {
+        // Inizializza la lista di tranci
+        this.tranci = new HashMap<>();
+        
         // Inizializza la coda di messaggi
         MessageQueue.Init();
         
