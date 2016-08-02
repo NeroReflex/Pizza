@@ -1,0 +1,11 @@
+site_name: Gishiki
+
+pages:
+- Home: index.md
+- Compilazione: compilazione.md
+
+- About:
+    - Community: pierotofy.md
+    - Licenza:   license.md
+
+theme: readthedocs
