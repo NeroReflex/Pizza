@@ -28,13 +28,32 @@ import java.util.logging.Logger;
  * 
  * @author Benato Denis <benato.denis96@gmail.com>
  */
-public class Trancio {
+public class Trancio implements Runnable {
+    
+    private String botID;
     
     private Date startupDate;
     
     private String stratupName;
     
-    public final void Initialize(String name) {
+    /**
+     * Ottieni l'ID interno del bot (usato solo all'interno del programma). 
+     * 
+     * @return ID del bot
+     */
+    public final String getBotID() {
+        return this.botID;
+    }
+    
+    public final void writeMessage(Message msg) {
+        // Aggiungi il messaggio alla coda di messaggi da inviare
+        MessageQueue.writeMessage(this.getBotID(), msg);
+    }
+    
+    public final void Initialize(String name, String botID) {
+        // Registra l'ID del bot che usa questo trancio
+        this.botID = botID;
+        
         // Registra il tempo di avvio
         this.startupDate = new Date();
         
@@ -53,6 +72,39 @@ public class Trancio {
         return this.stratupName;
     }
     
+    public void run() {
+        while (true) {
+            try {
+                // Ottieni la richiesta da soddisfare
+                Request req = RequestQueue.unqueueRequest(this.getBotID(), this.getClass().getSimpleName());
+
+                // Crea il messaggio che sarà inviato come risposta
+                Message response = this.onCall(req.getUser(), req.getChannel(), req.getArguments());
+
+                // Invia alla coda il messaggio
+                this.writeMessage(response);
+            } catch (NullPointerException ex) {
+                
+            }
+        }
+    }
+    
+    @Override
+    protected void finalize() throws Throwable {
+        // Gli ultimi step della de-inizializzazione possono essere personalizzati
+        this.onShutdown();
+        
+        super.finalize();
+    }
+    
+    
+    
+    
+    
+    
+    
+    /*      BUON DIVERTIMENTO!      */
+    
     protected void onInitialize() {
         
     }
@@ -61,15 +113,7 @@ public class Trancio {
         
     }
     
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        
-        // Gli ultimi step della de-inizializzazione possono essere personalizzati
-        this.onShutdown();
-    }
-    
-    protected String onCall(String user, Vector<String> args) {
-        return "";
+    protected Message onCall(String user, String channel, Vector<String> args) {
+        return new Message(channel, ":(");
     }
 }

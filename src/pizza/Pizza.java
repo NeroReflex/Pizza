@@ -96,20 +96,25 @@ public class Pizza extends PircBot implements Runnable {
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
         // Analizza il messaggio per identificare richieste fatte al bot
-        Pattern invokeRegex = Pattern.compile(this.getNick() + "([\\s]+)([\\w]+)([\\s]*)([\\s\\S]*)");
+        Pattern invokeRegex = Pattern.compile("(" + this.getNick() + ")([\\s]+)([\\w]+)([\\s]*)([\\s\\S]*)");
         Matcher invokeMatcher = invokeRegex.matcher(message);
         if (invokeMatcher.matches()) {
             // Ottieni il nome del comando
-            String command = invokeMatcher.group(2);
+            String command = invokeMatcher.group(3);
             
             // E' richiesta l'installazione di un plugin?
             if (command.compareTo("install") == 0) {
-                
-            } else if (this.tranci.containsKey(command)) {
-                
+                this.queueMessage(new Message(channel, "Al momento questo non e' possibile, scusa :*"));
             } else {
-                this.queueMessage(new Message(channel, "Dovrei fare qualcosa.... Ma non so cosa fare alla richiesta '" + command + "' :("));
+                // Controlla se il trancio e' presente e registrato
+                if (!this.tranci.containsKey(command)) {
+                    this.queueMessage(new Message(channel, "Dovrei fare qualcosa.... Ma non so cosa fare alla richiesta '" + command + "' :("));
+                } else {
+                    RequestQueue.queueRequest(new Request(this.getBotID(), command, channel, sender, new Vector<String>() ));
+                }
             }
+        } else if (this.getNick().compareTo(message) == 0) {
+            this.queueMessage(new Message(channel, "Sono il vostro amichevole robottino mangiapizza :)"));
         }
     }
     
@@ -119,12 +124,15 @@ public class Pizza extends PircBot implements Runnable {
      * @param nomeTrancio il nome con cui sarà attivabile il plugin dalla chat
      * @param istanzaTrancio la istanza del trancio pronta ad essere utilizzata
      */
-    public void RegistraTrancio(String nomeTrancio, Trancio istanzaTrancio) {
+    public void registerTrancio(Trancio istanzaTrancio) {
+        // Ottieni il nome del trancio di pizza
+        String nomeTrancio = istanzaTrancio.getClass().getSimpleName();
+        
         // Registra il nuovo trancio
         this.tranci.put(nomeTrancio, istanzaTrancio);
         
         // Chiama l'inizializzatore del trancio
-        this.tranci.get(nomeTrancio).Initialize(nomeTrancio);
+        this.tranci.get(nomeTrancio).Initialize(nomeTrancio, this.getBotID());
     }
     
     /**
@@ -145,6 +153,12 @@ public class Pizza extends PircBot implements Runnable {
      * @param botParams i parametri passati al bot al momento dell'avvio
      */
     public Pizza(String botName, String botServer, int botPort, HashMap<String, String> botParams) {
+        // Inizializza la coda di messaggi
+        MessageQueue.Init();
+        
+        // Inizializza la coda di richieste
+        RequestQueue.Init();
+        
         // Imposta il nome del bot
         this.setName(botName);
         
@@ -222,9 +236,6 @@ public class Pizza extends PircBot implements Runnable {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // Inizializza la coda di messaggi
-        MessageQueue.Init();
-        
         // Inizializza il driver sqlite
         try {
             Class.forName("org.sqlite.JDBC");
