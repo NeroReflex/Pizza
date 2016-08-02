@@ -1,8 +1,9 @@
-site_name: Gishiki
+site_name: Pizza
 
 pages:
 - Home: index.md
 - Compilazione: compilazione.md
+- Utilizzo: utilizzo.md
 
 - About:
     - Community: pierotofy.md
