@@ -6,5 +6,6 @@ pages:
 
 - About:
     - Community: pierotofy.md
+    - Licenza:   license.md
 
 theme: readthedocs
