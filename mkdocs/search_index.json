@@ -1,0 +1,59 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "Pizza\n\n\nPizza\n e' un piccolo bot estremamente modulare per \ntutte\n le chat IRC!\n\n\nIl progetto e' mantenuto dai volontari della community di \npierotofy.it", 
+            "title": "Home"
+        }, 
+        {
+            "location": "/#pizza", 
+            "text": "Pizza  e' un piccolo bot estremamente modulare per  tutte  le chat IRC!  Il progetto e' mantenuto dai volontari della community di  pierotofy.it", 
+            "title": "Pizza"
+        }, 
+        {
+            "location": "/compilazione/", 
+            "text": "Compilazione\n\n\nLa compilazione di Pizza richiede 3 semplicissime fasi descritte di seguito.\n\n\nParadossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro!\n\n\nPreparazione\n\n\nL'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto!\n\n\nLa versione utilizzata al momento della creazione del progetto e': \njdk 1.8\n\n\nIl processo di compilazione e' automatizzato da \nant\n: e' necessario aggiungere la directory bin alla variabile d'ambiente PATH!\n\n\nPer scaricare il progetto e' necessario installare \ngit\n con il plugin \ngit-lfs\n!\n\n\nOttenere il codice sorgente\n\n\nL'utilizzo di git e' altamente consigliato per scaricare il codice sorgente:\n\n\ngit clone https://github.com/NeroReflex/Pizza.git\ncd Pizza\n\n\n\n\nOra e' possibile passare alla compilazione vera e propria!\n\n\nCompilazione\n\n\nIl proecsso di compilazione e' descritto nel file nbbuild.xml:\n\n\nant -f nbbuild.xml -Dnb.internal.action.name=build jar\n\n\n\n\nUna corretta compilazione produrra' una directory \"dist\" contenente un file chiamato \"Pizza.jar\" e una directory \"lib\".", 
+            "title": "Compilazione"
+        }, 
+        {
+            "location": "/compilazione/#compilazione", 
+            "text": "La compilazione di Pizza richiede 3 semplicissime fasi descritte di seguito.  Paradossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro!", 
+            "title": "Compilazione"
+        }, 
+        {
+            "location": "/compilazione/#preparazione", 
+            "text": "L'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto!  La versione utilizzata al momento della creazione del progetto e':  jdk 1.8  Il processo di compilazione e' automatizzato da  ant : e' necessario aggiungere la directory bin alla variabile d'ambiente PATH!  Per scaricare il progetto e' necessario installare  git  con il plugin  git-lfs !", 
+            "title": "Preparazione"
+        }, 
+        {
+            "location": "/compilazione/#ottenere-il-codice-sorgente", 
+            "text": "L'utilizzo di git e' altamente consigliato per scaricare il codice sorgente:  git clone https://github.com/NeroReflex/Pizza.git\ncd Pizza  Ora e' possibile passare alla compilazione vera e propria!", 
+            "title": "Ottenere il codice sorgente"
+        }, 
+        {
+            "location": "/compilazione/#compilazione_1", 
+            "text": "Il proecsso di compilazione e' descritto nel file nbbuild.xml:  ant -f nbbuild.xml -Dnb.internal.action.name=build jar  Una corretta compilazione produrra' una directory \"dist\" contenente un file chiamato \"Pizza.jar\" e una directory \"lib\".", 
+            "title": "Compilazione"
+        }, 
+        {
+            "location": "/pierotofy/", 
+            "text": "Community\n\n\nLa community dietro a Pizza e' quella di \npierotofy.it\n!\n\n\npierotofy.it e' una community italiana di programmatori dove sono il benvenuto gli esperti tanto quanto i novizi.", 
+            "title": "Community"
+        }, 
+        {
+            "location": "/pierotofy/#community", 
+            "text": "La community dietro a Pizza e' quella di  pierotofy.it !  pierotofy.it e' una community italiana di programmatori dove sono il benvenuto gli esperti tanto quanto i novizi.", 
+            "title": "Community"
+        }, 
+        {
+            "location": "/license/", 
+            "text": "Licenza\n\n\nPizza\n e' un programma rilasciato sotto licenza \nGPL v3\n, leggere il file LICENSE all'interno del reposotory\nper ulteriori informazioni.", 
+            "title": "Licenza"
+        }, 
+        {
+            "location": "/license/#licenza", 
+            "text": "Pizza  e' un programma rilasciato sotto licenza  GPL v3 , leggere il file LICENSE all'interno del reposotory\nper ulteriori informazioni.", 
+            "title": "Licenza"
+        }
+    ]
+}
