@@ -15,46 +15,27 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package pizza;
+package plugins;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Vector;
+import pizza.Message;
 
 /**
- * Identifica una richiesta che verrà "esaudita" da un plugin della
- * chat in un diverso thread.
+ * Un plugin per l'ora attuale.
  * 
  * @author Benato Denis <benato.denis96@gmail.com>
  */
-public final class Request {
+public final class Time extends pizza.Trancio {
     
-    private final String nameTrancio, botId, channel, user;
-    Vector<String> args;
-    
-    public Request(String botID, String trancio, String channel, String user, Vector<String> args) {
-        this.botId = botID;
-        this.args = args;
-        this.channel = channel;
-        this.nameTrancio = trancio;
-        this.user = user;
+    protected Message onCall(String user, String channel, Vector<String> args) {
+        // Ottieni l'ora attuale
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        
+        // e metti in coda la risposta
+        return new Message(channel, user + " sono le " + sdf.format(cal.getTime()));
     }
     
-    public String getBotID() {
-        return this.botId;
-    }
-    
-    public String getTrancio() {
-        return this.nameTrancio;
-    }
-    
-    public String getChannel() {
-        return this.channel;
-    }
-    
-    public String getUser() {
-        return this.user;
-    }
-    
-    public Vector<String> getArguments() {
-        return this.args;
-    }
 }

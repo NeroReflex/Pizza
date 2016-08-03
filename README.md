@@ -5,6 +5,14 @@ Un semplice bot IRC basato sui tranci di pizza a cura della community [pierotofy
 
 [![Build Status](https://travis-ci.org/NeroReflex/Pizza.svg?branch=master)](https://travis-ci.org/NeroReflex/Pizza)
 
+
+## Documentazione
+
+La documentazione viene compilata da un bot a partire dalla directory Documentazione del repository.
+
+Potete prendere visione della docuentazione aggiornata [qui](https://neroreflex.github.io/Pizza/).
+
+
 ## Compilazione
 Per compilare Pizza sono necessarie due dipendenze: [jdk 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 ed [ant](http://ant.apache.org/bindownload.cgi).

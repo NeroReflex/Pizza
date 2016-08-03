@@ -30,11 +30,17 @@ import java.util.logging.Logger;
  */
 public class Trancio implements Runnable {
     
+    public enum Type {
+        // internal plugin (written in Java)
+        Internal,
+        
+        // external plugins
+        Python
+    }
+    
     private String botID;
     
     private Date startupDate;
-    
-    private String stratupName;
     
     /**
      * Ottieni l'ID interno del bot (usato solo all'interno del programma). 
@@ -50,6 +56,14 @@ public class Trancio implements Runnable {
         MessageQueue.writeMessage(this.getBotID(), msg);
     }
     
+    public Type getType() {
+        return Type.Internal;
+    }
+    
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
+    
     public final void Initialize(String name, String botID) {
         // Registra l'ID del bot che usa questo trancio
         this.botID = botID;
@@ -57,19 +71,12 @@ public class Trancio implements Runnable {
         // Registra il tempo di avvio
         this.startupDate = new Date();
         
-        // Registra il nome con cui e' stato avviato il plugin
-        this.stratupName = name;
-        
         //gli ultimi step dell'inizializzazione possono essere personalizzati
         this.onInitialize();
     }
     
     public final Date getDate() {
         return this.startupDate;
-    }
-    
-    public final String getName() {
-        return this.stratupName;
     }
     
     public void run() {

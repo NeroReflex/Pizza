@@ -27,6 +27,11 @@ import org.jibble.pircbot.*;
 import java.util.regex.*;
 import java.security.SecureRandom;
 import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 
 /**
@@ -46,17 +51,21 @@ public class Pizza extends PircBot implements Runnable {
      */
     private final Vector<Message> messages;
     
-    protected HashMap<String, Trancio> tranci;
+    /**
+     * La connessione al database
+     */
+    protected Connection sqliteDriver;
     
     /**
-     * Il database usato per memorizzare certe operazioni
+     * La lista dei tranci di pizza attualmente attivi con il rispettivo nome
      */
-    protected Scatola scatola;
+    protected HashMap<String, Trancio> tranci;
     
     /**
      * Il thread che si occupa di scrivere i messaggi in coda
      */
     private final Thread messageWriter;
+    private final Vector<Thread> esecutoriTranci;
     
     /**
      * Ottieni l'ID interno del bot (usato solo all'interno del programma). 
@@ -102,15 +111,28 @@ public class Pizza extends PircBot implements Runnable {
             // Ottieni il nome del comando
             String command = invokeMatcher.group(3);
             
+            // Questa e' la stringa con ulteriori dettagli sulla operazione da eseguire
+            String rawParamsString = invokeMatcher.group(5);
+            String[] params = rawParamsString.split("([\\s]+)");
+            Vector<String> args = new Vector<>();
+            
+            try {
+                for (int i = 0; i < params.length; i++) {
+                    args.add(params[i]);
+                }
+            } catch (Exception ex) {
+                
+            }
+            
             // E' richiesta l'installazione di un plugin?
-            if (command.compareTo("install") == 0) {
+            if (command.compareTo("plugin") == 0) {
                 this.queueMessage(new Message(channel, "Al momento questo non e' possibile, scusa :*"));
             } else {
                 // Controlla se il trancio e' presente e registrato
                 if (!this.tranci.containsKey(command)) {
                     this.queueMessage(new Message(channel, "Dovrei fare qualcosa.... Ma non so cosa fare alla richiesta '" + command + "' :("));
                 } else {
-                    RequestQueue.queueRequest(new Request(this.getBotID(), command, channel, sender, new Vector<String>() ));
+                    RequestQueue.queueRequest(new Request(this.getBotID(), command, channel, sender, args));
                 }
             }
         } else if (this.getNick().compareTo(message) == 0) {
@@ -123,16 +145,43 @@ public class Pizza extends PircBot implements Runnable {
      * 
      * @param nomeTrancio il nome con cui sarà attivabile il plugin dalla chat
      * @param istanzaTrancio la istanza del trancio pronta ad essere utilizzata
+     * @returns true se la registrazione è andata a buon fine
      */
-    public void registerTrancio(Trancio istanzaTrancio) {
+    public boolean registerTrancio(Trancio istanzaTrancio) {
         // Ottieni il nome del trancio di pizza
-        String nomeTrancio = istanzaTrancio.getClass().getSimpleName();
+        String nomeTrancio = istanzaTrancio.getName();
         
         // Registra il nuovo trancio
         this.tranci.put(nomeTrancio, istanzaTrancio);
         
         // Chiama l'inizializzatore del trancio
         this.tranci.get(nomeTrancio).Initialize(nomeTrancio, this.getBotID());
+        if (istanzaTrancio.getType() != Trancio.Type.Internal) {
+            try {
+                // Controlla se il plugin è già installato
+                Statement readStmt = this.sqliteDriver.createStatement();
+                ResultSet rs = readStmt.executeQuery("SELECT * FROM plugins WHERE name = " + nomeTrancio + ";");
+                
+                // Controlla se il plugin e' gia' presente
+                if (!rs.next()) {
+                    // Inserisci il plugin nella lista di quelli installati
+                    Statement stmt = this.sqliteDriver.createStatement();
+                    stmt.executeUpdate("INSERT INTO plugins (name, url, date) VALUES ('" + nomeTrancio + "', 'http://neroreflex.github.io', date('now'));)");
+                    stmt.close();
+                }
+                
+                readStmt.close();
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        
+        // Crea l'esecutore di operazioni in un thread separato
+        this.esecutoriTranci.add(new Thread(istanzaTrancio));
+        this.esecutoriTranci.lastElement().start();
+        
+        // Installazione completata!
+        return true;
     }
     
     /**
@@ -144,6 +193,10 @@ public class Pizza extends PircBot implements Runnable {
         while (this.isConnected()) this.dequeueMessage();
     }
     
+    protected void loadInternalPlugins() {
+        this.registerTrancio(new plugins.Time());
+    }
+    
     /**
      * Inizializza una nuova istanza del bot e la connette al server dato.
      * 
@@ -153,8 +206,9 @@ public class Pizza extends PircBot implements Runnable {
      * @param botParams i parametri passati al bot al momento dell'avvio
      */
     public Pizza(String botName, String botServer, int botPort, HashMap<String, String> botParams) {
-        // Inizializza la lista di tranci
+        // Inizializza la lista di tranci e la lista di esecutori
         this.tranci = new HashMap<>();
+        this.esecutoriTranci = new Vector<>();
         
         // Inizializza la coda di messaggi
         MessageQueue.Init();
@@ -166,7 +220,24 @@ public class Pizza extends PircBot implements Runnable {
         this.setName(botName);
         
         // Apri il database
-        this.scatola = new Scatola(this.getName());
+        // Open the database that holds the enabled plugins
+        try {
+            this.sqliteDriver = DriverManager.getConnection("jdbc:sqlite:" + this.getName() + ".db");
+            this.sqliteDriver.setAutoCommit(true);
+            
+            // Crea (se non esiste) la tabella dei plugin utilizzabili
+            Statement stmt = this.sqliteDriver.createStatement();
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS plugins ("
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "name TEXT NOT NULL,"
+                    + "url TEXT NOT NULL,"
+                    + "date TEXT NOT NULL"
+                    + ");");
+            stmt.close();
+        } catch (Exception e) {
+            System.err.println("Errore nell'apertura del database");
+            System.exit(-5);
+        }
         
         // Inizializza lo spammer di messaggi in coda
         messages = new Vector<>();
@@ -203,6 +274,11 @@ public class Pizza extends PircBot implements Runnable {
         
         // Apri lo scrittore di messaggi in coda
         this.messageWriter.start();
+        
+        // Cambia il nick
+        this.changeNick("PizzaBot");
+        
+        this.loadInternalPlugins();
     }
     
     /**
@@ -212,6 +288,16 @@ public class Pizza extends PircBot implements Runnable {
      */
     @Override
     public void finalize() throws Throwable {
+        // Chiudi la connessione al database interno
+        if (!this.sqliteDriver.isClosed()) {
+            try {
+                this.sqliteDriver.close();
+            } catch (SQLException ex) {
+                System.err.println("Errore nella chiusura del database");
+                System.exit(-5);
+            }
+        }
+        
         try {
             // Disconnettiti dal server
             this.disconnect();
@@ -318,6 +404,5 @@ public class Pizza extends PircBot implements Runnable {
             
         // E unisciti al canale
         bot.joinChannel(botChannel);
-        
     }
 }
