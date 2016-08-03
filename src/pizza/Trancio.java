@@ -30,17 +30,17 @@ import java.util.logging.Logger;
  */
 public class Trancio implements Runnable {
     
-    public enum Type {
-        // internal plugin (written in Java)
-        Internal,
-        
-        // external plugins
-        Python
-    }
-    
     private String botID;
     
     private Date startupDate;
+    
+    private boolean loaded = false;
+    protected final synchronized void doneLoading() {
+        this.loaded = true;
+    }
+    protected final synchronized boolean isLoaded() {
+        return this.loaded;
+    }
     
     /**
      * Ottieni l'ID interno del bot (usato solo all'interno del programma). 
@@ -51,46 +51,66 @@ public class Trancio implements Runnable {
         return this.botID;
     }
     
+    /**
+     * @param msg si chiama all'interno del plugin per scrivere un messaggio
+     */
     public final void writeMessage(Message msg) {
         // Aggiungi il messaggio alla coda di messaggi da inviare
-        MessageQueue.writeMessage(this.getBotID(), msg);
+        MessageQueue.enqueueMessage(this.getBotID(), msg);
     }
     
-    public Type getType() {
-        return Type.Internal;
-    }
-    
+    /**
+     * @return il nome del plugin attuale, in lettere MINUSCOLE
+     */
     public String getName() {
-        return this.getClass().getSimpleName();
+        return this.getClass().getSimpleName().toLowerCase();
     }
     
-    public final void Initialize(String name, String botID) {
+    /**
+     * Inizializza il plugin.
+     * 
+     * Chiamato internamente quando il plugin e' caricato.
+     * 
+     * @param botID l'ID univoco dell'istanza che ha caricato il plugin
+     */
+    public final void Initialize(String botID) {
+        // Evita un doppio caricamento
+        if (this.isLoaded()) return;
+        
         // Registra l'ID del bot che usa questo trancio
         this.botID = botID;
         
         // Registra il tempo di avvio
         this.startupDate = new Date();
         
-        //gli ultimi step dell'inizializzazione possono essere personalizzati
+        // Gli ultimi step dell'inizializzazione possono essere personalizzati
         this.onInitialize();
+        
+        // Il caricamento e' stato completato
+        this.doneLoading();
     }
     
     public final Date getDate() {
         return this.startupDate;
     }
     
-    public void run() {
-        while (true) {
+    public final void run() {
+        while (this.isLoaded()) {
             try {
+                // Polling!
+                this.onPoll();
+                
                 // Ottieni la richiesta da soddisfare
-                Request req = RequestQueue.unqueueRequest(this.getBotID(), this.getClass().getSimpleName());
-
+                Request req = RequestQueue.unqueueRequest(this.getBotID(), this.getName());
+                
                 // Crea il messaggio che sarà inviato come risposta
                 Message response = this.onCall(req.getUser(), req.getChannel(), req.getArguments());
-
+                
                 // Invia alla coda il messaggio
                 this.writeMessage(response);
             } catch (NullPointerException ex) {
+                
+            } finally {
                 
             }
         }
@@ -121,6 +141,10 @@ public class Trancio implements Runnable {
     }
     
     protected Message onCall(String user, String channel, Vector<String> args) {
-        return new Message(channel, ":(");
+        return null;
+    }
+    
+    protected void onPoll() {
+        
     }
 }

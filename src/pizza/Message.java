@@ -26,15 +26,31 @@ public final class Message {
     
     private final String channel, message;
     
+    /**
+     * Crea il nuovo messaggio selezionando la destinazione e il testo
+     * 
+     * @param ch il canale in cui mandare il messaggio
+     * @param msg il test del messaggio
+     */
     public Message(String ch, String msg) {
         this.channel = ch;
         this.message = msg;
     }
     
+    /**
+     * Ottieni il testo del messaggio
+     * 
+     * @return il testo
+     */
     public String getMessage() {
         return this.message;
     }
     
+    /**
+     * Ottieni il nome del canale
+     * 
+     * @return ottieni il nome del canale
+     */
     public String getChannel() {
         return this.channel;
     }
