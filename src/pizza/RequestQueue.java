@@ -23,7 +23,7 @@ import java.util.Vector;
 /**
  * Identifica la coda di richieste da gestire per il bot.
  * 
- * @author Benato Denis <benato.denis96@gmail.com>
+ * @author Benato Denis
  */
 public abstract class RequestQueue {
     

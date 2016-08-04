@@ -20,7 +20,7 @@ package pizza;
 /**
  * Identifica un messaggio da scrivere in un canale o ad un utente.
  * 
- * @author Benato Denis <benato.denis96@gmail.com>
+ * @author Benato Denis
  */
 public final class Message {
     

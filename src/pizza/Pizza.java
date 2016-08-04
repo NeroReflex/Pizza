@@ -37,7 +37,7 @@ import java.sql.Statement;
 /**
  * La classe che, una volta istanziata identificherà un bot connesso ad un server
  * 
- * @author Benato Denis <benato.denis96@gmail.com>
+ * @author Benato Denis
  */
 public class Pizza extends PircBot implements Runnable {
     
@@ -124,9 +124,8 @@ public class Pizza extends PircBot implements Runnable {
     /**
      * Registra un trancio per essere utilizzato nel bot attuale
      * 
-     * @param nomeTrancio il nome con cui sarà attivabile il plugin dalla chat
      * @param istanzaTrancio la istanza del trancio pronta ad essere utilizzata
-     * @returns true se la registrazione è andata a buon fine
+     * @return true se la registrazione è andata a buon fine
      */
     public boolean registerTrancio(Trancio istanzaTrancio) {
         // Ottieni il nome del trancio di pizza

@@ -35,14 +35,14 @@ import java.util.TimeZone;
  * Un plugin per l'ora attuale. Gran parte del codice e' preso da:
  * http://www.rgagnon.com/javadetails/java-0589.html
  * 
- * @author Benato Denis <benato.denis96@gmail.com>
+ * @author Benato Denis
  */
 public final class Time extends pizza.Trancio {
     public static final int ATOMICTIME_PORT = 13;
 
     public static final String ATOMICTIME_SERVER = "129.6.15.30";
     
-    /**
+    /*
     ref : http://www.bldrdoc.gov/doc-tour/atomic_clock.html
 
                        49825 95-04-18 22:24:11 50 0 0 50.0 UTC(NIST) *

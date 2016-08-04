@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 /**
  * Per aggiungere funzionalità al bot è necessario estendere questa classe
  * 
- * @author Benato Denis <benato.denis96@gmail.com>
+ * @author Benato Denis
  */
 public class Trancio implements Runnable {
     

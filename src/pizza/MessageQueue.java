@@ -23,7 +23,7 @@ import java.util.Vector;
 /**
  * La coda di scrittura dei messaggi
  * 
- * @author Benato Denis <benato.denis96@gmail.com>
+ * @author Benato Denis
  */
 public abstract class MessageQueue {
 

@@ -23,7 +23,7 @@ import java.util.Vector;
  * Identifica una richiesta che verrà "esaudita" da un plugin della
  * chat in un diverso thread.
  * 
- * @author Benato Denis <benato.denis96@gmail.com>
+ * @author Benato Denis
  */
 public final class Request {
     
