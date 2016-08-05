@@ -126,17 +126,23 @@ public final class Time extends pizza.Trancio {
     }
     
     protected final void onCall(String user, String channel, Vector<String> args) {
+        // Stabilisci la zona del mondo richiesta
+        String timezone = (args.size() > 0)? args.get(0) : "Europe/Rome";
+        
         try {
             // Ottieni l'ora attuale
             GregorianCalendar cal = getAtomicTime();
+            
+            GregorianCalendar correctTimeZone = new GregorianCalendar(TimeZone.getTimeZone(timezone));
+            correctTimeZone.setTimeInMillis(cal.getTimeInMillis());
             
             // Imposta il formato di visualizzazione
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
 
             // Metti in coda la risposta
-            this.sendMessage(new Message(channel, user + " exact time: " + sdf.format(cal.getTime())));
+            this.sendMessage(new Message(channel, user + " exact time: " + sdf.format(correctTimeZone.getTime())));
         } catch (Exception ex) {
-            this.sendMessage(new Message(channel, user + " error occurred while retrieving the exact time :("));
+            this.sendMessage(new Message(channel, user + " error occurred while retrieving the exact time for the " + timezone + ":("));
         }
     }
     
