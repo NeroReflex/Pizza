@@ -5,6 +5,7 @@ pages:
 - Compilazione: compilazione.md
 - Utilizzo: utilizzo.md
 - Plugins: plugin.md
+- Javadoc: javadoc.md
 
 - About:
     - Community: pierotofy.md
