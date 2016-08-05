@@ -52,11 +52,24 @@ public class Trancio implements Runnable {
     }
     
     /**
-     * @param msg si chiama all'interno del plugin per scrivere un messaggio
+     * Aggiunge alla coda di messaggi da scrivere il messaggio
+     * 
+     * @param msg il messaggio da scrivere
      */
-    public final void writeMessage(Message msg) {
+    public final void sendMessage(Message msg) {
         // Aggiungi il messaggio alla coda di messaggi da inviare
-        MessageQueue.enqueueMessage(this.getBotID(), msg);
+        PluginAPI.sendMessage(this.getBotID(), msg);
+    }
+    
+    /**
+     * Ottiene la lista di canali ai quali il bot e' connesso.
+     * Se una variazione dei canali occupati dal bot e' appena
+     * avvenuta potrebbe non essere riportata!
+     * 
+     * @return la lista di canali a cui il bot e' connesso 
+     */
+    public final String[] getChannels() {
+        return PluginAPI.getChannels(this.getBotID());
     }
     
     /**
@@ -103,11 +116,8 @@ public class Trancio implements Runnable {
                 // Ottieni la richiesta da soddisfare
                 Request req = RequestQueue.unqueueRequest(this.getBotID(), this.getName());
                 
-                // Crea il messaggio che sarà inviato come risposta
-                Message response = this.onCall(req.getUser(), req.getChannel(), req.getArguments());
-                
-                // Invia alla coda il messaggio
-                this.writeMessage(response);
+                // Chiama il gestore dell'evento
+                this.onCall(req.getUser(), req.getChannel(), req.getArguments());
             } catch (NullPointerException ex) {
                 
             } finally {
@@ -140,8 +150,8 @@ public class Trancio implements Runnable {
         
     }
     
-    protected Message onCall(String user, String channel, Vector<String> args) {
-        return null;
+    protected void onCall(String user, String channel, Vector<String> args) {
+        
     }
     
     protected void onPoll() {

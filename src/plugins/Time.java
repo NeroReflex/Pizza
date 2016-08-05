@@ -125,7 +125,7 @@ public final class Time extends pizza.Trancio {
         }
     }
     
-    protected final Message onCall(String user, String channel, Vector<String> args) {
+    protected final void onCall(String user, String channel, Vector<String> args) {
         try {
             // Ottieni l'ora attuale
             GregorianCalendar cal = getAtomicTime();
@@ -134,9 +134,9 @@ public final class Time extends pizza.Trancio {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
 
             // Metti in coda la risposta
-            return new Message(channel, user + " exact time: " + sdf.format(cal.getTime()));
+            this.sendMessage(new Message(channel, user + " exact time: " + sdf.format(cal.getTime())));
         } catch (Exception ex) {
-            return new Message(channel, user + " error occurred while retrieving the exact time :(");
+            this.sendMessage(new Message(channel, user + " error occurred while retrieving the exact time :("));
         }
     }
     

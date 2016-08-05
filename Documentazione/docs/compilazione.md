@@ -30,10 +30,22 @@ Ora e' possibile passare alla compilazione vera e propria!
 
 ## Compilazione
 
-Il proecsso di compilazione e' descritto nel file nbbuild.xml:
+Per linux, FreeBSD e Mac OS e' incluso uno script che si occupa della compilazione e dell'inclusione
+delle librerie.
+
+```sh
+chmod +x build.sh
+./build.sh
+```
+
+Se state usando un sistema operativo diverso il processo di compilazione
+e' descritto nel file nbbuild.xml e va azionato con il comando:
 
 ```sh
 ant -f nbbuild.xml -Dnb.internal.action.name=build jar
 ```
 
-Una corretta compilazione produrra' una directory "dist" contenente un file chiamato "Pizza.jar" e una directory "lib".
+Una corretta compilazione produrra' una directory "dist" contenente un file chiamato "Pizza.jar",
+tuttavia il programma non potra' ancora essere avviato: e' infatti necessario creare una cartella "lib"
+allo stesso livello del programma compilato e copiarvi dentro le librerie necessarie che troverete nella root
+del progetto!

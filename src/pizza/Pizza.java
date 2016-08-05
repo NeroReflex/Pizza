@@ -42,6 +42,12 @@ import java.sql.Statement;
 public class Pizza extends PircBot implements Runnable {
     
     public static final Pizza Asporto(String botName, String botServer, String botChannel, HashMap<String, String> botParams) {
+        // Inizializza la coda di richieste
+        RequestQueue.Init();
+        
+        // Inizializza le API dei plugin
+        PluginAPI.Init();
+        
         // Inizializza il bot
         Pizza bot = new Pizza(botName, new IRCServer(botServer), botParams);
             
@@ -191,6 +197,9 @@ public class Pizza extends PircBot implements Runnable {
         // Inizializza la coda di richieste
         RequestQueue.Init();
         
+        // Inizializza le API dei plugin
+        PluginAPI.Init();
+        
         // Imposta il nome del bot
         this.setName(botName);
         
@@ -224,7 +233,9 @@ public class Pizza extends PircBot implements Runnable {
         // Ottieni un ID univoco per il bot attuale
         SecureRandom random = new SecureRandom();
         this.botID = new BigInteger(130, random).toString(32);
-        MessageQueue.addBot(this.getBotID(), this);
+        
+        // Registra il bot attuale
+        PluginAPI.addBot(this);
         
         // Cambia il nick
         this.changeNick("PizzaBot");
@@ -250,8 +261,8 @@ public class Pizza extends PircBot implements Runnable {
             // Smetti di scrivere messaggi!
             this.messageWriter.interrupt();
             
-            // Disattiva la coda di messaggi per il bot
-            MessageQueue.removeBot(this.getBotID());
+            // Rimuovi il bot dalla lista dei bot attivi
+            PluginAPI.removeBot(this);
         } finally {
             super.finalize();
         }
@@ -303,7 +314,7 @@ public class Pizza extends PircBot implements Runnable {
             }
                 
         } catch (ArrayIndexOutOfBoundsException ex) {
-            System.out.println("Usage: java -jar Pizza.jar BotName server[:port] #channel");
+            System.out.println("Usage: java -jar Pizza.jar \"BotName\" \"server[:port]\" \"#channel\"");
             System.exit(-1);
         }
         
@@ -316,15 +327,15 @@ public class Pizza extends PircBot implements Runnable {
         }
             
         if (!botParams.containsKey("--verbose")) {
-            System.out.println("Puoi aggiungere output aggiuntivo utilizzando il parametro --verbose on");
+            System.out.println("You can add verbose output adding \"--verbose\" \"on\" to the arguments list");
             botParams.put("--verbose", "off");
         } else if ((botParams.get("--verbose").compareTo("off") != 0) && (botParams.get("--verbose").compareTo("on") != 0)) {
-            System.err.println("Il valore del parametro --verbose non e' riconosciuto");
+            System.err.println("The value of the \"--verbose\" argument is not valid");
             System.exit(-1);
         }
             
         if (!botParams.containsKey("--identify")) {
-            System.out.println("Puoi identificate il bot tramite NickServ utilizzando il parametro --identify password");
+            System.out.println("You can identify the bot using NickServ by adding \"--identify\" \"password\" to the list of arguments");
             botParams.put("--identify", "");
         }
             
