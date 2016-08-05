@@ -76,6 +76,16 @@
             "title": "API"
         }, 
         {
+            "location": "/javadoc/", 
+            "text": "Javadoc\n\n\nPotete visualizzare il risultato dell'analisi del sorgente da parte di javadoc online a \nquesto indirizzo\n.", 
+            "title": "Javadoc"
+        }, 
+        {
+            "location": "/javadoc/#javadoc", 
+            "text": "Potete visualizzare il risultato dell'analisi del sorgente da parte di javadoc online a  questo indirizzo .", 
+            "title": "Javadoc"
+        }, 
+        {
             "location": "/pierotofy/", 
             "text": "Community\n\n\nLa community dietro a Pizza e' quella di \npierotofy.it\n!\n\n\npierotofy.it e' una community italiana di programmatori dove sono il benvenuto gli esperti tanto quanto i novizi.", 
             "title": "Community"
