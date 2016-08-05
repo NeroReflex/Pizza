@@ -49,7 +49,7 @@ build:
           ls -lh sqlite-jdbc-3.8.11.2.jar
     - script:
         name: Building Project
-        code: apache-ant-1.9.7/bin/ant -f nbbuild.xml -Dnb.internal.action.name=build jar
+        code: apache-ant-1.9.7/bin/ant -f nbbuild.xml
 deploy :
   steps :
     - install-packages:
@@ -71,6 +71,7 @@ deploy :
     - script:
         name: Building Documentation
         code: |-
+          rsync -avh --progress dist/javadoc Documentazione/docs/javadoc
           cd Documentazione
           mkdocs build
           cd ../
