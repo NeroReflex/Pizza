@@ -30,16 +30,8 @@ Ora e' possibile passare alla compilazione vera e propria!
 
 ## Compilazione
 
-Per linux, FreeBSD e Mac OS e' incluso uno script che si occupa della compilazione e dell'inclusione
-delle librerie.
-
-```sh
-chmod +x build.sh
-./build.sh
-```
-
-Se state usando un sistema operativo diverso il processo di compilazione
-e' descritto nel file nbbuild.xml e va azionato con il comando:
+Il processo di compilazione e' descritto nel file nbbuild.xml, destinato al build system ant,
+e va azionato con il comando:
 
 ```sh
 ant -f nbbuild.xml -Dnb.internal.action.name=build jar

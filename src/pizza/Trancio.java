@@ -57,7 +57,7 @@ public abstract class Trancio implements Runnable {
      * @param channel il nome del canale a cui il bot si unira'
      * @param key la chiave usata per l'accesso al canale
      */
-    public void joinChannel(String channel, String key) {
+    protected void joinChannel(String channel, String key) {
         PluginAPI.joinChannel(this.getBotID(), channel, key);
     }
     
@@ -66,7 +66,7 @@ public abstract class Trancio implements Runnable {
      * 
      * @param msg il messaggio da scrivere
      */
-    public final void sendMessage(Message msg) {
+    protected final void sendMessage(Message msg) {
         // Aggiungi il messaggio alla coda di messaggi da inviare
         PluginAPI.sendMessage(this.getBotID(), msg);
     }
@@ -78,15 +78,36 @@ public abstract class Trancio implements Runnable {
      * 
      * @return la lista di canali a cui il bot e' connesso 
      */
-    public final String[] getChannels() {
+    protected final String[] getChannels() {
         return PluginAPI.getChannels(this.getBotID());
     }
     
     /**
+     * Ottiene il nome del plugin in lettere minuscole
+     * 
      * @return il nome del plugin attuale, in lettere MINUSCOLE
      */
     public String getName() {
         return this.getClass().getSimpleName().toLowerCase();
+    }
+    
+    /**
+     * Ottiene la porta usata dal bot per la connessione al server
+     * 
+     * @return il numero della porta
+     */
+    protected final int getPort() {
+        return PluginAPI.getPort(this.getBotID());
+    }
+    
+    /**
+     * Ottiene il nome del server al quale il bot e' connesso
+     * o il suo indirizzo IP
+     * 
+     * @return l'indirizzo del server
+     */
+    protected final String getServer() {
+        return PluginAPI.getServer(this.getBotID());
     }
     
     /**
