@@ -34,7 +34,7 @@ Il processo di compilazione e' descritto nel file nbbuild.xml, destinato al buil
 e va azionato con il comando:
 
 ```sh
-ant -f nbbuild.xml -Dnb.internal.action.name=build jar
+ant -f nbbuild.xml
 ```
 
 Una corretta compilazione produrra' una directory "dist" contenente un file chiamato "Pizza.jar",
