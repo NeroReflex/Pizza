@@ -50,7 +50,7 @@ public class Pizza extends PircBot implements Runnable {
         
         // Inizializza il bot
         Pizza bot = new Pizza(botName, new IRCServer(botServer), botParams);
-            
+        
         // E unisciti al canale
         bot.joinChannel(botChannel);
         
@@ -241,6 +241,7 @@ public class Pizza extends PircBot implements Runnable {
         PluginAPI.addBot(this);
         
         // Cambia il nick
+        this.setAutoNickChange(true);
         this.changeNick("PizzaBot");
         
         // Apri lo scrittore di messaggi in coda
