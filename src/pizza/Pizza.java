@@ -97,7 +97,7 @@ public class Pizza extends PircBot implements Runnable {
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
         // Analizza il messaggio per identificare richieste fatte al bot
-        Pattern invokeRegex = Pattern.compile("(" + this.getNick() + ")([\\s]+)([\\w]+)([\\s]*)([\\s\\S]*)");
+        Pattern invokeRegex = Pattern.compile("(" + this.getNick() + ")([\\s]+)([\\w]+)([\\s]*)([\\s\\S\\/\\:\\\\]*)");
         Matcher invokeMatcher = invokeRegex.matcher(message);
         if (invokeMatcher.matches()) {
             // Ottieni il nome del comando
@@ -118,7 +118,7 @@ public class Pizza extends PircBot implements Runnable {
             
             // Controlla se il trancio e' presente e registrato
             if (!this.tranci.containsKey(command)) {
-                this.enqueueMessage(new Message(channel, "Dovrei fare qualcosa.... Ma non so cosa fare alla richiesta '" + command + "' :("));
+                this.enqueueMessage(new Message(channel, "I don't know what I have to do at '" + command + "' request :("));
             } else {
                 RequestQueue.queueRequest(new Request(this.getBotID(), command, channel, sender, args));
             }
@@ -177,6 +177,9 @@ public class Pizza extends PircBot implements Runnable {
     protected void loadInternalPlugins() {
         if (!this.registerTrancio(new plugins.Time()))
             System.err.println("La registrazione del plugin time e' fallita");
+        
+        if (!this.registerTrancio(new plugins.Join()))
+            System.err.println("La registrazione del plugin join e' fallita");
     }
     
     /**
@@ -274,7 +277,7 @@ public class Pizza extends PircBot implements Runnable {
         if ((sender.compareTo(this.getNick()) == 0) || (sender.compareTo(this.getName()) == 0) || (sender.compareTo(this.getLogin()) == 0)) {
             this.enqueueMessage(new Message(channel, "Salve ragazzi, sono PizzaBot: https://github.com/NeroReflex/Pizza :D"));
         } else {
-            this.enqueueMessage(new Message(channel, "Benvenuto " + sender + " :)"));
+            this.enqueueMessage(new Message(channel, "Welcome " + sender + " :)"));
         }
     }
     

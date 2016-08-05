@@ -142,4 +142,15 @@ public abstract class PluginAPI {
         // Metti in coda il messaggio
         MessageQueue.enqueueMessage(botId, msg);
     }
+    
+    /**
+     * Connetti il bot al nuovo canale.
+     * 
+     * @param botId l'ID univoco del bot con cui interagire
+     */
+    public static void joinChannel(String botId, String channel, String key) {
+        // Unisci il bot al canale
+        if (PluginAPI.robotAttivi.containsKey(botId))
+            PluginAPI.robotAttivi.get(botId).joinChannel(channel, key);
+    }
 }

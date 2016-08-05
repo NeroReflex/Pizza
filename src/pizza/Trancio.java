@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * 
  * @author Benato Denis
  */
-public class Trancio implements Runnable {
+public abstract class Trancio implements Runnable {
     
     private String botID;
     
@@ -49,6 +49,16 @@ public class Trancio implements Runnable {
      */
     public final String getBotID() {
         return this.botID;
+    }
+    
+    /**
+     * Connetti il bot al canale specificato
+     * 
+     * @param channel il nome del canale a cui il bot si unira'
+     * @param key la chiave usata per l'accesso al canale
+     */
+    public void joinChannel(String channel, String key) {
+        PluginAPI.joinChannel(this.getBotID(), channel, key);
     }
     
     /**
@@ -142,19 +152,11 @@ public class Trancio implements Runnable {
     
     /*      BUON DIVERTIMENTO!      */
     
-    protected void onInitialize() {
-        
-    }
+    protected /*abstract*/ void onInitialize()/*;*/ {}
     
-    protected void onShutdown() {
-        
-    }
+    protected /*abstract*/ void onShutdown()/*;*/ {}
     
-    protected void onCall(String user, String channel, Vector<String> args) {
-        
-    }
+    protected /*abstract*/ void onCall(String user, String channel, Vector<String> args)/*;*/ {}
     
-    protected void onPoll() {
-        
-    }
+    protected /*abstract*/ void onPoll()/*;*/ {}
 }

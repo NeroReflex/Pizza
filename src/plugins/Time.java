@@ -38,9 +38,10 @@ import java.util.TimeZone;
  * @author Benato Denis
  */
 public final class Time extends pizza.Trancio {
+    
     public static final int ATOMICTIME_PORT = 13;
-
-    public static final String ATOMICTIME_SERVER = "129.6.15.30";
+    //public static final String ATOMICTIME_SERVER = "129.6.15.30";
+    public static final String ATOMICTIME_SERVER = "time-c.nist.gov";
     
     /*
     ref : http://www.bldrdoc.gov/doc-tour/atomic_clock.html
@@ -81,7 +82,7 @@ public final class Time extends pizza.Trancio {
                                                                  |
     The instant the "*" appears, is the exact time. <------------+
     */
-    public final static GregorianCalendar getAtomicTime() throws IOException{
+    public final static Calendar getAtomicTime() throws IOException{
         BufferedReader in = null;
         Socket conn = null;
 
@@ -99,24 +100,24 @@ public final class Time extends pizza.Trancio {
             }
             //System.out.println("DEBUG 1 : " + atomicTime);
             String[] fields = atomicTime.split(" ");
-            GregorianCalendar calendar = new GregorianCalendar();
-
+            
             String[] date = fields[1].split("-");
-            calendar.set(Calendar.YEAR, 2000 +  Integer.parseInt(date[0]));
-            calendar.set(Calendar.MONTH, Integer.parseInt(date[1])-1);
-            calendar.set(Calendar.DATE, Integer.parseInt(date[2]));
-
+            
             // deals with the timezone and the daylight-saving-time (you may need to adjust this)
             // here i'm using "EST" for Eastern Standart Time (to support Daylight Saving Time)
             TimeZone tz = TimeZone.getTimeZone("EST"); // or .getDefault()
             int gmt = (tz.getRawOffset() + tz.getDSTSavings()) / 3600000;
             //System.out.println("DEBUG 2 : " + gmt);
-
+            
             String[] time = fields[2].split(":");
-            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time[0]) + gmt);
-            calendar.set(Calendar.MINUTE, Integer.parseInt(time[1]));
-            calendar.set(Calendar.SECOND, Integer.parseInt(time[2]));
-            return calendar;
+
+            Calendar.Builder cb = new Calendar.Builder();
+            cb.setTimeZone(tz);
+            cb.setCalendarType("gregorian");
+            cb.setDate(2000 +  Integer.parseInt(date[0]), Integer.parseInt(date[1])-1, Integer.parseInt(date[2]));
+            cb.setTimeOfDay(Integer.parseInt(time[0])  + gmt , Integer.parseInt(time[1]), Integer.parseInt(time[2]));
+            
+            return cb.build();
         } catch (IOException e){
            throw e;
         } finally {
@@ -131,17 +132,15 @@ public final class Time extends pizza.Trancio {
         
         try {
             // Ottieni l'ora attuale
-            GregorianCalendar cal = getAtomicTime();
-            
-            GregorianCalendar correctTimeZone = new GregorianCalendar(TimeZone.getTimeZone(timezone));
-            correctTimeZone.setTimeInMillis(cal.getTimeInMillis());
+            Calendar calendar = getAtomicTime();
             
             // Imposta il formato di visualizzazione
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
-
+            sdf.setTimeZone(TimeZone.getTimeZone(timezone));
+            
             // Metti in coda la risposta
-            this.sendMessage(new Message(channel, user + " exact time: " + sdf.format(correctTimeZone.getTime())));
-        } catch (Exception ex) {
+            this.sendMessage(new Message(channel, user + " exact " + timezone + " time: " + sdf.format(calendar.getTime())));
+        } catch (Throwable ex) {
             this.sendMessage(new Message(channel, user + " error occurred while retrieving the exact time for the " + timezone + ":("));
         }
     }
