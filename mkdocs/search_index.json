@@ -12,7 +12,7 @@
         }, 
         {
             "location": "/compilazione/", 
-            "text": "Compilazione\n\n\nLa compilazione di Pizza richiede 3 semplicissime fasi descritte di seguito.\n\n\nParadossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro!\n\n\nPreparazione\n\n\nL'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto!\n\n\nLa versione utilizzata al momento della creazione del progetto e': \njdk 1.8\n\n\nIl processo di compilazione e' automatizzato da \nant\n: e' necessario aggiungere la directory bin alla variabile d'ambiente PATH!\n\n\nPer scaricare il progetto e' necessario installare \ngit\n con il plugin \ngit-lfs\n!\n\n\nOttenere il codice sorgente\n\n\nL'utilizzo di git e' altamente consigliato per scaricare il codice sorgente:\n\n\ngit clone https://github.com/NeroReflex/Pizza.git\ncd Pizza\n\n\n\n\nOra e' possibile passare alla compilazione vera e propria!\n\n\nCompilazione\n\n\nIl proecsso di compilazione e' descritto nel file nbbuild.xml:\n\n\nant -f nbbuild.xml -Dnb.internal.action.name=build jar\n\n\n\n\nUna corretta compilazione produrra' una directory \"dist\" contenente un file chiamato \"Pizza.jar\" e una directory \"lib\".", 
+            "text": "Compilazione\n\n\nLa compilazione di Pizza richiede 3 semplicissime fasi descritte di seguito.\n\n\nParadossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro!\n\n\nPreparazione\n\n\nL'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto!\n\n\nLa versione utilizzata al momento della creazione del progetto e': \njdk 1.8\n\n\nIl processo di compilazione e' automatizzato da \nant\n: e' necessario aggiungere la directory bin alla variabile d'ambiente PATH!\n\n\nPer scaricare il progetto e' necessario installare \ngit\n con il plugin \ngit-lfs\n!\n\n\nOttenere il codice sorgente\n\n\nL'utilizzo di git e' altamente consigliato per scaricare il codice sorgente:\n\n\ngit clone https://github.com/NeroReflex/Pizza.git\ncd Pizza\n\n\n\n\nOra e' possibile passare alla compilazione vera e propria!\n\n\nCompilazione\n\n\nIl processo di compilazione e' descritto nel file nbbuild.xml, destinato al build system ant,\ne va azionato con il comando:\n\n\nant -f nbbuild.xml\n\n\n\n\nUna corretta compilazione produrra' una directory \"dist\" contenente un file chiamato \"Pizza.jar\",\ntuttavia il programma non potra' ancora essere avviato: e' infatti necessario creare una cartella \"lib\"\nallo stesso livello del programma compilato e copiarvi dentro le librerie necessarie che troverete nella root\ndel progetto!", 
             "title": "Compilazione"
         }, 
         {
@@ -32,7 +32,7 @@
         }, 
         {
             "location": "/compilazione/#compilazione_1", 
-            "text": "Il proecsso di compilazione e' descritto nel file nbbuild.xml:  ant -f nbbuild.xml -Dnb.internal.action.name=build jar  Una corretta compilazione produrra' una directory \"dist\" contenente un file chiamato \"Pizza.jar\" e una directory \"lib\".", 
+            "text": "Il processo di compilazione e' descritto nel file nbbuild.xml, destinato al build system ant,\ne va azionato con il comando:  ant -f nbbuild.xml  Una corretta compilazione produrra' una directory \"dist\" contenente un file chiamato \"Pizza.jar\",\ntuttavia il programma non potra' ancora essere avviato: e' infatti necessario creare una cartella \"lib\"\nallo stesso livello del programma compilato e copiarvi dentro le librerie necessarie che troverete nella root\ndel progetto!", 
             "title": "Compilazione"
         }, 
         {
@@ -49,6 +49,31 @@
             "location": "/utilizzo/#esempio", 
             "text": "Perche' non provare il bot in una stanza sperduta di freenode?  java -jar Pizza.jar PizzaBot irc.freenode.net #pizzabot --verbose off  Quando il bot sara' avviato potremmo interagire con esso tramite la chat, ovvero come\nfaranno  TUTTI  gli altri utenti della chat!", 
             "title": "Esempio"
+        }, 
+        {
+            "location": "/plugin/", 
+            "text": "Plugins\n\n\nPizza puo' essere esteso tramite diversi tipi di plugins.\n\n\nOgni plugin e' eseguito in un thread a se: questo significa che se il plugin dovesse interrompersi o generare un errore questo sarebbe interrotto senza\ncompromettere la funzionalita' degli altri plugin e del bot stesso!\n\n\nQuesta architettura rende Pizza estendibile a piacere, senza troppe preoccupazioni relative a plugin malfunzionanti!\n\n\nCreazione\n\n\nPer creaare un uovo plugin sono necessari due step:\n\n\n\n\nCreare una classe che erediti dalla classe base pizza.Trancio\n\n\nRegistrare il plugin come \"di sistema\" inserendolo nella funzione loadInternalPlugins in Pizza.java\n\n\n\n\nA questo punto il plugin sara' funzionante, anche se non sara' in grado di fare nulla!\n\n\nOgni plugin ha due modi per essere eseguito: il primo e' a comando, il secondo e' a ciclo continuo.\n\n\nOgni plugin puo' presentare entrambi i metodi/componenti di esecuzione.\n\n\nEstensione\n\n\nFacendo l'override di uno o pie' dei metodi descritti di seguito si estendera' il plugin:\n\n\n- protected void onInitialize(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*\n- protected void onShutdown(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*\n- protected onCall(String user, String channel, Vector\nString\n args): metodo chiamato nel plugin thread, quando l'utente invoca il plugin\n- protected onPoll(): metodo invocato nel plugin thread continuamente nel minor tempo possibile\n\n\n\nIn onCall(String user, String channel, Vector\n args) user e' il nick dell'utente che ha chiamato il plugin, channel e' il\ncanale usato per richiedere l'esecuzione del plugin e args e' l'elenco di argomenti passati al plugin.\n\n\nAPI\n\n\nIl plugin dovra' interagire attivamente con gli utenti della chat IRC oltre che a svolgere semplici interrogazioni del tipo:\nche canali occupa il bot? A che server e' connesso?\n\n\nPer fare questo TUTTI i plugin hanno accesso ad una serie di metodi che formano l'interfaccia con cui i plugin si rapportano al bot.\n\n\nTali API possono essere consultate nella documentazione della classe pizza.Trancio, ma fornisco qui una lista delle piu' comuni\nfunzioni:\n\n\n- String[] getChannels()\n- void sendMessage(Message msg)\n- void joinChannel(String channel, String key)", 
+            "title": "Plugins"
+        }, 
+        {
+            "location": "/plugin/#plugins", 
+            "text": "Pizza puo' essere esteso tramite diversi tipi di plugins.  Ogni plugin e' eseguito in un thread a se: questo significa che se il plugin dovesse interrompersi o generare un errore questo sarebbe interrotto senza\ncompromettere la funzionalita' degli altri plugin e del bot stesso!  Questa architettura rende Pizza estendibile a piacere, senza troppe preoccupazioni relative a plugin malfunzionanti!", 
+            "title": "Plugins"
+        }, 
+        {
+            "location": "/plugin/#creazione", 
+            "text": "Per creaare un uovo plugin sono necessari due step:   Creare una classe che erediti dalla classe base pizza.Trancio  Registrare il plugin come \"di sistema\" inserendolo nella funzione loadInternalPlugins in Pizza.java   A questo punto il plugin sara' funzionante, anche se non sara' in grado di fare nulla!  Ogni plugin ha due modi per essere eseguito: il primo e' a comando, il secondo e' a ciclo continuo.  Ogni plugin puo' presentare entrambi i metodi/componenti di esecuzione.", 
+            "title": "Creazione"
+        }, 
+        {
+            "location": "/plugin/#estensione", 
+            "text": "Facendo l'override di uno o pie' dei metodi descritti di seguito si estendera' il plugin:  - protected void onInitialize(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*\n- protected void onShutdown(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*\n- protected onCall(String user, String channel, Vector String  args): metodo chiamato nel plugin thread, quando l'utente invoca il plugin\n- protected onPoll(): metodo invocato nel plugin thread continuamente nel minor tempo possibile  In onCall(String user, String channel, Vector  args) user e' il nick dell'utente che ha chiamato il plugin, channel e' il\ncanale usato per richiedere l'esecuzione del plugin e args e' l'elenco di argomenti passati al plugin.", 
+            "title": "Estensione"
+        }, 
+        {
+            "location": "/plugin/#api", 
+            "text": "Il plugin dovra' interagire attivamente con gli utenti della chat IRC oltre che a svolgere semplici interrogazioni del tipo:\nche canali occupa il bot? A che server e' connesso?  Per fare questo TUTTI i plugin hanno accesso ad una serie di metodi che formano l'interfaccia con cui i plugin si rapportano al bot.  Tali API possono essere consultate nella documentazione della classe pizza.Trancio, ma fornisco qui una lista delle piu' comuni\nfunzioni:  - String[] getChannels()\n- void sendMessage(Message msg)\n- void joinChannel(String channel, String key)", 
+            "title": "API"
         }, 
         {
             "location": "/pierotofy/", 

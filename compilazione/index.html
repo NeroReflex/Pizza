@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="../css/highlight.css">
+  <link href="../javadoc/javadoc/stylesheet.css" rel="stylesheet">
 
   
   <script>
@@ -32,6 +33,7 @@
   <script src="../js/modernizr-2.8.3.min.js"></script>
   <script type="text/javascript" src="../js/highlight.pack.js"></script>
   <script src="../js/theme.js"></script> 
+  <script src="../javadoc/javadoc/script.js"></script>
 
   
 </head>
@@ -84,6 +86,13 @@
             <li>
     <li class="toctree-l1 ">
         <a class="" href="../utilizzo/">Utilizzo</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../plugin/">Plugins</a>
         
     </li>
 <li>
@@ -158,11 +167,15 @@ cd Pizza
 
 <p>Ora e' possibile passare alla compilazione vera e propria!</p>
 <h2 id="compilazione_1">Compilazione</h2>
-<p>Il proecsso di compilazione e' descritto nel file nbbuild.xml:</p>
-<pre><code class="sh">ant -f nbbuild.xml -Dnb.internal.action.name=build jar
+<p>Il processo di compilazione e' descritto nel file nbbuild.xml, destinato al build system ant,
+e va azionato con il comando:</p>
+<pre><code class="sh">ant -f nbbuild.xml
 </code></pre>
 
-<p>Una corretta compilazione produrra' una directory "dist" contenente un file chiamato "Pizza.jar" e una directory "lib".</p>
+<p>Una corretta compilazione produrra' una directory "dist" contenente un file chiamato "Pizza.jar",
+tuttavia il programma non potra' ancora essere avviato: e' infatti necessario creare una cartella "lib"
+allo stesso livello del programma compilato e copiarvi dentro le librerie necessarie che troverete nella root
+del progetto!</p>
               
             </div>
           </div>
