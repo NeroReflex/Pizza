@@ -183,6 +183,9 @@ public class Pizza extends PircBot implements Runnable {
 
         if (!this.registerTrancio(new plugins.Calc()))
             System.err.println("La registrazione del plugin calc e' fallita");
+
+        if (!this.registerTrancio(new plugins.Convert()))
+            System.err.println("La registrazione del plugin convert e' fallita");
     }
 
     /**
