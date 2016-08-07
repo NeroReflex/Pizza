@@ -16,11 +16,13 @@ script:
   - wget https://bitbucket.org/xerial/sqlite-jdbc/downloads/sqlite-jdbc-3.8.11.2.jar
   - wget http://www.jibble.org/files/pircbot-1.5.0.zip
   - unzip pircbot-1.5.0.zip
+  - wget http://www.java2s.com/Code/JarDownload/javax.json/javax.json-1.0.jar.zip
+  - unzip javax.json-1.0.jar.zip
   - mv -f pircbot-1.5.0/pircbot.jar pircbot.jar
 # fine della follia :/
 
   - ant -f nbbuild.xml -Dnb.internal.action.name=build jar
-  
+
 notifications:
   irc:
     channels:
