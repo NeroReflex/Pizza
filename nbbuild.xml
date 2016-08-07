@@ -76,6 +76,7 @@
         <file file="pircbot.jar" />
         <file file="sqlite-jdbc-3.8.11.2.jar" />
         <file file="jython-standalone-2.7.0.jar" />
+        <file file="javax.json-1.0.jar" />
       </copy>
     </target>
 </project>
