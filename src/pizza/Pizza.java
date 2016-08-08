@@ -177,6 +177,7 @@ public class Pizza extends PircBot implements Runnable {
     protected void loadInternalPlugins() {
         if (!this.registerTrancio(new plugins.Time()))
             System.err.println("La registrazione del plugin time e' fallita");
+<<<<<<< HEAD
 
         if (!this.registerTrancio(new plugins.Join()))
             System.err.println("La registrazione del plugin join e' fallita");
@@ -186,6 +187,10 @@ public class Pizza extends PircBot implements Runnable {
 
         if (!this.registerTrancio(new plugins.Convert()))
             System.err.println("La registrazione del plugin convert e' fallita");
+=======
+        if (!this.registerTrancio(new plugins.PTforum()))
+            System.err.println("La registrazione del plugin PTforum e' fallita");
+>>>>>>> forumplugin-dev
     }
 
     /**
