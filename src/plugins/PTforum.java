@@ -27,13 +27,17 @@ public final class PTforum extends pizza.Trancio{
       try{
           InputStream is = new URL(apiEndpoint).openStream();
           JsonArray topicList = Json.createReader(is).readArray();
+          boolean firstFetch = (topics.size() == 0);
           for(JsonValue v: topicList){
               JsonObject obj = (JsonObject)v;
               Integer oldReplies = topics.get(obj.getString("url"));
               //System.out.println(obj.getString("subject")); //per debug
               //System.out.println(obj.getInt("replies"));
-              if(oldReplies == null)
-                  topics.put(obj.getString("url"), obj.getInt("replies")); //se non è già in elenco, lo aggiungo
+              if(oldReplies == null){
+                  topics.put(obj.getString("url"), obj.getInt("replies")); //se non è già in elenco, lo aggiungo...
+                  if(!firstFetch)
+                      sendMessage(new Message(chan, "E' stato aperto un nuovo topic nel forum: \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url"))); //... e mando il messaggio
+              }
               else if(obj.getInt("replies") > oldReplies) //Se il numero di risposte è maggiore, allora ci sono stati nuovi post
                   sendMessage(new Message(chan, "Ci sono nuovi messaggi nel topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
           }
@@ -52,7 +56,7 @@ public final class PTforum extends pizza.Trancio{
           }
           for(String s: topicsToRemove){
               topics.remove(s);
-              System.out.println("Rimosso vecchio topic " + s); //debug
+              //System.out.println("Rimosso vecchio topic " + s); //debug
           }
           Thread.sleep(interval);
       }catch(IOException e){
