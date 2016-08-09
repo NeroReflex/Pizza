@@ -1,6 +1,6 @@
 /*
  *    Pizza IRC Bot (for pierotofy.it community)
- *    Copyright (C) 2016 Benato Denis
+ *    Copyright (C) 2016 Benato Denis, Gianluca Nitti
  * 
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
