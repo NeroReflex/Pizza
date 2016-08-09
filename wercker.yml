@@ -5,53 +5,13 @@ box: java
 build:
   steps:
     - install-packages:
-        packages: git openssl pkg-config libssl-dev wget zlib1g-dev unzip openssh-client unzip tar
-    - script:
-        name: Fetching git-lfs
-        code: wget https://github.com/github/git-lfs/releases/download/v1.3.0/git-lfs-linux-amd64-1.3.0.tar.gz
-    - script:
-        name: Extracting git-lfs
-        code: |-
-          tar -xf git-lfs-linux-amd64-1.3.0.tar.gz
-          chmod +x git-lfs-1.3.0/install.sh
-    - script:
-        name: Installing git-lfs
-        code: |-
-          cd git-lfs-1.3.0
-          ./install.sh
-          git lfs install
-          cd ../
-    - script:
-        name: Downloading ant
-        code: wget http://apache.panu.it//ant/binaries/apache-ant-1.9.7-bin.zip
-    - script:
-        name: Extracting ant
-        code: |-
-          unzip apache-ant-1.9.7-bin.zip
-          chmod +x apache-ant-1.9.7/bin/ant
-#    - script:
-#        name: Getting lfs-stored Files
-#        code: git pull
-    - script:
-        name: Downloading correct jar files
-        code: |-
-          rm -rf *.jar
-          wget https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.0/jython-standalone-2.7.0.jar
-          wget https://bitbucket.org/xerial/sqlite-jdbc/downloads/sqlite-jdbc-3.8.11.2.jar
-          wget http://www.jibble.org/files/pircbot-1.5.0.zip
-          unzip pircbot-1.5.0.zip
-          mv -f pircbot-1.5.0/pircbot.jar pircbot.jar
-          wget http://www.java2s.com/Code/JarDownload/javax.json/javax.json-1.0.jar.zip
-          unzip javax.json-1.0.jar.zip
-    - script:
-        name: Check jar files
-        code: |-
-          ls -lh jython-standalone-2.7.0.jar
-          ls -lh pircbot.jar
-          ls -lh sqlite-jdbc-3.8.11.2.jar
+        packages: git openssl pkg-config libssl-dev wget zlib1g-dev unzip openssh-client unzip tar maven
     - script:
         name: Building Project
-        code: apache-ant-1.9.7/bin/ant -f nbbuild.xml
+        code: mvn compile
+    - script:
+        name: Executing tests
+        code: mvn test
 deploy :
   steps :
     - install-packages:

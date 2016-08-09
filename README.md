@@ -15,10 +15,7 @@ Potete prendere visione della docuentazione aggiornata [qui](https://neroreflex.
 
 ## Compilazione
 Per compilare Pizza sono necessarie due dipendenze: [jdk 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-ed [ant](http://ant.apache.org/bindownload.cgi).
-
-Insieme a sorgente del progetto vengono distribuiti i file progetto di [NetBeans](https://netbeans.org/)
-per comodità verso chi usa lo stesso IDE.
+e [maven](https://maven.apache.org/).
 
 
 ## Licenza
