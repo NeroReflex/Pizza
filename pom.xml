@@ -98,7 +98,7 @@
                         
                         <addClasspath>true</addClasspath>
                         <classpathPrefix>lib/</classpathPrefix>
-                        <classpathLayoutType>repository</classpathLayoutType>
+                        <!--<classpathLayoutType>repository</classpathLayoutType>-->
                     </manifest>
                                         
                     </archive>
