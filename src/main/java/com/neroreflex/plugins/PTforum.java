@@ -35,54 +35,52 @@ public final class PTforum extends Trancio {
 
   HashMap<String, Integer> topics = new HashMap<String, Integer>(); //chiave=url, valore=numero risposte
 
-  protected final void onPoll(){
-      try{
-          String[] channels = this.getChannels();
-          InputStream is = new URL(apiEndpoint).openStream();
-          JsonArray topicList = Json.createReader(is).readArray();
-          boolean firstFetch = (topics.size() == 0);
-          for(JsonValue v: topicList){
-            JsonObject obj = (JsonObject)v;
-            Integer oldReplies = topics.get(obj.getString("url"));
+    protected final void onPoll(){
+        try {
+            String[] channels = this.getChannels();
+            InputStream is = new URL(apiEndpoint).openStream();
+            JsonArray topicList = Json.createReader(is).readArray();
+            boolean firstFetch = (topics.size() == 0);
+            for(JsonValue v: topicList){
+                JsonObject obj = (JsonObject)v;
+                Integer oldReplies = topics.get(obj.getString("url"));
 
-            if(oldReplies == null){
-                // Se non è già in elenco, lo aggiungo...
-                topics.put(obj.getString("url"), obj.getInt("replies"));
-                if(!firstFetch)
-                    for (int i = 0; i < channels.length; i++) {
-                         String chan = channels[i];
-                        sendMessage(new Message(chan, "Ci sono nuovi messaggi nel topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
+                if(oldReplies == null){
+                    // Se non è già in elenco, lo aggiungo...
+                    topics.put(obj.getString("url"), obj.getInt("replies"));
+                    if(!firstFetch)
+                        for (String chan : channels) {
+                            sendMessage(new Message(chan, "Ci sono nuovi messaggi nel topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
                     }
-            } else if(obj.getInt("replies") > oldReplies) {
-                // Se il numero di risposte è maggiore, allora ci sono stati nuovi post
-                for (int i = 0; i < channels.length; i++) {
-                        String chan = channels[i];
+                } else if(obj.getInt("replies") > oldReplies) {
+                    // Se il numero di risposte è maggiore, allora ci sono stati nuovi post
+                    for (String chan : channels) {
                         sendMessage(new Message(chan, "Ci sono nuovi messaggi nel topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
                     }
                 }
             }
-          ArrayList<String> topicsToRemove = new ArrayList<>();
-          // Pulisce la hashmap dai vecchi topic (che non sono più nella risposta dell'api)
-          for(String url: topics.keySet()){
-              boolean toRemove = true;
-              for(JsonValue v: topicList){
-                  if(((JsonObject)v).getString("url").equals(url)){
-                      toRemove = false;
-                      break;
-                  }
-              }
-              if(toRemove)
-                  topicsToRemove.add(url);
-          }
-          for(String s: topicsToRemove)
-              topics.remove(s);
-          
-          Thread.sleep(interval);
-      }catch(IOException e){
-          e.printStackTrace();
-          //sendMessage(new Message(chan, "Attenzione: impossibile recuperare gli aggiornamenti dal forum."));
-      }catch(InterruptedException e){
-          e.printStackTrace();
-      }
-  }
+            ArrayList<String> topicsToRemove = new ArrayList<>();
+            // Pulisce la hashmap dai vecchi topic (che non sono più nella risposta dell'api)
+            for(String url: topics.keySet()){
+                boolean toRemove = true;
+                for(JsonValue v: topicList){
+                    if(((JsonObject)v).getString("url").equals(url)){
+                        toRemove = false;
+                        break;
+                    }
+                }
+                if(toRemove)
+                    topicsToRemove.add(url);
+            }
+            for(String s: topicsToRemove)
+                topics.remove(s);
+
+            Thread.sleep(interval);
+        }catch(IOException e){
+            e.printStackTrace();
+            //sendMessage(new Message(chan, "Attenzione: impossibile recuperare gli aggiornamenti dal forum."));
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
+    }
 }
