@@ -48,7 +48,7 @@ deploy :
         code: |-
           cd Documentazione
           git clone -b gh-pages $GIT_REMOTE
-          rsync -avh --progress /pipeline/source/Documentazione/site/ ./Pizza
+          rsync -avh --progress Documentazione/site/ Pizza
           cd Pizza
           git add .
           git commit -m "[ci skip]deploy commit from $WERCKER_STARTED_BY" --quiet &> /dev/null
