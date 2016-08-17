@@ -49,7 +49,7 @@ deploy :
           cd Documentazione
           git clone -b gh-pages $GIT_REMOTE
           sudo chmod 0777 -R site
-          sudo rsync -ah ./site/ ./Pizza/
+          sudo cp -R site/ .Pizza/
           cd Pizza
           git add .
           git commit -m "[ci skip]deploy commit from $WERCKER_STARTED_BY" --quiet &> /dev/null
