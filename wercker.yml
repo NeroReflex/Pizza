@@ -33,7 +33,7 @@ deploy :
     - script:
         name: Building Documentation
         code: |-
-          rsync -avh --progress dist/javadoc Documentazione/docs/javadoc
+          # rsync -avh --progress dist/javadoc Documentazione/docs/javadoc
           cd Documentazione
           mkdocs build
           cd ../
@@ -49,7 +49,7 @@ deploy :
           cd Documentazione
           git clone -b gh-pages $GIT_REMOTE
           sudo chmod 0777 -R site
-          sudo cp -R site/ .Pizza/
+          sudo rsync -avh ./site/ ./Pizza/
           cd Pizza
           git add .
           git commit -m "[ci skip]deploy commit from $WERCKER_STARTED_BY" --quiet &> /dev/null
