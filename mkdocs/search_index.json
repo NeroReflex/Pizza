@@ -12,7 +12,7 @@
         }, 
         {
             "location": "/compilazione/", 
-            "text": "Compilazione\n\n\nLa compilazione di Pizza richiede 3 semplicissime fasi descritte di seguito.\n\n\nParadossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro!\n\n\nPreparazione\n\n\nL'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto!\n\n\nLa versione utilizzata al momento della creazione del progetto e': \njdk 1.8\n\n\nIl processo di compilazione e' automatizzato da \nant\n: e' necessario aggiungere la directory bin alla variabile d'ambiente PATH!\n\n\nPer scaricare il progetto e' necessario installare \ngit\n con il plugin \ngit-lfs\n!\n\n\nOttenere il codice sorgente\n\n\nL'utilizzo di git e' altamente consigliato per scaricare il codice sorgente:\n\n\ngit clone https://github.com/NeroReflex/Pizza.git\ncd Pizza\n\n\n\n\nOra e' possibile passare alla compilazione vera e propria!\n\n\nCompilazione\n\n\nIl processo di compilazione e' descritto nel file nbbuild.xml, destinato al build system ant,\ne va azionato con il comando:\n\n\nant -f nbbuild.xml\n\n\n\n\nUna corretta compilazione produrra' una directory \"dist\" contenente un file chiamato \"Pizza.jar\",\ntuttavia il programma non potra' ancora essere avviato: e' infatti necessario creare una cartella \"lib\"\nallo stesso livello del programma compilato e copiarvi dentro le librerie necessarie che troverete nella root\ndel progetto!", 
+            "text": "Compilazione\n\n\nLa compilazione di Pizza richiede 3 semplicissime fasi descritte di seguito.\n\n\nParadossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro!\n\n\nPreparazione\n\n\nL'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto!\n\n\nLa versione utilizzata al momento della creazione del progetto e': \njdk 1.8\n\n\nIl processo di compilazione e' automatizzato da \nmaven\n: e' altamente consigliato aggiungere la directory bin alla variabile d'ambiente PATH!\n\n\nPer scaricare il progetto e' necessario installare \ngit\n o scaricare il progetto come zip da GitHub!\n\n\nOttenere il codice sorgente\n\n\nL'utilizzo di git e' altamente consigliato per scaricare il codice sorgente:\n\n\ngit clone https://github.com/NeroReflex/Pizza.git\ncd Pizza\n\n\n\n\nOra e' possibile passare alla compilazione vera e propria!\n\n\nCompilazione\n\n\nIl processo di compilazione e' descritto nel file bom.xml, destinato al build system maven,\ne va azionato con il comando:\n\n\nmvn compile \n mvn package\n\n\n\n\nUna corretta compilazione produrra' una directory \"target\" contenente un file chiamato \"PizzaBot-1.0-SNAPSHOT.jar\".", 
             "title": "Compilazione"
         }, 
         {
@@ -22,7 +22,7 @@
         }, 
         {
             "location": "/compilazione/#preparazione", 
-            "text": "L'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto!  La versione utilizzata al momento della creazione del progetto e':  jdk 1.8  Il processo di compilazione e' automatizzato da  ant : e' necessario aggiungere la directory bin alla variabile d'ambiente PATH!  Per scaricare il progetto e' necessario installare  git  con il plugin  git-lfs !", 
+            "text": "L'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto!  La versione utilizzata al momento della creazione del progetto e':  jdk 1.8  Il processo di compilazione e' automatizzato da  maven : e' altamente consigliato aggiungere la directory bin alla variabile d'ambiente PATH!  Per scaricare il progetto e' necessario installare  git  o scaricare il progetto come zip da GitHub!", 
             "title": "Preparazione"
         }, 
         {
@@ -32,7 +32,7 @@
         }, 
         {
             "location": "/compilazione/#compilazione_1", 
-            "text": "Il processo di compilazione e' descritto nel file nbbuild.xml, destinato al build system ant,\ne va azionato con il comando:  ant -f nbbuild.xml  Una corretta compilazione produrra' una directory \"dist\" contenente un file chiamato \"Pizza.jar\",\ntuttavia il programma non potra' ancora essere avviato: e' infatti necessario creare una cartella \"lib\"\nallo stesso livello del programma compilato e copiarvi dentro le librerie necessarie che troverete nella root\ndel progetto!", 
+            "text": "Il processo di compilazione e' descritto nel file bom.xml, destinato al build system maven,\ne va azionato con il comando:  mvn compile   mvn package  Una corretta compilazione produrra' una directory \"target\" contenente un file chiamato \"PizzaBot-1.0-SNAPSHOT.jar\".", 
             "title": "Compilazione"
         }, 
         {

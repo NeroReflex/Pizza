@@ -19,7 +19,6 @@
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="../css/highlight.css">
-  <link href="../javadoc/javadoc/stylesheet.css" rel="stylesheet">
 
   
   <script>
@@ -33,7 +32,6 @@
   <script src="../js/modernizr-2.8.3.min.js"></script>
   <script type="text/javascript" src="../js/highlight.pack.js"></script>
   <script src="../js/theme.js"></script> 
-  <script src="../javadoc/javadoc/script.js"></script>
 
   
 </head>
@@ -164,8 +162,8 @@
 <h2 id="preparazione">Preparazione</h2>
 <p>L'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto!</p>
 <p>La versione utilizzata al momento della creazione del progetto e': <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">jdk 1.8</a></p>
-<p>Il processo di compilazione e' automatizzato da <a href="http://ant.apache.org/bindownload.cgi">ant</a>: e' necessario aggiungere la directory bin alla variabile d'ambiente PATH!</p>
-<p>Per scaricare il progetto e' necessario installare <a href="https://git-scm.com/">git</a> con il plugin <a href="https://git-lfs.github.com/">git-lfs</a>!</p>
+<p>Il processo di compilazione e' automatizzato da <a href="https://maven.apache.org/">maven</a>: e' altamente consigliato aggiungere la directory bin alla variabile d'ambiente PATH!</p>
+<p>Per scaricare il progetto e' necessario installare <a href="https://git-scm.com/">git</a> o scaricare il progetto come zip da GitHub!</p>
 <h2 id="ottenere-il-codice-sorgente">Ottenere il codice sorgente</h2>
 <p>L'utilizzo di git e' altamente consigliato per scaricare il codice sorgente:</p>
 <pre><code class="sh">git clone https://github.com/NeroReflex/Pizza.git
@@ -174,15 +172,12 @@ cd Pizza
 
 <p>Ora e' possibile passare alla compilazione vera e propria!</p>
 <h2 id="compilazione_1">Compilazione</h2>
-<p>Il processo di compilazione e' descritto nel file nbbuild.xml, destinato al build system ant,
+<p>Il processo di compilazione e' descritto nel file bom.xml, destinato al build system maven,
 e va azionato con il comando:</p>
-<pre><code class="sh">ant -f nbbuild.xml
+<pre><code class="sh">mvn compile &amp;&amp; mvn package
 </code></pre>
 
-<p>Una corretta compilazione produrra' una directory "dist" contenente un file chiamato "Pizza.jar",
-tuttavia il programma non potra' ancora essere avviato: e' infatti necessario creare una cartella "lib"
-allo stesso livello del programma compilato e copiarvi dentro le librerie necessarie che troverete nella root
-del progetto!</p>
+<p>Una corretta compilazione produrra' una directory "target" contenente un file chiamato "PizzaBot-1.0-SNAPSHOT.jar".</p>
               
             </div>
           </div>
