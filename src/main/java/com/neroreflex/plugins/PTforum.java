@@ -1,7 +1,7 @@
 /*
  *    Pizza IRC Bot (for pierotofy.it community)
  *    Copyright (C) 2016 Benato Denis, Gianluca Nitti, Gianluca Nitti
- * 
+ *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -38,6 +38,8 @@ public final class PTforum extends Trancio {
     protected final void onPoll(){
         try {
             String[] channels = this.getChannels();
+            //for (String chan : channels)
+            //  sendMessage(new Message(chan, "Controllo se ci sono nuovi messaggi..."));
             InputStream is = new URL(apiEndpoint).openStream();
             JsonArray topicList = Json.createReader(is).readArray();
             boolean firstFetch = (topics.size() == 0);
@@ -58,6 +60,8 @@ public final class PTforum extends Trancio {
                         sendMessage(new Message(chan, "Ci sono nuovi messaggi nel topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
                     }
                 }
+                //Aggiorna il numero di risposte
+                topics.put(obj.getString("url"), obj.getInt("replies"));
             }
             ArrayList<String> topicsToRemove = new ArrayList<>();
             // Pulisce la hashmap dai vecchi topic (che non sono più nella risposta dell'api)
