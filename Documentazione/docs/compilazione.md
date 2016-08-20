@@ -2,16 +2,18 @@
 
 La compilazione di Pizza richiede 3 semplicissime fasi descritte di seguito.
 
-Paradossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro!
+Paradossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro -.-"
 
 
 ## Preparazione
 
-L'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto!
+L'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto.
 
 La versione utilizzata al momento della creazione del progetto e': [jdk 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 
-Il processo di compilazione e' automatizzato da [maven](https://maven.apache.org/): e' altamente consigliato aggiungere la directory bin alla variabile d'ambiente PATH!
+Il processo di compilazione e' automatizzato da [maven](https://maven.apache.org/):
+e' altamente consigliato aggiungere la directory bin alla variabile d'ambiente PATH,
+in caso contrario dovrete ogni volta far riferimento al percorso completo.
 
 Per scaricare il progetto e' necessario installare [git](https://git-scm.com/) o scaricare il progetto come zip da GitHub!
 
