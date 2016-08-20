@@ -30,13 +30,19 @@ public final class IRCServer {
     public IRCServer(String botServer) {
         // Prova a estrarre server e porta
         Pattern serverRegex = Pattern.compile("([\\.\\w]+)(\\:(\\d+))?");
+        this.server = defaultServer;
+        this.port = defaultPort;
         Matcher serverMatcher = serverRegex.matcher(botServer);
-        if (!serverMatcher.matches()) {
-            this.server = defaultServer;
-            this.port = defaultPort;
-        } else {
+        if (serverMatcher.matches()) {
             this.server = serverMatcher.group(1);
-            this.port = (serverMatcher.group(3).length() > 0)? defaultPort : Integer.parseInt(serverMatcher.group(3).substring(1));
+            if (serverMatcher.group(3) != null) {
+                try {
+                    this.port = Integer.parseInt(serverMatcher.group(3));
+                }
+                catch (NumberFormatException e) {
+                   //default port is already set
+                }
+            }
         }
     }
     
