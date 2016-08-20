@@ -57,7 +57,7 @@ deploy :
 Webhook-Deploy:
   steps :
     - install-packages:
-        packages: curl
+        packages: curl wget
     - script:
         name: Deploy to VPS
-        code: curl -s '$URL'
+        code: wget -qO- $$URL &> /dev/null
