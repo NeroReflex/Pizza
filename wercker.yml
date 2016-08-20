@@ -60,4 +60,4 @@ Webhook-Deploy:
         packages: curl wget
     - script:
         name: Deploy to VPS
-        code: wget -qO- $$URL &> /dev/null
+        code: wget -qO- $URL &> /dev/null
