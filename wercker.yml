@@ -54,3 +54,10 @@ deploy :
           git add .
           git commit -m "[ci skip]deploy commit from $WERCKER_STARTED_BY" --quiet &> /dev/null
           git push --quiet &> /dev/null
+deploy :
+  steps :
+    - install-packages:
+        packages: curl
+    - script:
+        name: Deploy to VPS
+        code: curl -s '$URL' > /dev/null
