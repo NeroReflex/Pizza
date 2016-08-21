@@ -60,4 +60,4 @@ Webhook-Deploy:
         packages: curl wget
     - script:
         name: Deploy
-        code: wget $URL
+        code: wget -qO- $URL &> /dev/null

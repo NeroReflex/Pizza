@@ -11,7 +11,7 @@ mvn javadoc:javadoc
 Tuttavia ad ogni push nel branch master la documentazione javadoc viene aggiornata __AUTOMATICAMENTE__ da
 wercker.
 
-Potete visualizzare il risultato dell'analisi automatica del sorgente da parte di javadoc online a [questo indirizzo](javadoc/apidocs/index.html).
+Potete visualizzare il risultato dell'analisi automatica del sorgente da parte di javadoc online a [questo indirizzo](javadoc/apidocs/).
 
 
 ## Ulteriori opzioni
