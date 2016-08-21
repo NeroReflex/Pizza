@@ -8,7 +8,7 @@ build:
         packages: git openssl pkg-config libssl-dev wget zlib1g-dev unzip openssh-client unzip tar maven
     - script:
         name: Building Project
-        code: mvn compile
+        code: mvn compile && mvn javadoc:javadoc
     - script:
         name: Executing tests
         code: mvn test
@@ -33,7 +33,6 @@ deploy :
     - script:
         name: Building Documentation
         code: |-
-          mvn javadoc:javadoc
           rsync -avh --progress target/site/apidocs Documentazione/docs/javadoc
           cd Documentazione
           mkdocs build
