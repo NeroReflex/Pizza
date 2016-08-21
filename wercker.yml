@@ -33,7 +33,8 @@ deploy :
     - script:
         name: Building Documentation
         code: |-
-          # rsync -avh --progress dist/javadoc Documentazione/docs/javadoc
+          mvn javadoc:javadoc
+          rsync -avh --progress target/site/apidocs Documentazione/docs/javadoc
           cd Documentazione
           mkdocs build
           cd ../
@@ -59,5 +60,5 @@ Webhook-Deploy:
     - install-packages:
         packages: curl wget
     - script:
-        name: Deploy to VPS
-        code: wget -qO- $URL &> /dev/null
+        name: Deploy
+        code: wget $URL
