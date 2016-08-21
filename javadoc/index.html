@@ -92,6 +92,8 @@
             
                 <li class="toctree-l3"><a href="#javadoc">Javadoc</a></li>
                 
+                    <li><a class="toctree-l4" href="#ulteriori-opzioni">Ulteriori opzioni</a></li>
+                
             
             </ul>
         
@@ -153,7 +155,17 @@
             <div class="section">
               
                 <h1 id="javadoc">Javadoc</h1>
-<p>Potete visualizzare il risultato dell'analisi del sorgente da parte di javadoc online a <a href="../javadoc/javadoc/index.html">questo indirizzo</a>.</p>
+<p>Il progetto e' configurato per la generazione della documentazione partendo dal codice sorgente.</p>
+<p>Maven per svolgere il compito si affida a javadoc:</p>
+<pre><code class="sh">mvn javadoc:javadoc
+</code></pre>
+
+<p>Tuttavia ad ogni push nel branch master la documentazione javadoc viene aggiornata <strong>AUTOMATICAMENTE</strong> da
+wercker.</p>
+<p>Potete visualizzare il risultato dell'analisi automatica del sorgente da parte di javadoc online a <a href="../javadoc/apidocs/index.html">questo indirizzo</a>.</p>
+<h2 id="ulteriori-opzioni">Ulteriori opzioni</h2>
+<p>Per chi ha specifiche necessita' riguardo alla generazione della documentazione il plugin maven utilizzato e'
+il seguente: <a href="https://maven.apache.org/plugins/maven-javadoc-plugin/usage.html">javadoc for mvn</a>.</p>
               
             </div>
           </div>
