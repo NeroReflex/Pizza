@@ -117,7 +117,7 @@ public class Pizza extends PircBot implements Runnable {
             
             try {
                 for (int i = 0; i < params.length; i++) {
-                    args.add(params[i]);
+                    if (params[i].length() > 0) args.add(params[i]);
                 }
             } catch (Exception ex) {
                 
@@ -125,7 +125,7 @@ public class Pizza extends PircBot implements Runnable {
             
             // Controlla se il bot e' stato salutato
             if ((command.compareTo("hello") == 0) && (args.isEmpty())) {
-                this.enqueueMessage(new Message(channel, "Hello '" + sender + "' :)"));
+                this.enqueueMessage(new Message(channel, "Hello " + sender + " :)"));
             } // Qualcuno ha chiesto aiuto?
             else if ((command.compareTo("help") == 0) && (args.isEmpty())) {
                 this.enqueueMessage(new Message(channel, sender + " you should type: " + this.getNick() + " plugin list"));
