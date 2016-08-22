@@ -36,9 +36,13 @@ import java.util.TimeZone;
  * @author Nitti Gianluca
  */
 public class Calc extends Trancio {
+    protected String onHelp() {
+        return "<number1> <operation> <number2> - where operation can either be +, - * or /";
+    }
+    
     protected final void onCall(String user, String channel, Vector<String> args) {
         if(args.size() != 3)
-            this.sendMessage(new Message(channel, user + " non ho capito :(. Dopo \"calc\", specifica il primo operando, seguito da un'operatore e quindi dal secondo operando, separati da spazi."));
+            this.sendMessage(new Message(channel, user + " I haven't understand :(. Look at the plugin help to understand how to invoke cald."));
         else{
             double a;
             double b;
@@ -46,7 +50,7 @@ public class Calc extends Trancio {
                 a = Double.parseDouble(args.get(0));
                 b = Double.parseDouble(args.get(2));
             }catch(NumberFormatException e){
-                this.sendMessage(new Message(channel, user + " gli operandi inseriti non sono entrambi numeri :(."));
+                this.sendMessage(new Message(channel, user + " given operands aren't both numbers :(."));
                 return;
             }
             char op = args.get(1).charAt(0);
@@ -65,7 +69,7 @@ public class Calc extends Trancio {
                     r = a / b;
                     break;
                 default:
-                    sendMessage(new Message(channel, user + " non conosco l'operatore \"" + args.get(1) + "\" :(. Sono supportati +,-,*,/"));
+                    sendMessage(new Message(channel, user + " unknown operator \"" + args.get(1) + "\" :(. Only +,-,*,/ are supported!"));
                     return;
             }
             sendMessage(new Message(channel, user + " " + a + op + b + "=" + r));

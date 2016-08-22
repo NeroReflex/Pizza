@@ -175,6 +175,8 @@ public abstract class Trancio implements Runnable {
     
     /*      BUON DIVERTIMENTO!      */
     
+    protected /*abstract*/ String onHelp()/*;*/ { return ""; }
+    
     protected /*abstract*/ void onInitialize()/*;*/ {}
     
     protected /*abstract*/ void onShutdown()/*;*/ {}

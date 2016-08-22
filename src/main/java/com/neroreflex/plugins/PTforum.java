@@ -30,16 +30,40 @@ import com.neroreflex.pizza.*;
  */
 public final class PTforum extends Trancio {
 
-  String apiEndpoint = "http://www.pierotofy.it/pages/extras/forum/api/last_topics.php";
-  int interval = 300000; //TODO: rendere configurabili
+    String apiEndpoint = "http://www.pierotofy.it/pages/extras/forum/api/last_topics.php";
+    int interval = 3000; //TODO: rendere configurabili
 
-  HashMap<String, Integer> topics = new HashMap<String, Integer>(); //chiave=url, valore=numero risposte
+    HashMap<String, Integer> topics = new HashMap<>(); //chiave=url, valore=numero risposte
 
+    protected String onHelp() {
+        return "- will print out the list of hot topics";
+    }
+    
+    protected final void onCall(String user, String channel, Vector<String> args) {
+        try {
+            // Leggi il JSON dall'API
+            InputStream is = new URL(apiEndpoint).openStream();
+            JsonArray topicList = Json.createReader(is).readArray();
+            
+            // Scorri tutti gli ultimi topics
+            for(JsonValue v: topicList){
+                JsonObject obj = (JsonObject)v;
+
+                // Stampa nome e url di quello corrente
+                sendMessage(new Message(channel, "Topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+            sendMessage(new Message(channel, "Error occured while fetching the list of topics."));
+        }
+    }
+  
     protected final void onPoll(){
         try {
+            // Ottengo la lista di canali in cui informare gli utenti
             String[] channels = this.getChannels();
-            //for (String chan : channels)
-            //  sendMessage(new Message(chan, "Controllo se ci sono nuovi messaggi..."));
+            
+            // Mi connetto all'endpoint per le API del sito pierotofy.it
             InputStream is = new URL(apiEndpoint).openStream();
             JsonArray topicList = Json.createReader(is).readArray();
             boolean firstFetch = (topics.size() == 0);
@@ -52,12 +76,12 @@ public final class PTforum extends Trancio {
                     topics.put(obj.getString("url"), obj.getInt("replies"));
                     if(!firstFetch)
                         for (String chan : channels) {
-                            sendMessage(new Message(chan, "Ci sono nuovi messaggi nel topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
+                            sendMessage(new Message(chan, "New message(s) on topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
                     }
                 } else if(obj.getInt("replies") > oldReplies) {
                     // Se il numero di risposte è maggiore, allora ci sono stati nuovi post
                     for (String chan : channels) {
-                        sendMessage(new Message(chan, "Ci sono nuovi messaggi nel topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
+                        sendMessage(new Message(chan, "New message(s) on topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
                     }
                 }
                 //Aggiorna il numero di risposte
@@ -79,11 +103,12 @@ public final class PTforum extends Trancio {
             for(String s: topicsToRemove)
                 topics.remove(s);
 
+            // Dormo per non fare troppe richieste al server
             Thread.sleep(interval);
-        }catch(IOException e){
+        } catch(IOException e){
             e.printStackTrace();
             //sendMessage(new Message(chan, "Attenzione: impossibile recuperare gli aggiornamenti dal forum."));
-        }catch(InterruptedException e){
+        } catch(InterruptedException e){
             e.printStackTrace();
         }
     }

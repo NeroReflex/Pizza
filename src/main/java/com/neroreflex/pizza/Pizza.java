@@ -97,6 +97,12 @@ public class Pizza extends PircBot implements Runnable {
     
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
+        // No plugins che si chiamano da soli (o chiamano altri plugins)
+        if (sender.compareTo(this.getNick()) == 0) {
+            this.enqueueMessage(new Message(channel, "***CENSORED*** spam avoid"));
+            return;
+        }
+        
         // Analizza il messaggio per identificare richieste fatte al bot
         Pattern invokeRegex = Pattern.compile("(" + this.getNick() + ")([\\s]+)([\\w]+)([\\s]*)([\\s\\S\\/\\:\\\\]*)");
         Matcher invokeMatcher = invokeRegex.matcher(message);
@@ -117,11 +123,39 @@ public class Pizza extends PircBot implements Runnable {
                 
             }
             
-            // Controlla se il trancio e' presente e registrato
-            if (!this.tranci.containsKey(command)) {
-                this.enqueueMessage(new Message(channel, "I don't know what I have to do at '" + command + "' request :("));
-            } else {
+            // Controlla se il bot e' stato salutato
+            if ((command.compareTo("hello") == 0) && (args.isEmpty())) {
+                this.enqueueMessage(new Message(channel, "Hello '" + sender + "' :)"));
+            } // Qualcuno ha chiesto aiuto?
+            else if ((command.compareTo("help") == 0) && (args.isEmpty())) {
+                this.enqueueMessage(new Message(channel, sender + " you should type: " + this.getNick() + " plugin list"));
+            }
+            else if ((command.compareTo("plugin") == 0) && (!args.isEmpty())) {
+                if (args.elementAt(0).compareTo("list") == 0) {
+                    this.tranci.entrySet().stream().forEach((entry) -> {
+                        String name = entry.getKey();
+                        Trancio trancio = entry.getValue();
+                        
+                        this.enqueueMessage(new Message(channel, "Plugin \"" + name + "\" Started at: " + trancio.getDate()));
+                    });
+                } else if ((args.elementAt(0).compareTo("help") == 0) && (args.size() >= 2)) {
+                    if (this.tranci.containsKey(args.get(1))) {
+                        String helpMsgByPlugin = this.tranci.get(args.get(1)).onHelp();
+                        if (helpMsgByPlugin.length() > 0)
+                                this.enqueueMessage(new Message(channel, "Usage: " + this.getNick() + " " + args.get(1) + " " + helpMsgByPlugin));
+                        else
+                            this.enqueueMessage(new Message(channel, "The plugin haven't got an help page"));
+                    } else {
+                        this.enqueueMessage(new Message(channel, "Plugin \"" + args.get(1) + "\" not found."));
+                    }
+                }
+            }
+            // Controlla se il trancio e' presente e registrato 
+            else if (this.tranci.containsKey(command)) {
                 RequestQueue.queueRequest(new Request(this.getBotID(), command, channel, sender, args));
+            } // E se non lo e' invia l'errore
+            else {
+                this.enqueueMessage(new Message(channel, "I don't know what I have to do at '" + command + "' request :("));
             }
         } else if (this.getNick().compareTo(message) == 0) {
             this.enqueueMessage(new Message(channel, "Sono il vostro amichevole robottino mangiapizza :)"));

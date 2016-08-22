@@ -35,6 +35,10 @@ import java.util.TimeZone;
  * @author Benato Denis
  */
 public class Join extends Trancio {
+    protected String onHelp() {
+        return "<channel> - where channel is the name of the channel to be joined";
+    }
+    
     protected final void onCall(String user, String channel, Vector<String> args) {
         if ((args.size() > 0) && (args.get(0).length() > 0)) {
             // A che canale deve fare il join?

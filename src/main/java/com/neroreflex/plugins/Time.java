@@ -38,8 +38,12 @@ import java.util.TimeZone;
  */
 public final class Time extends com.neroreflex.pizza.Trancio {
     
+    protected String onHelp() {
+        return "[<timezone>] - where timezone can be omitted, the default will be '"+ Time.DEFAULT_TIMEZONE + "'";
+    }
+    
+    public static final String DEFAULT_TIMEZONE = "Europe/Rome";
     public static final int ATOMICTIME_PORT = 13;
-    //public static final String ATOMICTIME_SERVER = "129.6.15.30";
     public static final String ATOMICTIME_SERVER = "time-c.nist.gov";
     
     /*
@@ -127,7 +131,7 @@ public final class Time extends com.neroreflex.pizza.Trancio {
     
     protected final void onCall(String user, String channel, Vector<String> args) {
         // Stabilisci la zona del mondo richiesta
-        String timezone = ((args.size() > 0) && (args.get(0).length() > 2))? args.get(0) : "Europe/Rome";
+        String timezone = ((args.size() > 0) && (args.get(0).length() > 2))? args.get(0) : Time.DEFAULT_TIMEZONE;
         
         try {
             // Ottieni l'ora attuale

@@ -28,6 +28,10 @@ import java.util.*;
  */
 public class Convert extends Trancio {
 
+    protected String onHelp() {
+        return "<op> <number> - where op is the name of two notations separed by a 2, like bin2dec, oct2bin, hex2bin, an so on....";
+    }
+    
     private Map<String, Integer> baseList;
 
     protected final void onInitialize(){
