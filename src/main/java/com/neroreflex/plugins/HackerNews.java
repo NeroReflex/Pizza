@@ -80,19 +80,15 @@ public final class HackerNews extends Trancio {
                 if(!topStories.contains(id)){ //se non è nell'elenco delle già notificate
                     if(!firstTime)
                         notifyNews(id); //la notifica
-                    System.out.println("new " + id);
                     topStories.add(id); //e la aggiunge all'elenco
                 }
             }
             //pulisce l'elenco dalle notizie vecchie che non sono più segnalate dall'API
             ArrayList<Integer> toRemove = new ArrayList<Integer>();
             for(Integer i: topStories)
-                if(!newTopStories.contains(i)){
+                if(!newTopStories.contains(i))
                     toRemove.add(i);
-                    System.out.println("removing " + i);
-                }
             topStories.removeAll(toRemove);
-            System.out.println("SIZE: " + topStories.size());
             Thread.sleep(interval);
         } catch(IOException | InterruptedException | NumberFormatException e){
             e.printStackTrace();
