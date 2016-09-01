@@ -35,36 +35,6 @@ public final class PTforum extends Trancio {
 
     HashMap<String, Integer> topics = new HashMap<>(); //chiave=url, valore=numero risposte
 
-    protected String onHelp() {
-        return "[<max_number>] - will print out the list of hot topics, max_number can be omitted";
-    }
-
-    protected final void onCall(String user, String channel, Vector<String> args) {
-        try {
-            // Leggi il JSON dall'API
-            InputStream is = new URL(apiEndpoint).openStream();
-            JsonArray topicList = Json.createReader(is).readArray();
-
-            int max = (args.isEmpty())? 100 : Integer.parseInt(args.get(0));
-
-            // Scorri tutti gli ultimi topics
-            for(JsonValue v: topicList){
-                if (max > 0) {
-                    JsonObject obj = (JsonObject)v;
-
-                    // Stampa nome e url di quello corrente
-                    sendMessage(new Message(channel, "Topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
-                    max--;
-                }
-            }
-        } catch(IOException e) {
-            e.printStackTrace();
-            this.sendMessage(new Message(channel, "Error occured while fetching the list of topics."));
-        } catch (NumberFormatException ex) {
-            this.sendMessage(new Message(channel, user + " The given number is not vvalid"));
-        }
-    }
-
     protected final void onPoll(){
         try {
             // Ottengo la lista di canali in cui informare gli utenti
