@@ -1,6 +1,6 @@
 /*
  *    Pizza IRC Bot (for pierotofy.it community)
- *    Copyright (C) 2016 Benato Denis, Gianluca Nitti, Gianluca Nitti
+ *    Copyright (C) 2016 Benato Denis, Gianluca Nitti
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -38,15 +38,15 @@ public final class PTforum extends Trancio {
     protected String onHelp() {
         return "[<max_number>] - will print out the list of hot topics, max_number can be omitted";
     }
-    
+
     protected final void onCall(String user, String channel, Vector<String> args) {
         try {
             // Leggi il JSON dall'API
             InputStream is = new URL(apiEndpoint).openStream();
             JsonArray topicList = Json.createReader(is).readArray();
-            
+
             int max = (args.isEmpty())? 100 : Integer.parseInt(args.get(0));
-            
+
             // Scorri tutti gli ultimi topics
             for(JsonValue v: topicList){
                 if (max > 0) {
@@ -64,12 +64,12 @@ public final class PTforum extends Trancio {
             this.sendMessage(new Message(channel, user + " The given number is not vvalid"));
         }
     }
-  
+
     protected final void onPoll(){
         try {
             // Ottengo la lista di canali in cui informare gli utenti
             String[] channels = this.getChannels();
-            
+
             // Mi connetto all'endpoint per le API del sito pierotofy.it
             InputStream is = new URL(apiEndpoint).openStream();
             JsonArray topicList = Json.createReader(is).readArray();
