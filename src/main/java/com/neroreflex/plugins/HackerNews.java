@@ -34,25 +34,38 @@ public final class HackerNews extends Trancio {
     private int interval = 30000; //tempo tra le chiamate all'api in millisecondi
 
     private final String apiBaseURL = "https://hacker-news.firebaseio.com/v0/";
-    private final String apiMaxItem = apiBaseURL + "maxitem.json";
+    private final String apiTopStories = apiBaseURL + "topstories.json";
     private final String apiItem = apiBaseURL + "item/";
 
-    private int oldMaxItem = 0;
-
-    private JsonReader jsonApiCall(String endpoint) throws IOException{
-        return Json.createReader(new URL(endpoint).openStream());
-    }
-
-    private int getMaxItem() throws IOException, NumberFormatException{
-        InputStream is = new URL(apiMaxItem).openStream(); //apre una connessione con l'api come InputStream
-        Scanner s = new Scanner(is).useDelimiter("\\A");
-        String stringValue = s.hasNext() ? s.next() : ""; //legge tutto lo stream
-        is.close();
-        return Integer.parseInt(stringValue);
-    }
+    private ArrayList<Integer> topStories = new ArrayList<Integer>();
 
     protected String onHelp() {
-        return "No commands are available. The plugin will automatically notify new posts on Hacker News.";
+      return "No commands are available. The plugin will automatically notify new posts on Hacker News.";
+    }
+
+    private JsonStructure jsonApiCall(String endpoint) throws IOException{
+        JsonReader rdr = Json.createReader(new URL(endpoint).openStream());
+        JsonStructure result = rdr.read();
+        rdr.close(); //questa chiamata chiude anche l'InputStream sottostante  (http://docs.oracle.com/javaee/7/api/javax/json/JsonReader.html#close--)
+        return result;
+    }
+
+    //Notifica nella chat la notizia con l'id specificato.
+    private void notifyNews(int id) throws IOException{
+        JsonObject obj = (JsonObject)jsonApiCall(apiItem + id + ".json"); //apre la connessione con l'api
+        if(obj.getString("type").equals("story")){ //controlla che sia una story (un thread) e non un comento, poll, ecc.
+            String[] channels = getChannels();
+            for(String chan: channels)
+                sendMessage(new Message(chan, "From Hacker News: " + obj.getString("title") + " " + obj.getString("url")));
+        }
+    }
+
+    private List<Integer> getTopStories() throws IOException{
+        JsonArray apiResponse = (JsonArray)jsonApiCall(apiTopStories); //ottiene l'elenco degli id delle prime 500 top stories (quelle in home)
+        List<Integer> result = new ArrayList<Integer>();
+        for(JsonValue v: apiResponse)
+            result.add(((JsonNumber)v).intValue());
+        return result;
     }
 
     /*protected final void onCall(String user, String channel, Vector<String> args) {
@@ -60,22 +73,26 @@ public final class HackerNews extends Trancio {
     }*/
 
     protected final void onPoll(){
-        String[] channels = getChannels();
         try{
-            int maxItem = getMaxItem();
-            if(oldMaxItem != 0){ //controlla che non sia la prima iterazione (altrimenti tenterebbe di scansionare tutto hacker news)
-                for(int id = oldMaxItem; id <= maxItem; id++){ //per ogni nuovo elemento
-                    //System.out.println(apiItem + id + ".json"); //debug: stampa l'url della richiesta
-                    JsonReader rdr = jsonApiCall(apiItem + id + ".json"); //apre la connessione con l'api
-                    JsonObject obj = rdr.readObject(); //legge l'oggetto json restituito dall'api
-                    rdr.close(); //questa chiamata chiude anche l'InputStream sottostante (http://docs.oracle.com/javaee/7/api/javax/json/JsonReader.html#close--)
-                    if(obj.getString("type").equals("story")){ //analizza solo le "stories", che sono i thread
-                        for(String chan: channels)
-                            sendMessage(new Message(chan, "From Hacker News: " + obj.getString("title") + " " + obj.getString("url")));
-                    }
+            boolean firstTime = topStories.size() == 0;
+            List<Integer> newTopStories = getTopStories();
+            for(Integer id: newTopStories){ //per ogni elemento restituito dall'api
+                if(!topStories.contains(id)){ //se non è nell'elenco delle già notificate
+                    if(!firstTime)
+                        notifyNews(id); //la notifica
+                    System.out.println("new " + id);
+                    topStories.add(id); //e la aggiunge all'elenco
                 }
             }
-            oldMaxItem = maxItem + 1;
+            //pulisce l'elenco dalle notizie vecchie che non sono più segnalate dall'API
+            ArrayList<Integer> toRemove = new ArrayList<Integer>();
+            for(Integer i: topStories)
+                if(!newTopStories.contains(i)){
+                    toRemove.add(i);
+                    System.out.println("removing " + i);
+                }
+            topStories.removeAll(toRemove);
+            System.out.println("SIZE: " + topStories.size());
             Thread.sleep(interval);
         } catch(IOException | InterruptedException | NumberFormatException e){
             e.printStackTrace();
