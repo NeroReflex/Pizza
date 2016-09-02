@@ -20,6 +20,7 @@ package com.neroreflex.plugins;
 import java.util.*;
 import java.net.URL;
 import java.io.*;
+import java.time.Duration;
 import javax.json.*;
 import com.neroreflex.pizza.*;
 
@@ -31,7 +32,7 @@ import com.neroreflex.pizza.*;
  */
 public final class HackerNews extends Trancio {
 
-    private int interval = (int)2.16e+7; // (= 6h) tempo tra le chiamate all'api in millisecondi
+    private long interval = Duration.ofHours(6).toMillis(); // (= 6h) tempo tra le chiamate all'api in millisecondi
 
     private final String apiBaseURL = "https://hacker-news.firebaseio.com/v0/";
     private final String apiTopStories = apiBaseURL + "topstories.json";
@@ -63,7 +64,7 @@ public final class HackerNews extends Trancio {
             return other.score - score;
         }
         public String toString(){
-            return "From Hacker News: " + title + " " + url + " (score = " + score + ")";
+            return "From Hacker News: " + title + " " + url + " (" + score + ")";
         }
     }
 
