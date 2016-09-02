@@ -46,28 +46,6 @@ public final class HackerNews extends Trancio {
       return result;
     }
 
-    private class NewsEntry implements Comparable<NewsEntry>{
-        private int score;
-        private String title;
-        private String url;
-        public NewsEntry(int id) throws IOException{
-            JsonObject obj = (JsonObject)jsonApiCall(apiItem + id + ".json"); //apre la connessione con l'api
-            score = obj.getInt("score");
-            title = obj.getString("title");
-            try{
-                url = obj.getString("url");
-            }catch(NullPointerException e){
-                url = defaultURL + id;
-            }
-        }
-        public int compareTo(NewsEntry other){
-            return other.score - score;
-        }
-        public String toString(){
-            return "From Hacker News: " + title + " " + url + " (" + score + ")";
-        }
-    }
-
     protected String onHelp() {
       return "No commands are available. The plugin will automatically notify new posts on Hacker News.";
     }
@@ -80,14 +58,17 @@ public final class HackerNews extends Trancio {
     protected final void onPoll(){
         try{
             JsonArray apiResponse = (JsonArray)jsonApiCall(apiTopStories); //ottiene l'elenco degli id delle top stories, max 500 (quelle in home)
-            List<NewsEntry> l = new ArrayList<NewsEntry>();
-            for(JsonValue v: apiResponse) //riempie la lista
-                l.add(new NewsEntry(((JsonNumber)v).intValue()));
-            Collections.sort(l); //la ordina in base al punteggio
-            String[] channels = getChannels();
-            for(int i = 0; i < 5; i++) //notifica nella chat le migliori 5
+            for(int i = 0; i < 5; i++){
+                int id = apiResponse.getInt(i, -1); //id della i-esima notizia, o -1 se per qualche motivo la risposta dell'api fosse più corta
+                if(i == -1) break; //esce se l'id non è stato trovato
+                JsonObject obj = (JsonObject)jsonApiCall(apiItem + id + ".json"); //recupera i dettagli della notizia
+                int score = obj.getInt("score");
+                String title = obj.getString("title");
+                String url = obj.getString("url", url = defaultURL + id); //se non ha il campo url il 2° argomento viene usato come default (url della pagina dei commenti)
+                String[] channels = getChannels(); //lista dei canali a cui il bot è connesso
                 for(String chan: channels)
-                    sendMessage(new Message(chan, l.get(i).toString()));
+                    sendMessage(new Message(chan, "From Hacker News: " + title + " " + url + " (" + score + ")"));
+            }
             Thread.sleep(interval);
         } catch(IOException | InterruptedException | NumberFormatException e){
             e.printStackTrace();
