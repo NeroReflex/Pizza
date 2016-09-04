@@ -36,25 +36,23 @@ import java.util.TimeZone;
  */
 public class Join extends Trancio {
     protected String onHelp() {
-        return "<channel> - where channel is the name of the channel to be joined";
+        return "<channel> <key>";
     }
     
     protected final void onCall(String user, String channel, Vector<String> args) {
-        if ((args.size() > 0) && (args.get(0).length() > 0)) {
+        if (args.size() > 0) {
             // A che canale deve fare il join?
             String newChannel = args.get(0);
-            channel = (newChannel.charAt(0) != '#')? "#" + newChannel : channel;
-            
+            if (newChannel.charAt(0) != '#') {
+                newChannel = "#" + newChannel;
+            }
             // Chiave del canale?
             String key = ((args.size() > 1) && (args.get(1).length() > 0))? args.get(0) : "";
-            
-            // Unisciti al canale specificato
-            this.joinChannel(channel, user);
-            
-            // Joined! :)
-            this.sendMessage(new com.neroreflex.pizza.Message(channel, user + " I have joined the " + channel + " channel"));
+
+            this.joinChannel(newChannel, key);
+            this.sendMessage(new Message(channel, user + " I have joined " + newChannel));
         } else {
-            this.sendMessage(new com.neroreflex.pizza.Message(channel, user + " You are supposed to tell me the channel I have to join to :/"));
+            this.sendMessage(new Message(channel, user + "Please specify a channel"));
         }
     }
 }
