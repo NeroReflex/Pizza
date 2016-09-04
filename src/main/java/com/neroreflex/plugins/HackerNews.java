@@ -31,9 +31,6 @@ import com.neroreflex.pizza.*;
  * @author Nitti Gianluca
  */
 public final class HackerNews extends Trancio {
-
-    private long interval = Duration.ofHours(6).toMillis(); // (= 6h) tempo tra le chiamate all'api in millisecondi
-
     private final String apiBaseURL = "https://hacker-news.firebaseio.com/v0/";
     private final String apiTopStories = apiBaseURL + "topstories.json";
     private final String apiItem = apiBaseURL + "item/";
@@ -47,31 +44,54 @@ public final class HackerNews extends Trancio {
     }
 
     protected String onHelp() {
-      return "No commands are available. The plugin will automatically notify new posts on Hacker News.";
+      return "Call this plugin without arguments to show the first 5 top news";
     }
 
-    /*protected final void onCall(String user, String channel, Vector<String> args) {
-        /*Qui si potrebbe implementare un comando per far printare al bot le notizie anche se non è ancora trascorso l'interval dall'ultima volta
-        tuttavia per ora non credo sia possibile perchè il thread rimane bloccato (chiamata a thread.sleep in onPoll). Vedremo in seguito
-    }*/
+    private synchronized void sendHackerNews() {
+        try {
+            Vector<String> messages = new Vector<String>(5);
 
-    protected final void onPoll(){
-        try{
             JsonArray apiResponse = (JsonArray)jsonApiCall(apiTopStories); //ottiene l'elenco degli id delle top stories, max 500 (quelle in home)
-            for(int i = 0; i < 5; i++){
+            for(int i = 0; i < 5; i++) {
                 int id = apiResponse.getInt(i, -1); //id della i-esima notizia, o -1 se per qualche motivo la risposta dell'api fosse più corta
                 if(i == -1) break; //esce se l'id non è stato trovato
                 JsonObject obj = (JsonObject)jsonApiCall(apiItem + id + ".json"); //recupera i dettagli della notizia
                 int score = obj.getInt("score");
                 String title = obj.getString("title");
                 String url = obj.getString("url", url = defaultURL + id); //se non ha il campo url il 2° argomento viene usato come default (url della pagina dei commenti)
-                String[] channels = getChannels(); //lista dei canali a cui il bot è connesso
-                for(String chan: channels)
-                    sendMessage(new Message(chan, "From Hacker News: " + title + " " + url + " (" + score + ")"));
+
+                messages.add( (i+1) + ". " + title + " " + url + " (" + score + ")");
             }
-            Thread.sleep(interval);
-        } catch(IOException | InterruptedException | NumberFormatException e){
-            e.printStackTrace();
+
+            String[] channels = getChannels(); //lista dei canali a cui il bot è connesso
+            for(String chan: channels) {
+                sendMessage(new Message(chan, "From Hacker News: "));
+                for (String m : messages) {
+                    sendMessage(new Message(chan, m));
+                }
+            }
+        } catch(IOException | NumberFormatException e) {
+             e.printStackTrace();
         }
+    }
+
+    protected final void onCall(String user, String channel, Vector<String> args) {
+        this.sendHackerNews();
+    }
+
+    protected final void onInitalize() {
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"));
+        cal.set(Calendar.HOUR_OF_DAY, 8); // start at 8 AM
+
+        // schedule every six hours
+        new Timer().scheduleAtFixedRate(
+            new TimerTask() {
+                public void run() {
+                    HackerNews.this.sendHackerNews();
+                }
+            },
+            cal.getTime(),
+            Duration.ofHours(6).toMillis() 
+        );
     }
 }

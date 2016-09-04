@@ -143,7 +143,6 @@ public abstract class Trancio implements Runnable {
     public final void run() {
         while (this.isLoaded()) {
             try {
-                // Polling!
                 this.onPoll();
                 
                 // Ottieni la richiesta da soddisfare
@@ -173,7 +172,7 @@ public abstract class Trancio implements Runnable {
     
     
     
-    /*      BUON DIVERTIMENTO!      */
+    /*      BUON DIVERTIMENTO      */
     
     protected /*abstract*/ String onHelp()/*;*/ { return ""; }
     
