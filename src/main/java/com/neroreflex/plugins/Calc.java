@@ -42,7 +42,7 @@ public class Calc extends Trancio {
     
     protected final void onCall(String user, String channel, Vector<String> args) {
         if(args.size() != 3)
-            this.sendMessage(new Message(channel, user + " I haven't understand :(. Look at the plugin help to understand how to invoke cald."));
+            this.sendMessage(new Message(channel, user + " Invalid arguments. Look at the plugin help to understand how to invoke cald"));
         else{
             double a;
             double b;
@@ -50,7 +50,7 @@ public class Calc extends Trancio {
                 a = Double.parseDouble(args.get(0));
                 b = Double.parseDouble(args.get(2));
             }catch(NumberFormatException e){
-                this.sendMessage(new Message(channel, user + " given operands aren't both numbers :(."));
+                this.sendMessage(new Message(channel, user + " the given operands aren't numbers"));
                 return;
             }
             char op = args.get(1).charAt(0);
@@ -69,7 +69,7 @@ public class Calc extends Trancio {
                     r = a / b;
                     break;
                 default:
-                    sendMessage(new Message(channel, user + " unknown operator \"" + args.get(1) + "\" :(. Only +,-,*,/ are supported!"));
+                    sendMessage(new Message(channel, user + " unknown operator \"" + args.get(1) + "\" :(. Only +,-,*,/ are supported"));
                     return;
             }
             sendMessage(new Message(channel, user + " " + a + op + b + "=" + r));
