@@ -78,9 +78,16 @@ public final class HackerNews extends Trancio {
         this.sendHackerNews(channel);
     }
 
-    protected final void onInitalize() {
+    protected final void onInitialize() {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"));
-        cal.set(Calendar.HOUR_OF_DAY, 8); // start at 8 AM
+        int currHour = cal.get(Calendar.HOUR_OF_DAY);
+        //le notifiche vengono inviate alle 2, 8, 14, 20; la formula determina il prossimo orario più vicino tra quelli.
+        int startHour = ((int)Math.floor(((currHour - 2)/6.0)) + 1)* 6 + 2;
+        cal.set(Calendar.HOUR_OF_DAY, startHour);
+        cal.set(Calendar.MINUTE, 0); //ora esatta (altrimenti mantiene minuti e secondi dell'istande della chiamata a Calendar.getInstance)
+        cal.set(Calendar.SECOND, 0);
+
+        //System.out.println(cal.getTime().toString()); //Debug: stampa l'ora della prima notifica
 
         // schedule every six hours
         new Timer().scheduleAtFixedRate(
