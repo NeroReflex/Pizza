@@ -47,7 +47,7 @@ public final class HackerNews extends Trancio {
       return "Call this plugin without arguments to show the first 5 top news";
     }
 
-    private synchronized void sendHackerNews() {
+    private synchronized void sendHackerNews(String ... channels) {
         try {
             Vector<String> messages = new Vector<String>(5);
 
@@ -63,7 +63,6 @@ public final class HackerNews extends Trancio {
                 messages.add( (i+1) + ". " + title + " " + url + " (" + score + ")");
             }
 
-            String[] channels = getChannels(); //lista dei canali a cui il bot è connesso
             for(String chan: channels) {
                 sendMessage(new Message(chan, "From Hacker News: "));
                 for (String m : messages) {
@@ -76,7 +75,7 @@ public final class HackerNews extends Trancio {
     }
 
     protected final void onCall(String user, String channel, Vector<String> args) {
-        this.sendHackerNews();
+        this.sendHackerNews(channel);
     }
 
     protected final void onInitalize() {
@@ -87,11 +86,11 @@ public final class HackerNews extends Trancio {
         new Timer().scheduleAtFixedRate(
             new TimerTask() {
                 public void run() {
-                    HackerNews.this.sendHackerNews();
+                    HackerNews.this.sendHackerNews(HackerNews.this.getChannels());
                 }
             },
             cal.getTime(),
-            Duration.ofHours(6).toMillis() 
+            Duration.ofHours(6).toMillis()
         );
     }
 }
