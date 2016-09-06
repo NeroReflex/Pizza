@@ -82,7 +82,7 @@ public final class HackerNews extends Trancio {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"));
         int currHour = cal.get(Calendar.HOUR_OF_DAY);
         //le notifiche vengono inviate alle 2, 8, 14, 20; la formula determina il prossimo orario più vicino tra quelli.
-        int startHour = ((int)Math.floor(((currHour - 2)/6.0)) + 1)* 6 + 2;
+        int startHour = ((int)Math.floor(((currHour - 8)/6.0)) + 1) * 6 + 8;
         cal.set(Calendar.HOUR_OF_DAY, startHour);
         cal.set(Calendar.MINUTE, 0); //ora esatta (altrimenti mantiene minuti e secondi dell'istande della chiamata a Calendar.getInstance)
         cal.set(Calendar.SECOND, 0);
