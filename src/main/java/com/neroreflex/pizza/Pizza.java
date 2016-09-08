@@ -40,7 +40,7 @@ import java.util.Map.Entry;
  * 
  * @author Benato Denis
  */
-public class Pizza extends PircBot implements Runnable {
+public class Pizza extends PircBot {
     
     public static final Pizza Asporto(String botName, String botServer, String botChannel, HashMap<String, String> botParams) {
         // Inizializza le API dei plugin
@@ -67,9 +67,8 @@ public class Pizza extends PircBot implements Runnable {
     protected HashMap<String, Trancio> tranci;
     
     /**
-     * Il thread che si occupa di scrivere i messaggi in coda
+     * La lista di threads generati dai plugins
      */
-    private final Thread messageWriter;
     private final HashMap<String, Thread> esecutoriTranci;
     
     /**
@@ -82,14 +81,12 @@ public class Pizza extends PircBot implements Runnable {
     }
     
     /**
-     * Usato da MessageQueue per inserire nella lista un messaggio da scrivere
-     * nel server occupato dal bot.
+     * Inserisce il messaggio nella coda di messaggi da scrivere
      * 
-     * @param msg il messaggio da inserire nella coda dei messaggi da scrivere 
+     * @param msg il messaggio da accodare
      */
-    protected final void enqueueMessage(Message msg) {
-        // Aggiungi il messaggio alla coda di messaggi da inviare
-        MessageQueue.enqueueMessage(this.getBotID(), msg);
+    public /*synchronized*/ void enqueueMessage(Message msg) {
+        this.sendMessage(msg.getChannel(), msg.getMessage());
     }
     
     @Override
@@ -190,26 +187,6 @@ public class Pizza extends PircBot implements Runnable {
         return true;
     }
     
-    /**
-     * Usato internamente per scrivere la lista di messaggi in maniera asincrona
-     */
-    @Override
-    public final void run() {
-        // Scrivi continuamente il primo messaggio della lista
-        while (this.isConnected()) {
-            try {
-                // Ottieni il messaggio da scrivere
-                Message toWrite = MessageQueue.dequeueMessage(this.getBotID());
-
-                // Scrivi il messaggio nella chat
-                this.sendMessage(toWrite.getChannel(), toWrite.getMessage());
-                
-            } catch (NullPointerException ex) {
-                // Nessun messaggio in coda :D
-            }
-        }
-    }
-    
     protected void loadInternalPlugins() {
         // Trova tutti i plugin da caricare automaticamente
         org.reflections.Reflections reflections = new org.reflections.Reflections("com.neroreflex.plugins");
@@ -249,17 +226,11 @@ public class Pizza extends PircBot implements Runnable {
         this.tranci = new HashMap<>();
         this.esecutoriTranci = new HashMap<>();
         
-        // Inizializza la coda di messaggi
-        MessageQueue.Init();
-        
         // Inizializza le API dei plugin
         PluginAPI.Init();
         
         // Imposta il nome del bot
         this.setName(botName);
-        
-        // Inizializza lo spammer di messaggi in coda
-        this.messageWriter = new Thread(this);
         
         // Abilita l'output di debug (se richiesto), spento di default
         String verbose = botParams.get("--verbose");
@@ -296,9 +267,6 @@ public class Pizza extends PircBot implements Runnable {
         this.setAutoNickChange(true);
         this.changeNick("PizzaBot");
         
-        // Apri lo scrittore di messaggi in coda
-        this.messageWriter.start();
-        
         // Carica il set di plugin "standard"
         this.loadInternalPlugins();
     }
@@ -313,9 +281,6 @@ public class Pizza extends PircBot implements Runnable {
         try {
             // Disconnettiti dal server
             this.disconnect();
-            
-            // Smetti di scrivere messaggi!
-            this.messageWriter.interrupt();
             
             // Rimuovi il bot dalla lista dei bot attivi
             PluginAPI.removeBot(this);

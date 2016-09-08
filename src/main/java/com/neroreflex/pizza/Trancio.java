@@ -36,11 +36,11 @@ public abstract class Trancio implements Runnable {
     
     protected Vector<Request> requests;
     
-    public /*synchronized*/ void queueRequest(Request action) {
+    public synchronized void queueRequest(Request action) {
         this.requests.add(action);
     }
     
-    protected /*synchronized*/ Request unqueueRequest(String botId, String nomeTrancio) {
+    protected synchronized Request unqueueRequest(String botId, String nomeTrancio) {
         // Cerco il prossimo lavoro da svolgere
         if (!this.requests.isEmpty())
             return this.requests.remove(0);
@@ -160,7 +160,7 @@ public abstract class Trancio implements Runnable {
     public final void run() {
         while (this.isLoaded()) {
             try {
-                //this.onPoll();
+                this.onPoll();
                 
                 // Ottieni la richiesta da soddisfare
                 Request req = this.unqueueRequest(this.getBotID(), this.getName());

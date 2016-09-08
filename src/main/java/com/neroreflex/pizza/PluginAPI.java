@@ -132,15 +132,14 @@ public abstract class PluginAPI {
     }
     
     /**
-     * Enqueue the given message to the list of messages to be sent by the
-     * current bot.
+     * Scrive nella lista di messaggi del bot il messaggio dato.
      * 
      * @param botId l'ID univoco del bot che dovra' scrivere il messaggio
      * @param msg il messaggio che dovra' essere scritto
      */
     public static void sendMessage(String botId, Message msg) {
         // Metti in coda il messaggio
-        MessageQueue.enqueueMessage(botId, msg);
+        PluginAPI.robotAttivi.get(botId).enqueueMessage(msg);
     }
     
     /**
