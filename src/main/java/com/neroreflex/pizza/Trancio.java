@@ -34,7 +34,24 @@ public abstract class Trancio implements Runnable {
     
     private Date startupDate;
     
-    public Trancio() { }
+    protected Vector<Request> requests;
+    
+    public synchronized void queueRequest(Request action) {
+        this.requests.add(action);
+    }
+    
+    protected synchronized Request unqueueRequest(String botId, String nomeTrancio) {
+        // Cerco il prossimo lavoro da svolgere
+        if (!this.requests.isEmpty())
+            return this.requests.remove(0);
+        
+        // Nessuna richiesta da esaudire
+        return null;
+    }
+    
+    public Trancio() { 
+        this.requests = new Vector<>();
+    }
     
     private boolean loaded = false;
     protected final synchronized void doneLoading() {
@@ -146,12 +163,12 @@ public abstract class Trancio implements Runnable {
                 this.onPoll();
                 
                 // Ottieni la richiesta da soddisfare
-                Request req = RequestQueue.unqueueRequest(this.getBotID(), this.getName());
+                Request req = this.unqueueRequest(this.getBotID(), this.getName());
                 
                 // Chiama il gestore dell'evento
                 this.onCall(req.getUser(), req.getChannel(), req.getArguments());
             } catch (NullPointerException ex) {
-                
+                Thread.currentThread().interrupt();
             } finally {
                 
             }
