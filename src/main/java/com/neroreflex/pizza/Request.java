@@ -27,23 +27,13 @@ import java.util.Vector;
  */
 public final class Request {
     
-    private final String nameTrancio, botId, channel, user;
+    private final String channel, user;
     Vector<String> args;
     
-    public Request(String botID, String trancio, String channel, String user, Vector<String> args) {
-        this.botId = botID;
+    public Request(String channel, String user, Vector<String> args) {
         this.args = args;
         this.channel = channel;
-        this.nameTrancio = trancio;
         this.user = user;
-    }
-    
-    public String getBotID() {
-        return this.botId;
-    }
-    
-    public String getTrancio() {
-        return this.nameTrancio;
     }
     
     public String getChannel() {

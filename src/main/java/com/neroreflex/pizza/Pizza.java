@@ -43,9 +43,6 @@ import java.util.Map.Entry;
 public class Pizza extends PircBot implements Runnable {
     
     public static final Pizza Asporto(String botName, String botServer, String botChannel, HashMap<String, String> botParams) {
-        // Inizializza la coda di richieste
-        RequestQueue.Init();
-        
         // Inizializza le API dei plugin
         PluginAPI.Init();
         
@@ -73,7 +70,7 @@ public class Pizza extends PircBot implements Runnable {
      * Il thread che si occupa di scrivere i messaggi in coda
      */
     private final Thread messageWriter;
-    private final Vector<Thread> esecutoriTranci;
+    private final HashMap<String, Thread> esecutoriTranci;
     
     /**
      * Ottieni l'ID interno del bot (usato solo all'interno del programma). 
@@ -152,7 +149,11 @@ public class Pizza extends PircBot implements Runnable {
             }
             // Controlla se il trancio e' presente e registrato 
             else if (this.tranci.containsKey(command)) {
-                RequestQueue.queueRequest(new Request(this.getBotID(), command, channel, sender, args));
+                this.tranci.get(command).queueRequest(new Request(channel, sender, args));
+                
+                // Se il thread e' sospeso fallo ripartire
+                if (this.esecutoriTranci.get(command).isInterrupted())
+                    this.esecutoriTranci.get(command).start();
             } // E se non lo e' invia l'errore
             else {
                 this.enqueueMessage(new Message(channel, "I don't know what I have to do at '" + command + "' request :("));
@@ -173,7 +174,7 @@ public class Pizza extends PircBot implements Runnable {
         String nomeTrancio = istanzaTrancio.getName();
         
         // Se il plugin e' gia' registrato segnala l'errore
-        if (this.tranci.containsValue(nomeTrancio)) return false;
+        if (this.esecutoriTranci.containsKey(nomeTrancio)) return false;
         
         // Registra il nuovo trancio
         this.tranci.put(nomeTrancio, istanzaTrancio);
@@ -182,8 +183,8 @@ public class Pizza extends PircBot implements Runnable {
         this.tranci.get(nomeTrancio).Initialize(this.getBotID());
         
         // Crea l'esecutore di operazioni in un thread separato
-        this.esecutoriTranci.add(new Thread(istanzaTrancio));
-        this.esecutoriTranci.lastElement().start();
+        this.esecutoriTranci.put(istanzaTrancio.getName(), new Thread(istanzaTrancio));
+        this.esecutoriTranci.get(istanzaTrancio.getName()).start();
         
         // Installazione completata!
         return true;
@@ -246,13 +247,10 @@ public class Pizza extends PircBot implements Runnable {
     public Pizza(String botName, IRCServer botServer, HashMap<String, String> botParams) {
         // Inizializza la lista di tranci e la lista di esecutori
         this.tranci = new HashMap<>();
-        this.esecutoriTranci = new Vector<>();
+        this.esecutoriTranci = new HashMap<>();
         
         // Inizializza la coda di messaggi
         MessageQueue.Init();
-        
-        // Inizializza la coda di richieste
-        RequestQueue.Init();
         
         // Inizializza le API dei plugin
         PluginAPI.Init();
