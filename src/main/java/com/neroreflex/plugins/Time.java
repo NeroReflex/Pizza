@@ -28,6 +28,7 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
+import com.neroreflex.pizza.*;
 
 
 /**
@@ -36,7 +37,7 @@ import java.util.TimeZone;
  * 
  * @author Benato Denis
  */
-public final class Time extends com.neroreflex.pizza.Trancio {
+public final class Time extends RequestTrancio {
     
     protected String onHelp() {
         return "[<timezone>] - where timezone can be omitted, the default will be '"+ Time.DEFAULT_TIMEZONE + "'";

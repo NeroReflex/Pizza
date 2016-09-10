@@ -34,7 +34,7 @@ import java.util.TimeZone;
  * 
  * @author Benato Denis
  */
-public class Join extends Trancio {
+public final class Join extends RequestTrancio {
     protected String onHelp() {
         return "<channel> <key>";
     }

@@ -134,11 +134,15 @@ public class Pizza extends PircBot {
                     });
                 } else if ((args.elementAt(0).compareTo("help") == 0) && (args.size() >= 2)) {
                     if (this.tranci.containsKey(args.get(1))) {
-                        String helpMsgByPlugin = this.tranci.get(args.get(1)).onHelp();
-                        if (helpMsgByPlugin.length() > 0)
-                                this.enqueueMessage(new Message(channel, "Usage: " + this.getNick() + " " + args.get(1) + " " + helpMsgByPlugin));
-                        else
-                            this.enqueueMessage(new Message(channel, "The plugin haven't got an help page"));
+                        if (RequestTrancio.class.isAssignableFrom(this.tranci.get(args.get(1)).getClass())) {
+                            String helpMsgByPlugin = ((RequestTrancio)this.tranci.get(args.get(1))).onHelp();
+                            if (helpMsgByPlugin.length() > 0)
+                                    this.enqueueMessage(new Message(channel, "Usage: " + this.getNick() + " " + args.get(1) + " " + helpMsgByPlugin));
+                            else
+                                this.enqueueMessage(new Message(channel, "The plugin doesn't provide an help message"));
+                        } else {
+                            this.enqueueMessage(new Message(channel, "The plugin doesn't provide an help message because it cannot be actively queryed"));
+                        }
                     } else {
                         this.enqueueMessage(new Message(channel, "Plugin \"" + args.get(1) + "\" not found."));
                     }
@@ -147,7 +151,12 @@ public class Pizza extends PircBot {
             // Controlla se il trancio e' presente e registrato 
             else if (this.tranci.containsKey(command)) {
                 // E se lo e' piazza la richiesta che dovra' prendere in carico
-                this.tranci.get(command).enqueueRequest(new Request(channel, sender, args));
+                if (RequestTrancio.class.isAssignableFrom(this.tranci.get(command).getClass())) {
+                    RequestTrancio trancio = (RequestTrancio)this.tranci.get(command);
+                    trancio.enqueueRequest(new Request(channel, sender, args));
+                } else {
+                    this.enqueueMessage(new Message(channel, "The requested plugin cannot be actively activated"));
+                }
             } // E se non lo e' invia l'errore
             else {
                 this.enqueueMessage(new Message(channel, "I don't know what I have to do at '" + command + "' request :("));
@@ -188,20 +197,40 @@ public class Pizza extends PircBot {
         // Trova tutti i plugin da caricare automaticamente
         org.reflections.Reflections reflections = new org.reflections.Reflections("com.neroreflex.plugins");
 
-        // Esegui la ricerca
-        Set<Class<? extends com.neroreflex.pizza.Trancio>> allClasses = 
-                reflections.getSubTypesOf(com.neroreflex.pizza.Trancio.class);
-        Iterator<Class<? extends com.neroreflex.pizza.Trancio>> it = allClasses.iterator();
+        // Esegui la ricerca di tutti i plugins con attivazione a richiesta
+        Set<Class<? extends com.neroreflex.pizza.RequestTrancio>> allClasses = 
+                reflections.getSubTypesOf(com.neroreflex.pizza.RequestTrancio.class);
+        Iterator<Class<? extends com.neroreflex.pizza.RequestTrancio>> it = allClasses.iterator();
         
-        // Ed istanzia tutti i plugins
+        // Ed istanzia tutti i plugins con attivazione a richiesta
         while (it.hasNext()) {
+            Class<?> futureObj = it.next();
+            
             try {
-                this.registerTrancio((Trancio)it.next().getConstructor().newInstance());
+                this.registerTrancio((RequestTrancio)futureObj.getConstructor().newInstance());
             } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalArgumentException | InvocationTargetException | IllegalAccessException ex) {   
-                System.out.println("Couldn't load the internal plugin set.");
+                System.out.println("Couldn't load the internal request plugin set (at " + futureObj.getSimpleName() + "): " + ex.getClass().getSimpleName() + ", message:" + ex.getMessage());
                 System.exit(-5);
             }
         }
+        
+        // Esegui la ricerca di tutti i plugins con attivazione automatica
+        Set<Class<? extends com.neroreflex.pizza.AutoTrancio>> allAutoClasses = 
+                reflections.getSubTypesOf(com.neroreflex.pizza.AutoTrancio.class);
+        Iterator<Class<? extends com.neroreflex.pizza.AutoTrancio>> ait = allAutoClasses.iterator();
+        
+        // Ed istanzia tutti i plugins con attivazione allClasses
+        while (ait.hasNext()) {
+            Class<?> futureObj = ait.next();
+            
+            try {
+                this.registerTrancio((AutoTrancio)futureObj.getConstructor().newInstance());
+            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalArgumentException | InvocationTargetException | IllegalAccessException ex) {   
+                System.out.println("Couldn't load the internal auto plugin set (at " + futureObj.getSimpleName() + "): " + ex.getClass().getSimpleName() + ", message:" + ex.getMessage());
+                System.exit(-5);
+            }
+        }
+        
         
         // Stampa tutti i plugins avviati
         for(Entry<String, Trancio> entry : this.tranci.entrySet()) {

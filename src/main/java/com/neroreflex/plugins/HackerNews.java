@@ -30,7 +30,7 @@ import com.neroreflex.pizza.*;
  *
  * @author Nitti Gianluca
  */
-public final class HackerNews extends Trancio {
+public final class HackerNews extends AutoTrancio {
     private final String apiBaseURL = "https://hacker-news.firebaseio.com/v0/";
     private final String apiTopStories = apiBaseURL + "topstories.json";
     private final String apiItem = apiBaseURL + "item/";
@@ -43,12 +43,12 @@ public final class HackerNews extends Trancio {
       return result;
     }
 
-    protected String onHelp() {
-      return "Call this plugin without arguments to show the first 5 top news";
-    }
-
-    private synchronized void sendHackerNews(String ... channels) {
+    @Override
+    protected synchronized void onPoll() {
         try {
+            // Ottengo la lista di canali in cui informare gli utenti
+            String[] channels = this.getChannels();
+            
             Vector<String> messages = new Vector<String>(5);
 
             JsonArray apiResponse = (JsonArray)jsonApiCall(apiTopStories); //ottiene l'elenco degli id delle top stories, max 500 (quelle in home)
@@ -74,30 +74,9 @@ public final class HackerNews extends Trancio {
         }
     }
 
-    protected final void onCall(String user, String channel, Vector<String> args) {
-        this.sendHackerNews(channel);
-    }
-
+    @Override
     protected final void onInitialize() {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"));
-        int currHour = cal.get(Calendar.HOUR_OF_DAY);
-        //le notifiche vengono inviate alle 2, 8, 14, 20; la formula determina il prossimo orario più vicino tra quelli.
-        int startHour = ((int)Math.floor(((currHour - 8)/6.0)) + 1) * 6 + 8;
-        cal.set(Calendar.HOUR_OF_DAY, startHour);
-        cal.set(Calendar.MINUTE, 0); //ora esatta (altrimenti mantiene minuti e secondi dell'istande della chiamata a Calendar.getInstance)
-        cal.set(Calendar.SECOND, 0);
-
-        //System.out.println(cal.getTime().toString()); //Debug: stampa l'ora della prima notifica
-
-        // schedule every six hours
-        new Timer().scheduleAtFixedRate(
-            new TimerTask() {
-                public void run() {
-                    HackerNews.this.sendHackerNews(HackerNews.this.getChannels());
-                }
-            },
-            cal.getTime(),
-            Duration.ofHours(6).toMillis()
-        );
+        // Attivazione ogni 30 minuti
+        this.delay = 1800000;
     }
 }

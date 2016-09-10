@@ -28,13 +28,13 @@ import com.neroreflex.pizza.*;
  *
  * @author Nitti Gianluca
  */
-public final class PTforum extends Trancio {
+public final class PTforum extends AutoTrancio {
 
     String apiEndpoint = "http://www.pierotofy.it/pages/extras/forum/api/last_topics.php";
-    int interval = 3000; //TODO: rendere configurabili
 
     HashMap<String, Integer> topics = new HashMap<>(); //chiave=url, valore=numero risposte
 
+    @Override
     protected final void onPoll(){
         try {
             // Ottengo la lista di canali in cui informare gli utenti
@@ -79,14 +79,15 @@ public final class PTforum extends Trancio {
             }
             for(String s: topicsToRemove)
                 topics.remove(s);
-
-            // Dormo per non fare troppe richieste al server
-            Thread.sleep(interval);
         } catch(IOException e){
             e.printStackTrace();
             //sendMessage(new Message(chan, "Attenzione: impossibile recuperare gli aggiornamenti dal forum."));
-        } catch(InterruptedException e){
-            e.printStackTrace();
         }
+    }
+    
+    @Override
+    protected final void onInitialize() {
+        // Un poll ogni 2.5 secondi
+        this.delay = 2500;
     }
 }

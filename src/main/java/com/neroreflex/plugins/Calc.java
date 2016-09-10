@@ -35,7 +35,7 @@ import java.util.TimeZone;
  *
  * @author Nitti Gianluca
  */
-public class Calc extends Trancio {
+public final class Calc extends RequestTrancio {
     protected String onHelp() {
         return "<number1> <operation> <number2> - where operation can either be +, - * or /";
     }
