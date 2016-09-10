@@ -146,11 +146,8 @@ public class Pizza extends PircBot {
             }
             // Controlla se il trancio e' presente e registrato 
             else if (this.tranci.containsKey(command)) {
-                this.tranci.get(command).queueRequest(new Request(channel, sender, args));
-                
-                // Se il thread e' sospeso fallo ripartire
-                if (this.esecutoriTranci.get(command).isInterrupted())
-                    this.esecutoriTranci.get(command).start();
+                // E se lo e' piazza la richiesta che dovra' prendere in carico
+                this.tranci.get(command).enqueueRequest(new Request(channel, sender, args));
             } // E se non lo e' invia l'errore
             else {
                 this.enqueueMessage(new Message(channel, "I don't know what I have to do at '" + command + "' request :("));
