@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.*;
 
 /**
  * Per aggiungere funzionalità al bot è necessario estendere questa classe
@@ -34,23 +35,57 @@ public abstract class Trancio implements Runnable {
     
     private Date startupDate;
     
-    protected Vector<Request> requests;
+    protected LinkedBlockingQueue<Request> requests;
     
-    public synchronized void queueRequest(Request action) {
-        this.requests.add(action);
+    /**
+     * Inserisce una richeista nella coda FIFO di richieste da gestire.
+     * 
+     * Questa funzione e' chiamata in un thread diverso di quello che chiama
+     * unqueueRequest, precisamente dal thread principale del bot.
+     * 
+     * Se unqueueRequest ed enqueueRequest dovessero essere synchronized
+     * l'architettura dei plugins non funzionerebbe!
+     * 
+     * @param action la richiesta fatta da un utente che il plugin dovra' esaudire
+     */
+    public final void enqueueRequest(Request action) {
+        // Registro il lavoro da svolgere
+        try {
+            // Inserisci la richiesta nella coda
+            this.requests.put(action);
+        } catch (InterruptedException ex) {
+            
+        }
     }
     
-    protected synchronized Request unqueueRequest(String botId, String nomeTrancio) {
+    /**
+     * Rimuove dalla coda FIFO l'ultimo elemento inserito, ovvero l'ultima
+     * richiesta effettuata (da un utente).
+     * 
+     * Grazie alla coda usata il thread viene messo in sleep dalla JVM se NON
+     * sono presenti richieste.
+     * 
+     * Se unqueueRequest ed enqueueRequest dovessero essere synchronized
+     * l'architettura dei plugins non funzionerebbe!
+     * 
+     * @return la richiesta da esaudire
+     */
+    protected final Request unqueueRequest() {
         // Cerco il prossimo lavoro da svolgere
-        if (!this.requests.isEmpty())
-            return this.requests.remove(0);
+        try {
+            // Rimango in attesa di ricevere la richiesta (se la lista è vuota)
+            return this.requests.take();
+            // Grazie lumo_e per il suggerimento sulla BlockingQueue.
+            // Ora il thread viene messo a dormire in caso di coda vuota
+        } catch (InterruptedException ex) {
+            
+        }
         
-        // Nessuna richiesta da esaudire
         return null;
     }
     
     public Trancio() { 
-        this.requests = new Vector<>();
+        this.requests = new LinkedBlockingQueue<>(500);
     }
     
     private boolean loaded = false;
@@ -163,14 +198,12 @@ public abstract class Trancio implements Runnable {
                 this.onPoll();
                 
                 // Ottieni la richiesta da soddisfare
-                Request req = this.unqueueRequest(this.getBotID(), this.getName());
+                Request req = this.unqueueRequest();
                 
                 // Chiama il gestore dell'evento
                 this.onCall(req.getUser(), req.getChannel(), req.getArguments());
             } catch (NullPointerException ex) {
-                Thread.currentThread().interrupt();
-            } finally {
-                
+                //Thread.currentThread().interrupt();
             }
         }
     }
