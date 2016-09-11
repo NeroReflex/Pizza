@@ -18,6 +18,7 @@
 package com.neroreflex.pizza;
 
 import java.lang.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
@@ -36,9 +37,10 @@ public abstract class AutoTrancio extends Trancio implements Runnable {
      */
     protected final DelayQueue<Delayed> request;
     
-    protected long delay = 500;
+    protected Duration delay;
     
     public AutoTrancio() { 
+        this.delay = Duration.ofSeconds(1);
         this.request = new DelayQueue<>();
     }
     
@@ -49,7 +51,7 @@ public abstract class AutoTrancio extends Trancio implements Runnable {
                 this.onPoll();
                 
                 // Accoda la richiesta
-                this.request.put(new DelayedObject("", this.delay));
+                this.request.put(new DelayedObject(this.delay));
                 
                 // Ottieni la richiesta da soddisfare quando il delay sarà scaduto
                 this.request.take();

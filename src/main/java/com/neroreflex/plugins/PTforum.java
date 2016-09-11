@@ -22,6 +22,7 @@ import java.net.URL;
 import java.io.*;
 import javax.json.*;
 import com.neroreflex.pizza.*;
+import java.time.Duration;
 
 /**
  * Plugin per notificare nuovi messaggi sul forum di pierotofy.it
@@ -88,6 +89,6 @@ public final class PTforum extends AutoTrancio {
     @Override
     protected final void onInitialize() {
         // Un poll ogni 2.5 secondi
-        this.delay = 2500;
+        this.delay = Duration.ofMinutes(1);
     }
 }

@@ -5,40 +5,42 @@
  */
 package com.neroreflex.pizza;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 public class DelayedObject implements Delayed  {
-    private String data;
-    private long startTime;
+    private GregorianCalendar startTime;
 
-    public DelayedObject(String data, long delay) {
-        this.data = data;
-        this.startTime = System.currentTimeMillis() + delay;
+    public DelayedObject(Duration delay) {
+        this.startTime = new GregorianCalendar();
+        try {
+            this.startTime.setTimeInMillis(
+                    Math.addExact(this.startTime.getTimeInMillis(), delay.abs().toMillis())
+            );
+        } catch (ArithmeticException ex) {
+            if (delay.toMinutes() <= (long)Integer.MAX_VALUE)
+                this.startTime.add(GregorianCalendar.MINUTE, (int)delay.toMinutes());
+            else if (delay.toHours() <= (long)Integer.MAX_VALUE)
+                this.startTime.add(GregorianCalendar.MINUTE, (int)delay.toHours());
+            else
+                this.startTime.add(GregorianCalendar.MINUTE, (int)delay.toDays());
+        }
     }
 
     @Override
     public long getDelay(TimeUnit unit) {
-        long diff = startTime - System.currentTimeMillis();
+        long diff = startTime.getTimeInMillis() - System.currentTimeMillis();
         return unit.convert(diff, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public int compareTo(Delayed o) {
-        if (this.startTime < ((DelayedObject) o).startTime) {
-            return -1;
-        }
-        if (this.startTime > ((DelayedObject) o).startTime) {
-            return 1;
-        }
-        return 0;
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-               "data='" + data + "'" +
-               ", startTime=" + startTime +
-               "}";
+        return this.startTime.compareTo(((DelayedObject) o).startTime);
     }
 }

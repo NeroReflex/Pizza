@@ -76,7 +76,7 @@ public final class HackerNews extends AutoTrancio {
 
     @Override
     protected final void onInitialize() {
-        // Attivazione ogni 30 minuti
-        this.delay = 1800000;
+        // Attivazione ogni 6 ore
+        this.delay = Duration.ofHours(6);
     }
 }
