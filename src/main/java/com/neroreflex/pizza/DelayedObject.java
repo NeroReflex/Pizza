@@ -15,32 +15,32 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 public class DelayedObject implements Delayed  {
-    private GregorianCalendar startTime;
+    private GregorianCalendar endingTime;
 
     public DelayedObject(Duration delay) {
-        this.startTime = new GregorianCalendar();
+        this.endingTime = new GregorianCalendar();
         try {
-            this.startTime.setTimeInMillis(
-                    Math.addExact(this.startTime.getTimeInMillis(), delay.abs().toMillis())
+            this.endingTime.setTimeInMillis(
+                    // Controllo l'overflow
+                    Math.addExact(this.endingTime.getTimeInMillis(), delay.abs().toMillis())
             );
         } catch (ArithmeticException ex) {
             if (delay.toMinutes() <= (long)Integer.MAX_VALUE)
-                this.startTime.add(GregorianCalendar.MINUTE, (int)delay.toMinutes());
+                this.endingTime.add(GregorianCalendar.MINUTE, (int)delay.toMinutes());
             else if (delay.toHours() <= (long)Integer.MAX_VALUE)
-                this.startTime.add(GregorianCalendar.MINUTE, (int)delay.toHours());
+                this.endingTime.add(GregorianCalendar.MINUTE, (int)delay.toHours());
             else
-                this.startTime.add(GregorianCalendar.MINUTE, (int)delay.toDays());
+                this.endingTime.add(GregorianCalendar.MINUTE, (int)delay.toDays());
         }
     }
 
     @Override
     public long getDelay(TimeUnit unit) {
-        long diff = startTime.getTimeInMillis() - System.currentTimeMillis();
-        return unit.convert(diff, TimeUnit.MILLISECONDS);
+        return unit.convert(endingTime.getTimeInMillis() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
     @Override
     public int compareTo(Delayed o) {
-        return this.startTime.compareTo(((DelayedObject) o).startTime);
+        return (int)Math.signum((double)this.getDelay(TimeUnit.MILLISECONDS));
     }
 }

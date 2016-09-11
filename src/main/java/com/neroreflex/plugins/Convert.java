@@ -34,6 +34,7 @@ public final class Convert extends RequestTrancio {
     
     private Map<String, Integer> baseList;
 
+    @Override
     protected final void onInitialize(){
         baseList = new HashMap<>();
         baseList.put("bin", 2);
@@ -45,28 +46,75 @@ public final class Convert extends RequestTrancio {
     @Override
     protected final void onCall(String user, String channel, Vector<String> args) {
         if(args.size() != 2){
-            sendMessage(new Message(channel, user + " sono necessari due argomenti: conversione (es. hex2bin) e valore da convertire."));
+            sendMessage(new Message(channel, user + " wrong arguments number."));
             return;
         }
-        Message wrongConversionMsg = new Message(channel, user + " nome della conversione errato. Deve essere formato da base sorgente + '2' + destinazione. Le basi supportate sono bin, oct, dec, hex. Ad esempio bin2hex, hex2dec, ecc.");
-        if(args.get(0).length() != 7){
-            sendMessage(wrongConversionMsg);
-            return;
-        }
+        
+        // Ottieni i nomi delle basi da usare per la conversione
         String srcBaseName = args.get(0).substring(0, 3);
         String destBaseName = args.get(0).substring(4);
+        
+        // Controlla i nomi delle basi da convertire
+        if ((args.get(0).length() != 7) || (args.get(0).charAt(3) != '2') || (!baseList.containsKey(srcBaseName)) || (!baseList.containsKey(destBaseName))) {
+            sendMessage(
+                    new Message(channel, user + " wrong conversion name. Allowed names are: <src>2<dst> where <src> and <dst> are bin, hex, dec and oct")
+            );
+            return;
+        }
+        
+        // Ottengo il numero di caratteri nelle basi
         Integer srcBase = baseList.get(srcBaseName);
         Integer destBase = baseList.get(destBaseName);
+        
+        // Salvo il numero da convertire
         String src = args.get(1);
-        if(args.get(0).charAt(3) != '2' || srcBase == null || destBase == null)
-            sendMessage(wrongConversionMsg);
-        else{
-            try{
-                String dest = Integer.toString(Integer.parseInt(src, srcBase), destBase);
-                sendMessage(new Message(channel, user + " " + src + " (" + srcBaseName + ") = " + dest + " (" + destBaseName + ")"));
-            }catch(NumberFormatException e){
-                sendMessage(new Message(channel, user + " formato del numero errato :( :\"" + src + "\" non è un numero in base " + srcBase));
+        
+        try {
+            String dest = Integer.toString(Integer.parseInt(src, srcBase), destBase).toUpperCase();
+            if ((srcBase == 16) && (destBase == 2)) {
+                String zeroes = "";
+                int bitsNumber = (src.length() * 4) - dest.length();
+                for (int i = 0; i < bitsNumber; i++) 
+                    zeroes += "0";
+                
+                dest = insertPeriodically(zeroes + dest, " ", 4);
+            } else if ((srcBase == 2) && (destBase == 16)) {
+                String zeroes = "";
+                
+                int round = (4 - (src.length() % 4));
+                round = (round == 4) ? round - 4 : round;
+                int bitsNumber = ((src.length() + round) / 4) - dest.length();
+                for (int i = 0; i < bitsNumber; i++) 
+                    zeroes += "0";
+                
+                dest = zeroes + dest;
+                if (dest.substring(0, 4) == "0000")
+                    dest = dest.substring(4);
             }
+            this.sendMessage(new Message(channel, user + " " + src + " (" + srcBaseName + ") = " + dest + " (" + destBaseName + ")"));
+        } catch(NumberFormatException e){
+            this.sendMessage(new Message(channel, user + " wrong format for number " + src + ": not a base " + srcBase + " number."));
         }
     }
+    
+    public static String insertPeriodically(String text, String insert, int period)
+    {
+        StringBuilder builder = new StringBuilder(
+             text.length() + insert.length() * (text.length()/period)+1);
+
+        int index = 0;
+        String prefix = "";
+        while (index < text.length())
+        {
+            // Don't put the insert in the very first iteration.
+            // This is easier than appending it *after* each substring
+            builder.append(prefix);
+            prefix = insert;
+            builder.append(text.substring(index, 
+                Math.min(index + period, text.length())));
+            index += period;
+        }
+        return builder.toString();
+    }
+    
 }
