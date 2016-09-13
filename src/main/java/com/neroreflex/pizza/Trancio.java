@@ -10,6 +10,7 @@ import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -76,6 +77,8 @@ public abstract class Trancio {
      */
     private final Thread requestManager;
     
+    protected final Calendar firstSheduledPoll;
+    
     /**
      * Il timer che chiama onPoll ad intervalli di tempo regolari
      */
@@ -87,6 +90,7 @@ public abstract class Trancio {
     protected final ArrayBlockingQueue<Request> requests;
     
     public Trancio() {
+        this.firstSheduledPoll = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"));
         this.delay = Duration.ofSeconds(1);
         this.requests = new ArrayBlockingQueue<>(250, true);
         
@@ -211,6 +215,8 @@ public abstract class Trancio {
         // Gli ultimi step dell'inizializzazione possono essere personalizzati
         this.onInitialize();
         
+        
+        
         // Esegui i gestori degli eventi del plugin
         this.requestManager.start();
         this.autoCaller.scheduleAtFixedRate(
@@ -220,7 +226,7 @@ public abstract class Trancio {
                     this.plugin.onPoll();
                 }
             },
-            (new GregorianCalendar()).getTime(),
+            this.firstSheduledPoll.getTime(),
             this.delay.toMillis()
         );
         // E' importante far partire il thread autoManger in questo punto:

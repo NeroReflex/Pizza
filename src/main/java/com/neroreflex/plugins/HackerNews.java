@@ -76,6 +76,15 @@ public final class HackerNews extends Trancio {
 
     @Override
     protected final void onInitialize() {
+        // firstSheduledPoll è impostato nell'orario di partenza del plugin
+        int currHour = this.firstSheduledPoll.get(Calendar.HOUR_OF_DAY);
+        
+        // Le notifiche vengono inviate alle 2, 8, 14, 20; la formula determina il prossimo orario più vicino tra quelli.
+        int startHour = ((int)Math.floor(((currHour - 8)/6.0)) + 1) * 6 + 8;
+        this.firstSheduledPoll.set(Calendar.HOUR_OF_DAY, startHour);
+        this.firstSheduledPoll.set(Calendar.MINUTE, 0); //ora esatta (altrimenti mantiene minuti e secondi dell'istande della chiamata a Calendar.getInstance)
+        this.firstSheduledPoll.set(Calendar.SECOND, 0);
+        
         // Attivazione ogni 6 ore
         this.delay = Duration.ofHours(6);
     }
