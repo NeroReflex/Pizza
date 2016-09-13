@@ -136,8 +136,7 @@ public class Pizza extends PircBot {
                         if (!help.isEmpty())
                             this.enqueueMessage(new Message(helpRequest.GetChannel(), "!" + name + " " + help));
                     });
-        } // Devo stampare SOLO l'help del plugin richiesto
-        else {
+        } else {
             // Ottengo il nome del plugin
             String name = args.get(0);
             
