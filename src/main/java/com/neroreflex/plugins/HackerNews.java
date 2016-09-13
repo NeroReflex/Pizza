@@ -30,7 +30,7 @@ import com.neroreflex.pizza.*;
  *
  * @author Nitti Gianluca
  */
-public final class HackerNews extends AutoTrancio {
+public final class HackerNews extends Trancio {
     private final String apiBaseURL = "https://hacker-news.firebaseio.com/v0/";
     private final String apiTopStories = apiBaseURL + "topstories.json";
     private final String apiItem = apiBaseURL + "item/";
@@ -44,7 +44,7 @@ public final class HackerNews extends AutoTrancio {
     }
 
     @Override
-    protected synchronized void onPoll() {
+    public synchronized void onPoll() {
         try {
             // Ottengo la lista di canali in cui informare gli utenti
             String[] channels = this.getChannels();

@@ -34,12 +34,16 @@ import java.util.TimeZone;
  * 
  * @author Benato Denis
  */
-public final class Join extends RequestTrancio {
+public final class Join extends Trancio {
     protected String onHelp() {
         return "<channel> <key>";
     }
     
-    protected final void onCall(String user, String channel, Vector<String> args) {
+    @Override
+    public final void onCall(Request req) {
+        String user = req.GetUser(), channel = req.GetChannel();
+        Vector<String> args = req.GetBasicParse();
+        
         if (args.size() > 0) {
             // A che canale deve fare il join?
             String newChannel = args.get(0);

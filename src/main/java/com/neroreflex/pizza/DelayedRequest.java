@@ -14,10 +14,16 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-public class DelayedObject implements Delayed  {
+public class DelayedRequest implements Delayed  {
+    
     private GregorianCalendar endingTime;
-
-    public DelayedObject(Duration delay) {
+    private Request request;
+    
+    public DelayedRequest(Request req, Duration delay) {
+        // Store the request
+        this.request = req;
+        
+        // Store the ending time
         this.endingTime = new GregorianCalendar();
         try {
             this.endingTime.setTimeInMillis(
@@ -42,5 +48,9 @@ public class DelayedObject implements Delayed  {
     @Override
     public int compareTo(Delayed o) {
         return (int)Math.signum((double)this.getDelay(TimeUnit.MILLISECONDS));
+    }
+    
+    public Request GetRequest() {
+        return this.request;
     }
 }
