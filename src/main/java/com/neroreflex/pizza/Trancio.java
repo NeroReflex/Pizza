@@ -13,6 +13,7 @@ import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -83,17 +84,17 @@ public abstract class Trancio {
     /**
      * La coda di richieste fatte al plugin
      */
-    protected final LinkedBlockingQueue<Request> requests;
+    protected final ArrayBlockingQueue<Request> requests;
     
     public Trancio() {
         this.delay = Duration.ofSeconds(1);
-        this.requests = new LinkedBlockingQueue<>();
+        this.requests = new ArrayBlockingQueue<>(250, true);
         
         // Definisco le strutture dei gestori di chiamate al plugin
         RequestRunner requestRunner = new RequestRunner(this) {
             @Override
             public void run() {
-                while ((this.plugin.isLoaded() && (!Thread.currentThread().isInterrupted()))) {
+                while (!Thread.currentThread().isInterrupted()) {
                     // Ottiene la richiesta da esaudire
                     Request request = this.plugin.unqueueRequest();
 
@@ -294,7 +295,9 @@ public abstract class Trancio {
             // Grazie lumo_e per il suggerimento sulla BlockingQueue.
             // Ora il thread viene messo a dormire in caso di coda vuota
         } catch (InterruptedException ex) {
+            System.err.println("The " + this.getName() + "plugin is interrupted, but a new request is going to be dequeued");
             
+            Logger.getLogger(Trancio.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return null;

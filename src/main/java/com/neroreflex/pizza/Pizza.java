@@ -150,10 +150,10 @@ public class Pizza extends PircBot {
                 if (!help.isEmpty())
                     this.enqueueMessage(new Message(helpRequest.GetChannel(), "!" + name + " " + help));
                 else
-                    this.enqueueMessage(new Message(helpRequest.GetChannel(), "Usage help is not bundled with the '" + name + "' plugin."));
+                    this.enqueueMessage(new Message(helpRequest.GetChannel(), "Help is not bundled with the '" + name + "' plugin."));
             } // Se non lo ho avverto l'utente
             else {
-                this.enqueueMessage(new Message(helpRequest.GetChannel(), "A plugin named '" + name + "' doesn't exist."));
+                this.enqueueMessage(new Message(helpRequest.GetChannel(), "A plugin with name '" + name + "' doesn't exist."));
             }
         }
         
