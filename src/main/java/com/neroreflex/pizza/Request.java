@@ -27,23 +27,12 @@ import java.util.Vector;
  */
 public final class Request {
     
-    public enum Type {
-        Request,
-        Automatic
-    };
-    
     private final String channel, user, message;
-    Type requestType;
     
-    public Request(Type type, String channel, String user, String msg) {
-        this.requestType = type;
+    public Request(String channel, String user, String msg) {
         this.message = msg;
         this.channel = channel;
         this.user = user;
-    }
-    
-    public Type GetType() {
-        return this.requestType;
     }
     
     public String GetChannel() {

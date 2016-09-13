@@ -87,6 +87,10 @@ public class Pizza extends PircBot {
     
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
+        // Ottengo il numero di caratteri nel nick
+        int nickLength = this.getNick().length();
+        
+        // Cerco di capire se mi e' stato dato un comando
         if ((message.charAt(0) == '!') && (message.length() > 1)) {
             // Ottieni il nome del comando
             int firstSpacePos = message.indexOf(' ');
@@ -96,46 +100,64 @@ public class Pizza extends PircBot {
             
             // Questa e' la stringa con ulteriori dettagli sulla operazione da eseguire
             String rawParamsString = message.substring(firstSpacePos);
-            /*
-            // Qualcuno ha chiesto aiuto?
-            if ((command.compareTo("help") == 0) && (args.isEmpty())) {
-                this.enqueueMessage(new Message(channel, sender + " you should type: " + this.getNick() + " plugin list"));
-            }
-            else if ((command.compareTo("plugin") == 0) && (!args.isEmpty())) {
-                if (args.elementAt(0).compareTo("list") == 0) {
-                    this.tranci.entrySet().stream().forEach((entry) -> {
-                        String name = entry.getKey();
-                        Trancio trancio = entry.getValue();
-                        
-                        this.enqueueMessage(new Message(channel, "Plugin \"" + name + "\" Started at: " + trancio.getDate()));
-                    });
-                } else if ((args.elementAt(0).compareTo("help") == 0) && (args.size() >= 2)) {
-                    if (this.tranci.containsKey(args.get(1))) {
-                        String helpMsgByPlugin = (this.tranci.get(args.get(1))).onHelp();
-                        if (helpMsgByPlugin.length() > 0)
-                            this.enqueueMessage(new Message(channel, "Usage: " + this.getNick() + " " + args.get(1) + " " + helpMsgByPlugin));
-                        else
-                            this.enqueueMessage(new Message(channel, "The plugin doesn't provide an help message"));
-                    } else {
-                        this.enqueueMessage(new Message(channel, "Plugin \"" + args.get(1) + "\" not found."));
-                    }
-                }
-            }*/
             
             // Controlla se il trancio e' presente e registrato
             if (this.tranci.containsKey(command)) {
                 // E se lo e' piazza la richiesta che dovra' prendere in carico
-                this.tranci.get(command).enqueueRequest(new Request(Request.Type.Request ,channel, sender, rawParamsString), Duration.ofNanos(50));
-            } // E se non lo e' invia l'errore
-            else {
+                if (this.tranci.get(command).isLoaded())
+                    this.tranci.get(command).enqueueRequest(new Request(channel, sender, rawParamsString));
+                else
+                    this.sendMessage(channel, sender + " sorry but the requested plugin is not loaded (yet)");
+            } else if (command.compareTo("help") == 0) {// E se non lo e' invia l'errore
+                this.Help(new Request(channel, sender, rawParamsString));
+            } else {
                 this.enqueueMessage(new Message(channel, "I don't know what I have to do at '" + command + "' request :("));
             }
-        }
-            
-            /*else if (this.getNick().compareTo(message) == 0) {
+        } else if (message.substring(0, nickLength).compareTo(this.getNick()) == 0) {
             this.enqueueMessage(new Message(channel, "Sono il vostro amichevole robottino mangiapizza :)"));
             this.enqueueMessage(new Message(channel, "Type !help to get started"));
-        }*/
+        }
+    }
+    
+    public final void Help(Request helpRequest) {
+        // Dividi la richiesta di aiuto in piu' parti
+        Vector<String> args = helpRequest.GetBasicParse();
+        
+        // Non e' stato specificato un plugin
+        if (args.isEmpty()) {
+            this.tranci.entrySet().stream().forEach((entry) -> {
+                        String name = entry.getKey();
+                        Trancio trancio = entry.getValue();
+                        
+                        // Ottengo la stringa della guida
+                        String help = trancio.onHelp();
+                        
+                        // Stampo la guida solo se ha senso (la stringa della guida NON E' vuota)
+                        if (!help.isEmpty())
+                            this.enqueueMessage(new Message(helpRequest.GetChannel(), "!" + name + " " + help));
+                    });
+        } // Devo stampare SOLO l'help del plugin richiesto
+        else {
+            // Ottengo il nome del plugin
+            String name = args.get(0);
+            
+            // Ho caricato un plugin che si chiama con quel nome?
+            if (this.tranci.containsKey(name)) {
+                // Ottengo la stringa della guida
+                String help = this.tranci.get(name).onHelp();
+                        
+                // Stampo la guida solo se ha senso (la stringa della guida NON E' vuota)
+                if (!help.isEmpty())
+                    this.enqueueMessage(new Message(helpRequest.GetChannel(), "!" + name + " " + help));
+                else
+                    this.enqueueMessage(new Message(helpRequest.GetChannel(), "Usage help is not bundled with the '" + name + "' plugin."));
+            } // Se non lo ho avverto l'utente
+            else {
+                this.enqueueMessage(new Message(helpRequest.GetChannel(), "A plugin named '" + name + "' doesn't exist."));
+            }
+        }
+        
+        
     }
     
     /**
@@ -161,6 +183,12 @@ public class Pizza extends PircBot {
         return true;
     }
     
+    /**
+     * Usato internamente per caricare TUTTI i plugins nel package dei plugins.
+     * 
+     * Di fatto usa la reflection per ottenere TUTTE le classi che ereditano
+     * dalla classe base Trancio (ovvero la classe da estendere per implementare un plugin)
+     */
     protected void loadInternalPlugins() {
         // Trova tutti i plugin da caricare automaticamente
         org.reflections.Reflections reflections = new org.reflections.Reflections("com.neroreflex.plugins");
