@@ -77,7 +77,7 @@ public abstract class Trancio {
      */
     private final Thread requestManager;
     
-    protected final Calendar firstSheduledPoll;
+    protected final GregorianCalendar firstSheduledPoll;
     
     /**
      * Il timer che chiama onPoll ad intervalli di tempo regolari
@@ -90,8 +90,7 @@ public abstract class Trancio {
     protected final ArrayBlockingQueue<Request> requests;
     
     public Trancio() {
-        this.firstSheduledPoll = Calendar.getInstance(TimeZone.getTimeZone("Europe/Rome"));
-        this.delay = Duration.ofSeconds(1);
+        // Prepara la coda di richieste da esaudire
         this.requests = new ArrayBlockingQueue<>(250, true);
         
         // Definisco le strutture dei gestori di chiamate al plugin
@@ -113,6 +112,11 @@ public abstract class Trancio {
         
         // schedule every six hours
         this.autoCaller = new Timer();
+        
+        // Prepara i riferimenti temporali
+        this.firstSheduledPoll = new GregorianCalendar();
+        this.firstSheduledPoll.add(Calendar.SECOND, 1);
+        this.delay = Duration.ofSeconds(1);
     }
     
     public Duration GetPollingDelay() {
@@ -214,8 +218,6 @@ public abstract class Trancio {
         
         // Gli ultimi step dell'inizializzazione possono essere personalizzati
         this.onInitialize();
-        
-        
         
         // Esegui i gestori degli eventi del plugin
         this.requestManager.start();

@@ -110,12 +110,27 @@ public class Pizza extends PircBot {
                     this.sendMessage(channel, sender + " sorry but the requested plugin is not loaded (yet)");
             } else if (command.compareTo("help") == 0) {// E se non lo e' invia l'errore
                 this.Help(new Request(channel, sender, rawParamsString));
+            } else if (command.compareTo("info") == 0) {// E se non lo e' invia l'errore
+                this.Info(new Request(channel, sender, rawParamsString));
             } else {
                 this.enqueueMessage(new Message(channel, "I don't know what I have to do at '" + command + "' request :("));
             }
         } else if (message.substring(0, nickLength).compareTo(this.getNick()) == 0) {
-            this.enqueueMessage(new Message(channel, "Sono il vostro amichevole robottino mangiapizza :)"));
-            this.enqueueMessage(new Message(channel, "Type !help to get started"));
+            this.enqueueMessage(new Message(channel, "type !help to get started"));
+        }
+    }
+    
+    public final void Info(Request helpRequest) {
+        // Dividi la richiesta di informazioni in piu' parti
+        Vector<String> args = helpRequest.GetBasicParse();
+        
+        // Non e' stato specificato nulla
+        if (args.isEmpty()) {
+            this.enqueueMessage(new Message(helpRequest.GetChannel(), "I'm PizzaBot a small and modular IRC bot"));
+        } else if (args.get(0).compareTo("source") == 0) {
+            this.enqueueMessage(new Message(helpRequest.GetChannel(), "My source code <3 https://github.com/NeroReflex/Pizza"));
+        } else {
+            this.enqueueMessage(new Message(helpRequest.GetChannel(), "No info about that"));
         }
     }
     
