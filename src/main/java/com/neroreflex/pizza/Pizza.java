@@ -87,9 +87,8 @@ public class Pizza extends PircBot {
     
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
-        // Evito di fare controlli su un messaggio vuoto
+        // Evito di fare controlli su un messaggio vuoto e evito di stampare il messaggio di help se l'utente scrive solo: "!"
         // I messaggi vuoti non dovrebbero esistere, vedi https://tools.ietf.org/html/rfc2812.html Sezione 2.3.1: "Empty messages are silently ignored"
-        // Ma è meglio controllare....
         if (message.length() > 1) return;
         
         // Ottengo il numero di caratteri nel nick
