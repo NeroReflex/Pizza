@@ -43,16 +43,12 @@ public final class HackerNews extends Trancio {
       return result;
     }
 
-    @Override
-    public synchronized void onPoll() {
+    private synchronized void sendHackerNews(int tops, String ... channels) {
         try {
-            // Ottengo la lista di canali in cui informare gli utenti
-            String[] channels = this.getChannels();
-            
             Vector<String> messages = new Vector<String>(5);
 
             JsonArray apiResponse = (JsonArray)jsonApiCall(apiTopStories); //ottiene l'elenco degli id delle top stories, max 500 (quelle in home)
-            for(int i = 0; i < 5; i++) {
+            for(int i = 0; i < tops; i++) {
                 int id = apiResponse.getInt(i, -1); //id della i-esima notizia, o -1 se per qualche motivo la risposta dell'api fosse più corta
                 if(i == -1) break; //esce se l'id non è stato trovato
                 JsonObject obj = (JsonObject)jsonApiCall(apiItem + id + ".json"); //recupera i dettagli della notizia
@@ -64,16 +60,43 @@ public final class HackerNews extends Trancio {
             }
 
             for(String chan: channels) {
-                sendMessage(new Message(chan, "From Hacker News: "));
+                this.sendMessage(new Message(chan, "From Hacker News: "));
                 for (String m : messages) {
-                    sendMessage(new Message(chan, m));
+                    this.sendMessage(new Message(chan, m));
                 }
             }
         } catch(IOException | NumberFormatException e) {
              e.printStackTrace();
         }
     }
+    
+    @Override
+    public final String onHelp() {
+        return "[<tops>] - where tops is the number of news you want to read, can be omitted, default is 5";
+    }
+    
+    @Override
+    public final void onPoll() {
+        // Stampa le news su tutti i canali
+        this.sendHackerNews(5, this.getChannels());
+    }
 
+    @Override
+    public final void onCall(Request req) {
+        int tops = 5;
+        
+        try {
+            Vector<String> args = req.GetBasicParse();
+            if (!args.isEmpty())
+                tops = Integer.parseInt(args.get(0));
+        } catch (NumberFormatException ex) {
+            
+        }
+        
+        // Stampa le news in PM a chi le ha richieste
+        this.sendHackerNews(tops, req.GetUser());
+    }
+    
     @Override
     protected final void onInitialize() {
         // firstSheduledPoll è impostato nell'orario di partenza del plugin

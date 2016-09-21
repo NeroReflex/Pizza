@@ -94,7 +94,7 @@ public class Pizza extends PircBot {
         if ((message.charAt(0) == '!') && (message.length() > 1)) {
             // Ottieni il nome del comando
             int firstSpacePos = message.indexOf(' ');
-            firstSpacePos = (firstSpacePos <= -1)? message.length() : firstSpacePos;
+            firstSpacePos = (firstSpacePos <= -1) ? message.length() : firstSpacePos;
             
             String command = message.substring(1, firstSpacePos);
             
@@ -113,7 +113,7 @@ public class Pizza extends PircBot {
             } else if (command.compareTo("info") == 0) {// E se non lo e' invia l'errore
                 this.Info(new Request(channel, sender, rawParamsString));
             } else {
-                this.enqueueMessage(new Message(channel, "I don't know what I have to do at '" + command + "' request :("));
+                this.enqueueMessage(new Message(channel, "The request '" + command + "' cannot be resolved"));
             }
         } else if (message.substring(0, nickLength).compareTo(this.getNick()) == 0) {
             this.enqueueMessage(new Message(channel, "type !help to get started"));
