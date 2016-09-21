@@ -45,9 +45,9 @@ public final class Join extends Trancio {
             String key = ((args.size() > 1) && (args.get(1).length() > 0))? args.get(0) : "";
 
             this.joinChannel(newChannel, key);
-            this.sendMessage(new Message(channel, user + " I have joined the " + newChannel + " channel"));
+            this.sendMessage(new Message(channel, user + " I have joined " + newChannel + "."));
         } else {
-            this.sendMessage(new Message(channel, user + " Invalid channel name"));
+            this.sendMessage(new Message(channel, user + " Please specify a channel"));
         }
     }
 }

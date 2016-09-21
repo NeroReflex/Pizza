@@ -121,17 +121,8 @@ public class Pizza extends PircBot {
     }
     
     public final void Info(Request helpRequest) {
-        // Dividi la richiesta di informazioni in piu' parti
-        Vector<String> args = helpRequest.GetBasicParse();
-        
-        // Non e' stato specificato nulla
-        if (args.isEmpty()) {
-            this.enqueueMessage(new Message(helpRequest.GetChannel(), "I'm PizzaBot a small and modular IRC bot"));
-        } else if (args.get(0).compareTo("source") == 0) {
-            this.enqueueMessage(new Message(helpRequest.GetChannel(), "My source code <3 https://github.com/NeroReflex/Pizza"));
-        } else {
-            this.enqueueMessage(new Message(helpRequest.GetChannel(), "No info about that"));
-        }
+        this.enqueueMessage(new Message(helpRequest.GetChannel(), "I'm PizzaBot (https://github.com/NeroReflex/Pizza) a small and modular IRC bot"));
+ 
     }
     
     public final void Help(Request helpRequest) {
@@ -149,7 +140,7 @@ public class Pizza extends PircBot {
                         
                         // Stampo la guida solo se ha senso (la stringa della guida NON E' vuota)
                         if (!help.isEmpty())
-                            this.enqueueMessage(new Message(helpRequest.GetChannel(), "!" + name + " " + help));
+                            this.enqueueMessage(new Message(helpRequest.GetUser(), "!" + name + " " + help));
                     });
         } else {
             // Ottengo il nome del plugin
@@ -162,12 +153,12 @@ public class Pizza extends PircBot {
                         
                 // Stampo la guida solo se ha senso (la stringa della guida NON E' vuota)
                 if (!help.isEmpty())
-                    this.enqueueMessage(new Message(helpRequest.GetChannel(), "!" + name + " " + help));
+                    this.enqueueMessage(new Message(helpRequest.GetUser(), "!" + name + " " + help));
                 else
-                    this.enqueueMessage(new Message(helpRequest.GetChannel(), "Help is not bundled with the '" + name + "' plugin."));
+                    this.enqueueMessage(new Message(helpRequest.GetUser(), "No help is provided by the '" + name + "' plugin."));
             } // Se non lo ho avverto l'utente
             else {
-                this.enqueueMessage(new Message(helpRequest.GetChannel(), "A plugin with name '" + name + "' doesn't exist."));
+                this.enqueueMessage(new Message(helpRequest.GetUser(), "A plugin with name '" + name + "' doesn't exist."));
             }
         }
         
