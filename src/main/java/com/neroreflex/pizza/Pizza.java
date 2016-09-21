@@ -87,11 +87,16 @@ public class Pizza extends PircBot {
     
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
+        // Evito di fare controlli su un messaggio vuoto
+        // I messaggi vuoti non dovrebbero esistere, vedi https://tools.ietf.org/html/rfc2812.html Sezione 2.3.1: "Empty messages are silently ignored"
+        // Ma è meglio controllare....
+        if (message.length() > 1) return;
+        
         // Ottengo il numero di caratteri nel nick
         int nickLength = this.getNick().length();
         
         // Cerco di capire se mi e' stato dato un comando
-        if ((message.charAt(0) == '!') && (message.length() > 1)) {
+        if (message.charAt(0) == '!') {
             // Ottieni il nome del comando
             int firstSpacePos = message.indexOf(' ');
             firstSpacePos = (firstSpacePos <= -1) ? message.length() : firstSpacePos;
