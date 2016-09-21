@@ -27,24 +27,34 @@ import java.util.Vector;
  */
 public final class Request {
     
-    private final String channel, user;
-    Vector<String> args;
+    private final String channel, user, message;
     
-    public Request(String channel, String user, Vector<String> args) {
-        this.args = args;
+    public Request(String channel, String user, String msg) {
+        this.message = msg;
         this.channel = channel;
         this.user = user;
     }
     
-    public String getChannel() {
+    public String GetChannel() {
         return this.channel;
     }
     
-    public String getUser() {
+    public String GetUser() {
         return this.user;
     }
     
-    public Vector<String> getArguments() {
-        return this.args;
+    public String GetMessage() {
+        return this.message;
     }
+    
+    public Vector<String> GetBasicParse() {
+        String[] params = this.GetMessage().split("([\\s]+)");
+        Vector<String> args = new Vector<>();
+        
+        for (int i = 0; i < params.length; i++)
+            if (params[i].length() > 0) args.add(params[i]);
+        
+        return args;
+    }
+    
 }

@@ -29,14 +29,14 @@ import java.time.Duration;
  *
  * @author Nitti Gianluca
  */
-public final class PTforum extends AutoTrancio {
+public final class PTforum extends Trancio {
 
     String apiEndpoint = "http://www.pierotofy.it/pages/extras/forum/api/last_topics.php";
 
     HashMap<String, Integer> topics = new HashMap<>(); //chiave=url, valore=numero risposte
 
     @Override
-    protected final void onPoll(){
+    public final void onPoll(){
         try {
             // Ottengo la lista di canali in cui informare gli utenti
             String[] channels = this.getChannels();

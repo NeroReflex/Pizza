@@ -26,7 +26,7 @@ import java.util.*;
  *
  * @author Nitti Gianluca
  */
-public final class Convert extends RequestTrancio {
+public final class Convert extends Trancio {
 
     protected String onHelp() {
         return "<op> <number> - where op is the name of two notations separed by a 2, like bin2dec, oct2bin, hex2bin, an so on....";
@@ -44,7 +44,10 @@ public final class Convert extends RequestTrancio {
     }
 
     @Override
-    protected final void onCall(String user, String channel, Vector<String> args) {
+    public final void onCall(Request req) {
+        String user = req.GetUser(), channel = req.GetChannel();
+        Vector<String> args = req.GetBasicParse();
+        
         if(args.size() != 2){
             sendMessage(new Message(channel, user + " wrong arguments number."));
             return;
@@ -78,18 +81,6 @@ public final class Convert extends RequestTrancio {
                     zeroes += "0";
                 
                 dest = insertPeriodically(zeroes + dest, " ", 4);
-            } else if ((srcBase == 2) && (destBase == 16)) {
-                String zeroes = "";
-                
-                int round = (4 - (src.length() % 4));
-                round = (round == 4) ? round - 4 : round;
-                int bitsNumber = ((src.length() + round) / 4) - dest.length();
-                for (int i = 0; i < bitsNumber; i++) 
-                    zeroes += "0";
-                
-                dest = zeroes + dest;
-                if (dest.substring(0, 4) == "0000")
-                    dest = dest.substring(4);
             }
             this.sendMessage(new Message(channel, user + " " + src + " (" + srcBaseName + ") = " + dest + " (" + destBaseName + ")"));
         } catch(NumberFormatException e){

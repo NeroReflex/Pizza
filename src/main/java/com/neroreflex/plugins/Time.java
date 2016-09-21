@@ -37,7 +37,7 @@ import com.neroreflex.pizza.*;
  * 
  * @author Benato Denis
  */
-public final class Time extends RequestTrancio {
+public final class Time extends Trancio {
     
     protected String onHelp() {
         return "[<timezone>] - where timezone can be omitted, the default will be '"+ Time.DEFAULT_TIMEZONE + "'";
@@ -130,7 +130,11 @@ public final class Time extends RequestTrancio {
         }
     }
     
-    protected final void onCall(String user, String channel, Vector<String> args) {
+    @Override
+    public final void onCall(Request req) {
+        String user = req.GetUser(), channel = req.GetChannel();
+        Vector<String> args = req.GetBasicParse();
+        
         // Stabilisci la zona del mondo richiesta
         String timezone = ((args.size() > 0) && (args.get(0).length() > 2))? args.get(0) : Time.DEFAULT_TIMEZONE;
         

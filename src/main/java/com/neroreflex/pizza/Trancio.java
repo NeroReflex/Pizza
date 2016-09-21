@@ -5,17 +5,123 @@
  */
 package com.neroreflex.pizza;
 
+import java.lang.reflect.Method;
+import java.time.Duration;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author benat
  */
-public abstract class Trancio implements Runnable {
+public abstract class Trancio {
+    
+    private class RequestRunner implements Runnable {
+
+        /**
+         * Il plugin del quale l'oggetto attuale e' l'ascoltatore di richieste
+         */
+        Trancio plugin;
+        
+        public RequestRunner(Trancio plg) {
+            plugin = plg;
+        }
+        
+        @Override
+        public void run() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+    };
+    
+    private class TimerRunner extends TimerTask {
+
+        /**
+         * Il plugin del quale l'oggetto attuale e' l'ascoltatore di richieste
+         */
+        Trancio plugin;
+        
+        public TimerRunner(Trancio plg) {
+            plugin = plg;
+        }
+        
+        @Override
+        public void run() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+    };
+    
+    /**
+     * L'intervallo di tempo fra una chiamata ad onPoll e la successiva.
+     */
+    protected Duration delay;
+    
     private String botID;
     
     private Date startupDate;
+    
+    /**
+     * Il thread che si occupa di chiamare onCall.
+     */
+    private final Thread requestManager;
+    
+    protected final GregorianCalendar firstSheduledPoll;
+    
+    /**
+     * Il timer che chiama onPoll ad intervalli di tempo regolari
+     */
+    private final Timer autoCaller;
+    
+    /**
+     * La coda di richieste fatte al plugin
+     */
+    protected final ArrayBlockingQueue<Request> requests;
+    
+    public Trancio() {
+        // Prepara la coda di richieste da esaudire
+        this.requests = new ArrayBlockingQueue<>(250, true);
+        
+        // Definisco le strutture dei gestori di chiamate al plugin
+        RequestRunner requestRunner = new RequestRunner(this) {
+            @Override
+            public void run() {
+                while (!Thread.currentThread().isInterrupted()) {
+                    // Ottiene la richiesta da esaudire
+                    Request request = this.plugin.unqueueRequest();
+
+                    // Chiama il gestore dell'evento
+                    this.plugin.onCall(request);
+                }
+            }
+        };
+        
+        // Crea il gestore dell'onCall dei plugins
+        this.requestManager = new Thread(requestRunner);
+        
+        // schedule every six hours
+        this.autoCaller = new Timer();
+        
+        // Prepara i riferimenti temporali
+        this.firstSheduledPoll = new GregorianCalendar();
+        this.firstSheduledPoll.add(Calendar.SECOND, 1);
+        this.delay = Duration.ofSeconds(1);
+    }
+    
+    public Duration GetPollingDelay() {
+        return this.delay;
+    }
     
     private boolean loaded = false;
     protected final synchronized void doneLoading() {
@@ -113,10 +219,30 @@ public abstract class Trancio implements Runnable {
         // Gli ultimi step dell'inizializzazione possono essere personalizzati
         this.onInitialize();
         
+        // Esegui i gestori degli eventi del plugin
+        this.requestManager.start();
+        this.autoCaller.scheduleAtFixedRate(
+            new TimerRunner(this) {
+                @Override
+                public void run() {
+                    this.plugin.onPoll();
+                }
+            },
+            this.firstSheduledPoll.getTime(),
+            this.delay.toMillis()
+        );
+        // E' importante far partire il thread autoManger in questo punto:
+        // Un plugin usa onInitialize per cambiare il tempo di attesa di un plugin
+        
         // Il caricamento e' stato completato
         this.doneLoading();
     }
     
+    /**
+     * Ottengo l'orario in cui il plugin e' stato eseguito.
+     * 
+     * @return L'ora di esecuzione del plugin
+     */
     public final Date getDate() {
         return this.startupDate;
     }
@@ -126,10 +252,64 @@ public abstract class Trancio implements Runnable {
         // Gli ultimi step della de-inizializzazione possono essere personalizzati
         this.onShutdown();
         
+        // Termino il timer
+        this.autoCaller.cancel();
+        
+        // Termino il thread del gestore di richieste
+        this.requestManager.interrupt();
+        
         super.finalize();
     }
     
+    /**
+     * Inserisce una richeista nella coda FIFO di richieste da gestire.
+     * 
+     * Questa funzione e' chiamata in un thread diverso di quello che chiama
+     * unqueueRequest, precisamente dal thread principale del bot.
+     * 
+     * Se unqueueRequest ed enqueueRequest dovessero essere synchronized
+     * l'architettura dei plugins non funzionerebbe!
+     * 
+     * @param action la richiesta fatta da un utente che il plugin dovra' esaudire
+     */
+    public final void enqueueRequest(Request action) {
+        try {
+            // Inserisci la richiesta nella coda
+            this.requests.put(action);
+        } catch (InterruptedException ex) {
+            System.err.println("The " + this.getName() + "plugin is interrupted, but a new request was enqueued");
+            
+            Logger.getLogger(Trancio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
+    /**
+     * Rimuove dalla coda FIFO l'ultimo elemento inserito, ovvero l'ultima
+     * richiesta effettuata (da un utente).
+     * 
+     * Grazie alla coda usata il thread viene messo in sleep dalla JVM se NON
+     * sono presenti richieste.
+     * 
+     * Se unqueueRequest ed enqueueRequest dovessero essere synchronized
+     * l'architettura dei plugins non funzionerebbe!
+     * 
+     * @return la richiesta da esaudire
+     */
+    protected final Request unqueueRequest() {
+        // Cerco il prossimo lavoro da svolgere
+        try {
+            // Rimango in attesa di ricevere la richiesta (se la lista è vuota)
+            return this.requests.take();
+            // Grazie lumo_e per il suggerimento sulla BlockingQueue.
+            // Ora il thread viene messo a dormire in caso di coda vuota
+        } catch (InterruptedException ex) {
+            System.err.println("The " + this.getName() + "plugin is interrupted, but a new request is going to be dequeued");
+            
+            Logger.getLogger(Trancio.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return null;
+    }
     
     
     
@@ -137,13 +317,15 @@ public abstract class Trancio implements Runnable {
     
     /*      BUON DIVERTIMENTO      */
     
-    protected /*abstract*/ void onInitialize()/*;*/ {}
+    protected void onInitialize() {}
     
-    protected /*abstract*/ void onShutdown()/*;*/ {}
+    protected void onShutdown() {}
 
-    @Override
-    public void run() {
-        // This class in NOT SUPPOSED to be instantiated
-        throw new UnsupportedOperationException("Wrong way to do things.");
+    protected String onHelp() { return ""; }
+    
+    public void onCall(Request req) {
+        this.sendMessage(new Message(req.GetChannel(), "the '" + this.getName() + "' plugin isn't meant to be actively called."));
     }
+    
+    public void onPoll() {}
 }

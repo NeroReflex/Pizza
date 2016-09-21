@@ -33,6 +33,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.util.Map.Entry;
 
 /**
@@ -67,11 +68,6 @@ public class Pizza extends PircBot {
     protected HashMap<String, Trancio> tranci;
     
     /**
-     * La lista di threads generati dai plugins
-     */
-    private final HashMap<String, Thread> esecutoriTranci;
-    
-    /**
      * Ottieni l'ID interno del bot (usato solo all'interno del programma). 
      * 
      * @return ID del bot
@@ -91,79 +87,82 @@ public class Pizza extends PircBot {
     
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
-        // No plugins che si chiamano da soli (o chiamano altri plugins)
-        if (sender.compareTo(this.getNick()) == 0) {
-            this.enqueueMessage(new Message(channel, "***CENSORED*** spam avoid"));
-            return;
-        }
+        // Ottengo il numero di caratteri nel nick
+        int nickLength = this.getNick().length();
         
-        // Analizza il messaggio per identificare richieste fatte al bot
-        Pattern invokeRegex = Pattern.compile("(" + this.getNick() + ")([\\s]+)([\\w]+)([\\s]*)([\\s\\S\\/\\:\\\\]*)");
-        Matcher invokeMatcher = invokeRegex.matcher(message);
-        if (invokeMatcher.matches()) {
+        // Cerco di capire se mi e' stato dato un comando
+        if ((message.charAt(0) == '!') && (message.length() > 1)) {
             // Ottieni il nome del comando
-            String command = invokeMatcher.group(3).toLowerCase();
+            int firstSpacePos = message.indexOf(' ');
+            firstSpacePos = (firstSpacePos <= -1) ? message.length() : firstSpacePos;
+            
+            String command = message.substring(1, firstSpacePos);
             
             // Questa e' la stringa con ulteriori dettagli sulla operazione da eseguire
-            String rawParamsString = invokeMatcher.group(5);
-            String[] params = rawParamsString.split("([\\s]+)");
-            Vector<String> args = new Vector<>();
+            String rawParamsString = message.substring(firstSpacePos);
             
-            try {
-                for (int i = 0; i < params.length; i++) {
-                    if (params[i].length() > 0) args.add(params[i]);
-                }
-            } catch (Exception ex) {
-                
+            // Controlla se il trancio e' presente e registrato
+            if (this.tranci.containsKey(command)) {
+                // E se lo e' piazza la richiesta che dovra' prendere in carico
+                if (this.tranci.get(command).isLoaded())
+                    this.tranci.get(command).enqueueRequest(new Request(channel, sender, rawParamsString));
+                else
+                    this.sendMessage(channel, sender + " sorry but the requested plugin is not loaded (yet)");
+            } else if (command.compareTo("help") == 0) {// E se non lo e' invia l'errore
+                this.Help(new Request(channel, sender, rawParamsString));
+            } else if (command.compareTo("info") == 0) {// E se non lo e' invia l'errore
+                this.Info(new Request(channel, sender, rawParamsString));
+            } else {
+                this.enqueueMessage(new Message(channel, "The request '" + command + "' cannot be resolved"));
             }
-            
-            // Controlla se il bot e' stato salutato
-            if ((command.compareTo("hello") == 0) && (args.isEmpty())) {
-                this.enqueueMessage(new Message(channel, "Hello " + sender + " :)"));
-            } // Qualcuno ha chiesto aiuto?
-            else if ((command.compareTo("help") == 0) && (args.isEmpty())) {
-                this.enqueueMessage(new Message(channel, sender + " you should type: " + this.getNick() + " plugin list"));
-            }
-            else if ((command.compareTo("plugin") == 0) && (!args.isEmpty())) {
-                if (args.elementAt(0).compareTo("list") == 0) {
-                    this.tranci.entrySet().stream().forEach((entry) -> {
+        } else if (message.substring(0, nickLength).compareTo(this.getNick()) == 0) {
+            this.enqueueMessage(new Message(channel, "type !help to get started"));
+        }
+    }
+    
+    public final void Info(Request helpRequest) {
+        this.enqueueMessage(new Message(helpRequest.GetChannel(), "I'm PizzaBot (https://github.com/NeroReflex/Pizza) a small and modular IRC bot"));
+ 
+    }
+    
+    public final void Help(Request helpRequest) {
+        // Dividi la richiesta di aiuto in piu' parti
+        Vector<String> args = helpRequest.GetBasicParse();
+        
+        // Non e' stato specificato un plugin
+        if (args.isEmpty()) {
+            this.tranci.entrySet().stream().forEach((entry) -> {
                         String name = entry.getKey();
                         Trancio trancio = entry.getValue();
                         
-                        this.enqueueMessage(new Message(channel, "Plugin \"" + name + "\" Started at: " + trancio.getDate()));
+                        // Ottengo la stringa della guida
+                        String help = trancio.onHelp();
+                        
+                        // Stampo la guida solo se ha senso (la stringa della guida NON E' vuota)
+                        if (!help.isEmpty())
+                            this.enqueueMessage(new Message(helpRequest.GetUser(), "!" + name + " " + help));
                     });
-                } else if ((args.elementAt(0).compareTo("help") == 0) && (args.size() >= 2)) {
-                    if (this.tranci.containsKey(args.get(1))) {
-                        if (RequestTrancio.class.isAssignableFrom(this.tranci.get(args.get(1)).getClass())) {
-                            String helpMsgByPlugin = ((RequestTrancio)this.tranci.get(args.get(1))).onHelp();
-                            if (helpMsgByPlugin.length() > 0)
-                                    this.enqueueMessage(new Message(channel, "Usage: " + this.getNick() + " " + args.get(1) + " " + helpMsgByPlugin));
-                            else
-                                this.enqueueMessage(new Message(channel, "The plugin doesn't provide an help message"));
-                        } else {
-                            this.enqueueMessage(new Message(channel, "The plugin doesn't provide an help message because it cannot be actively queryed"));
-                        }
-                    } else {
-                        this.enqueueMessage(new Message(channel, "Plugin \"" + args.get(1) + "\" not found."));
-                    }
-                }
-            }
-            // Controlla se il trancio e' presente e registrato 
-            else if (this.tranci.containsKey(command)) {
-                // E se lo e' piazza la richiesta che dovra' prendere in carico
-                if (RequestTrancio.class.isAssignableFrom(this.tranci.get(command).getClass())) {
-                    RequestTrancio trancio = (RequestTrancio)this.tranci.get(command);
-                    trancio.enqueueRequest(new Request(channel, sender, args));
-                } else {
-                    this.enqueueMessage(new Message(channel, "The requested plugin cannot be actively activated"));
-                }
-            } // E se non lo e' invia l'errore
+        } else {
+            // Ottengo il nome del plugin
+            String name = args.get(0);
+            
+            // Ho caricato un plugin che si chiama con quel nome?
+            if (this.tranci.containsKey(name)) {
+                // Ottengo la stringa della guida
+                String help = this.tranci.get(name).onHelp();
+                        
+                // Stampo la guida solo se ha senso (la stringa della guida NON E' vuota)
+                if (!help.isEmpty())
+                    this.enqueueMessage(new Message(helpRequest.GetUser(), "!" + name + " " + help));
+                else
+                    this.enqueueMessage(new Message(helpRequest.GetUser(), "No help is provided by the '" + name + "' plugin."));
+            } // Se non lo ho avverto l'utente
             else {
-                this.enqueueMessage(new Message(channel, "I don't know what I have to do at '" + command + "' request :("));
+                this.enqueueMessage(new Message(helpRequest.GetUser(), "A plugin with name '" + name + "' doesn't exist."));
             }
-        } else if (this.getNick().compareTo(message) == 0) {
-            this.enqueueMessage(new Message(channel, "Sono il vostro amichevole robottino mangiapizza :)"));
         }
+        
+        
     }
     
     /**
@@ -177,7 +176,7 @@ public class Pizza extends PircBot {
         String nomeTrancio = istanzaTrancio.getName();
         
         // Se il plugin e' gia' registrato segnala l'errore
-        if (this.esecutoriTranci.containsKey(nomeTrancio)) return false;
+        if (this.tranci.containsKey(nomeTrancio)) return false;
         
         // Registra il nuovo trancio
         this.tranci.put(nomeTrancio, istanzaTrancio);
@@ -185,58 +184,35 @@ public class Pizza extends PircBot {
         // Chiama l'inizializzatore del trancio
         this.tranci.get(nomeTrancio).Initialize(this.getBotID());
         
-        // Crea l'esecutore di operazioni in un thread separato
-        this.esecutoriTranci.put(istanzaTrancio.getName(), new Thread(istanzaTrancio));
-        this.esecutoriTranci.get(istanzaTrancio.getName()).start();
-        
         // Installazione completata!
         return true;
     }
     
+    /**
+     * Usato internamente per caricare TUTTI i plugins nel package dei plugins.
+     * 
+     * Di fatto usa la reflection per ottenere TUTTE le classi che ereditano
+     * dalla classe base Trancio (ovvero la classe da estendere per implementare un plugin)
+     */
     protected void loadInternalPlugins() {
         // Trova tutti i plugin da caricare automaticamente
         org.reflections.Reflections reflections = new org.reflections.Reflections("com.neroreflex.plugins");
 
-        // Esegui la ricerca di tutti i plugins con attivazione a richiesta
-        Set<Class<? extends com.neroreflex.pizza.RequestTrancio>> allClasses = 
-                reflections.getSubTypesOf(com.neroreflex.pizza.RequestTrancio.class);
-        Iterator<Class<? extends com.neroreflex.pizza.RequestTrancio>> it = allClasses.iterator();
+        // Esegui la ricerca di tutti i plugins
+        Set<Class<? extends com.neroreflex.pizza.Trancio>> allClasses = 
+                reflections.getSubTypesOf(com.neroreflex.pizza.Trancio.class);
+        Iterator<Class<? extends com.neroreflex.pizza.Trancio>> it = allClasses.iterator();
         
-        // Ed istanzia tutti i plugins con attivazione a richiesta
+        // Ed istanzia tutti i plugins
         while (it.hasNext()) {
             Class<?> futureObj = it.next();
             
             try {
-                this.registerTrancio((RequestTrancio)futureObj.getConstructor().newInstance());
+                this.registerTrancio((Trancio)futureObj.getConstructor().newInstance());
             } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalArgumentException | InvocationTargetException | IllegalAccessException ex) {   
                 System.out.println("Couldn't load the internal request plugin set (at " + futureObj.getSimpleName() + "): " + ex.getClass().getSimpleName() + ", message:" + ex.getMessage());
                 System.exit(-5);
             }
-        }
-        
-        // Esegui la ricerca di tutti i plugins con attivazione automatica
-        Set<Class<? extends com.neroreflex.pizza.AutoTrancio>> allAutoClasses = 
-                reflections.getSubTypesOf(com.neroreflex.pizza.AutoTrancio.class);
-        Iterator<Class<? extends com.neroreflex.pizza.AutoTrancio>> ait = allAutoClasses.iterator();
-        
-        // Ed istanzia tutti i plugins con attivazione allClasses
-        while (ait.hasNext()) {
-            Class<?> futureObj = ait.next();
-            
-            try {
-                this.registerTrancio((AutoTrancio)futureObj.getConstructor().newInstance());
-            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalArgumentException | InvocationTargetException | IllegalAccessException ex) {   
-                System.out.println("Couldn't load the internal auto plugin set (at " + futureObj.getSimpleName() + "): " + ex.getClass().getSimpleName() + ", message:" + ex.getMessage());
-                System.exit(-5);
-            }
-        }
-        
-        
-        // Stampa tutti i plugins avviati
-        for(Entry<String, Trancio> entry : this.tranci.entrySet()) {
-            Trancio pluginCaricato = entry.getValue();
-
-            System.out.println("plugin " + pluginCaricato.getName() + " loaded for bot [" +this.getName() + "/" + this.getBotID() + "]");
         }
     }
     
@@ -250,7 +226,6 @@ public class Pizza extends PircBot {
     public Pizza(String botName, IRCServer botServer, HashMap<String, String> botParams) {
         // Inizializza la lista di tranci e la lista di esecutori
         this.tranci = new HashMap<>();
-        this.esecutoriTranci = new HashMap<>();
         
         // Inizializza le API dei plugin
         PluginAPI.Init();

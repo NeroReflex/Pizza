@@ -35,12 +35,16 @@ import java.util.TimeZone;
  *
  * @author Nitti Gianluca
  */
-public final class Calc extends RequestTrancio {
+public final class Calc extends Trancio {
     protected String onHelp() {
         return "<number1> <operation> <number2> - where operation can either be +, - * or /";
     }
     
-    protected final void onCall(String user, String channel, Vector<String> args) {
+    @Override
+    public final void onCall(Request req) {
+        String user = req.GetUser(), channel = req.GetChannel();
+        Vector<String> args = req.GetBasicParse();
+        
         if(args.size() != 3)
             this.sendMessage(new Message(channel, user + " Invalid arguments. Look at the plugin help to understand how to invoke cald"));
         else{

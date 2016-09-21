@@ -17,42 +17,37 @@
  */
 package com.neroreflex.plugins;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Vector;
 import com.neroreflex.pizza.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 /**
  * Un plugin per connettere il bot ad un altro canale
  * 
  * @author Benato Denis
  */
-public final class Join extends RequestTrancio {
+public final class Join extends Trancio {
+    @Override
     protected String onHelp() {
-        return "<channel> <key>";
+        return "<channel> <key> - where <channel> is the channel name and <key> the channel password";
     }
     
-    protected final void onCall(String user, String channel, Vector<String> args) {
+    @Override
+    public final void onCall(Request req) {
+        String user = req.GetUser(), channel = req.GetChannel();
+        Vector<String> args = req.GetBasicParse();
+        
         if (args.size() > 0) {
             // A che canale deve fare il join?
             String newChannel = args.get(0);
-            if (newChannel.charAt(0) != '#') {
-                newChannel = "#" + newChannel;
-            }
+            newChannel = (newChannel.charAt(0) != '#') ? "#" + newChannel : newChannel;
+            
             // Chiave del canale?
             String key = ((args.size() > 1) && (args.get(1).length() > 0))? args.get(0) : "";
 
             this.joinChannel(newChannel, key);
-            this.sendMessage(new Message(channel, user + " I have joined " + newChannel));
+            this.sendMessage(new Message(channel, user + " I have joined " + newChannel + "."));
         } else {
-            this.sendMessage(new Message(channel, user + "Please specify a channel"));
+            this.sendMessage(new Message(channel, user + " Please specify a channel"));
         }
     }
 }
