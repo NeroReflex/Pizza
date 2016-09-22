@@ -18,65 +18,86 @@
 
 package com.neroreflex.plugins;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Vector;
 import com.neroreflex.pizza.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
+import com.github.gianlucanitti.javaexpreval.*;
 
 /**
- * Un plugin per eseguire semplici operazioni matematiche
+ * Un plugin per risolvere espressioni matematiche
  *
  * @author Nitti Gianluca
  */
 public final class Calc extends Trancio {
+
+    private class IrcWriter extends Writer{
+        private String chan;
+        private String buffer;
+
+        public IrcWriter(String chan){
+            this.chan = chan;
+            buffer = "";
+        }
+
+        @Override
+        public void write(char[] cbuf, int off, int len) throws IOException {
+            for(int i = off; i < len; i++)
+                buffer += cbuf[i];
+        }
+
+        @Override
+        public void flush() throws IOException {
+            //if(buffer.length() == 0) return;
+            //for(String s: buffer.split("[\\r\\n]+"))
+            //    sendMessage(new Message(chan, prefix + s));
+            //buffer = "";
+        }
+
+        @Override
+        public void close() throws IOException {
+            if(buffer.length() != 0)
+                for(String s: buffer.split("[\\r\\n]+"))
+                    sendMessage(new Message(chan, s));
+            buffer = "";
+        }
+    }
+
     protected String onHelp() {
-        return "<number1> <operation> <number2> - where operation can either be +, - * or /";
+        return "Use !calc <expression> to evaluate an expression; supports integer and decimal numbers, parenthesis and +,-,*,/,^ binary operators. !calc verbose <expression> shows the steps done.";
     }
     
     @Override
     public final void onCall(Request req) {
         String user = req.GetUser(), channel = req.GetChannel();
         Vector<String> args = req.GetBasicParse();
-        
-        if(args.size() != 3)
-            this.sendMessage(new Message(channel, user + " Invalid arguments. Look at the plugin help to understand how to invoke cald"));
-        else{
-            double a;
-            double b;
-            try{
-                a = Double.parseDouble(args.get(0));
-                b = Double.parseDouble(args.get(2));
-            }catch(NumberFormatException e){
-                this.sendMessage(new Message(channel, user + " the given operands aren't numbers"));
-                return;
+        String result;
+        IrcWriter w = new IrcWriter(user); //un eventuale log viene mandato in provato all'utente che ha richiesto il calcolo
+        try {
+            if(args.size() == 0){
+                result = "please specify an expression or a command (see help for further information)";
+            }else if(args.size() == 1){ //Se viene specificato 1 solo argomento, allora dev'essere un'espresione
+                Expression expr = Expression.parse(args.get(0));
+                result = "res = " + expr.eval();
+            }else{ //Se ci sono più di un argomento, interpreta il primo come comando e i successivi come argomenti per esso
+                switch(args.get(0).toLowerCase()){
+                    case "verbose": //risolve l'espressione passata come argomento scrivendo i passaggi
+                        Expression expr = Expression.parse(args.get(1), w);
+                        result = "res = " + expr.eval(w);
+                        break;
+                    //qui verranno aggiunti nuovi comandi con le prossime versioni della libreria, ad esempio per definire variabili o funzioni
+                    default:
+                        result = "unknown command \"" + args.get(0) + "\"";
+                }
             }
-            char op = args.get(1).charAt(0);
-            double r = 0;
-            switch(op){
-                case '+':
-                    r = a + b;
-                    break;
-                case '-':
-                    r = a - b;
-                    break;
-                case '*':
-                    r = a * b;
-                    break;
-                case '/':
-                    r = a / b;
-                    break;
-                default:
-                    sendMessage(new Message(channel, user + " unknown operator \"" + args.get(1) + "\" :(. Only +,-,*,/ are supported"));
-                    return;
-            }
-            sendMessage(new Message(channel, user + " " + a + op + b + "=" + r));
+        }catch(ExpressionException e){
+            result = e.getMessage();
+        }
+        sendMessage(new Message(channel, user + ", " + result));
+        try {
+            w.close(); //manda l'eventuale log all'utente
+        }catch(IOException e){
+            e.printStackTrace();
         }
     }
 }
