@@ -47,12 +47,7 @@ public final class Calc extends Trancio {
         }
 
         @Override
-        public void flush() throws IOException {
-            //if(buffer.length() == 0) return;
-            //for(String s: buffer.split("[\\r\\n]+"))
-            //    sendMessage(new Message(chan, prefix + s));
-            //buffer = "";
-        }
+        public void flush() throws IOException {}
 
         @Override
         public void close() throws IOException {
