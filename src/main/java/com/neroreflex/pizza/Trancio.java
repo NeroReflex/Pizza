@@ -213,6 +213,9 @@ public abstract class Trancio {
         // Registra l'ID del bot che usa questo trancio
         this.botID = botID;
         
+        // Usa l'ID del bot per ottenere l'accesso l database
+        PluginAPI.initializePlugin(this.getBotID(), this.getName());
+        
         // Registra il tempo di avvio
         this.startupDate = new Date();
         
@@ -311,7 +314,29 @@ public abstract class Trancio {
         return null;
     }
     
+    /**
+     * Memorizza una coppia chiave-valore nel database associato al bot.
+     * Tale database sopravvive al riavvio del bot ed e' considerato
+     * un supporto di memorizzazione non volatile.
+     * 
+     * @param key la chiave di accesso alla stringa memorizzata
+     * @param value la stringa da memorizzare
+     */
+    protected final void storeData(String key, String value) {
+        PluginAPI.storeData(this.getBotID(), this.getName(), key, value);
+    }
     
+    /**
+     * Carica dal database il valore associato alla chiave data.
+     * Tale database sopravvive al riavvio del bot ed e' considerato
+     * un supporto di memorizzazione non volatile.
+     * 
+     * @param key il nome della chiave contenente il valore corretto
+     * @return il valore associato alla chiave o null (se una chiave con quel nome non esiste)
+     */
+    protected final String loadData(String key) {
+        return PluginAPI.loadData(this.getBotID(), this.getName(), key);
+    }
     
     
     

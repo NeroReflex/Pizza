@@ -17,8 +17,16 @@
  */
 package com.neroreflex.pizza;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Una classe che Permette ai plugin di accedere alle funzioni esclusive del bot.
@@ -28,6 +36,7 @@ import java.util.Vector;
 public abstract class PluginAPI {
     
     protected static HashMap<String, Pizza> robotAttivi;
+    protected static HashMap<String, Connection> databaseHandlers;
     
     private static boolean initiaziled = false;
     
@@ -39,6 +48,7 @@ public abstract class PluginAPI {
         // Inizializza la lista di bot attivi
         if (!PluginAPI.initiaziled) {
             PluginAPI.robotAttivi = new HashMap<>();
+            PluginAPI.databaseHandlers = new HashMap();
             PluginAPI.initiaziled = true;
         }
     }
@@ -53,7 +63,115 @@ public abstract class PluginAPI {
     public static synchronized void addBot(Pizza robot) {
         // Registra il bot
         if (!PluginAPI.robotAttivi.containsKey(robot.getBotID())) {
+            // Registra il robot
             PluginAPI.robotAttivi.put(robot.getBotID(), robot);
+            
+            // Crea/Apri il database
+            try {
+                PluginAPI.databaseHandlers.put(robot.getBotID(), DriverManager.getConnection("jdbc:sqlite:" + PluginAPI.robotAttivi.get(robot.getBotID()).getName() + ".db"));
+            } catch (SQLException ex) {
+                System.err.println("The execution cannot continue without a database");
+                
+                System.exit(-8);
+            }
+        }
+    }
+    
+    /**
+     * SOLO USO INTERNO: Inizializza nel database una tabella che il plugin potra'
+     * usare come memoria permanente di memorizzazoine dati.
+     * 
+     * @param botId ID univoco del bot al quale il plugin è collegato
+     * @param pluginName il nome del plugin da inizializzare
+     */
+    public static synchronized void initializePlugin(String botId, String pluginName) {
+        if (!PluginAPI.databaseHandlers.containsKey(botId)){
+            System.out.println("The given bot is not registered as an active bot");
+            
+            System.exit(-11);
+        }
+        
+        try {
+            // Crea (se non esiste) la tabella del db usata dal plugin per memorizzare dati
+            PreparedStatement stmt = PluginAPI.databaseHandlers.get(botId).prepareStatement(
+                      "CREATE TABLE IF NOT EXISTS \"" + pluginName + "\" ("
+                    + "key TEXT NOT NULL,"
+                    + "value TEXT"
+                    + ")");
+            
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("It was impossible to create the table for the " + pluginName + " plugin: " + ex.getMessage());
+            
+            System.exit(-10);
+        }
+    }
+    
+    public static synchronized String loadData(String botId, String pluginName, String key) {
+        if (!PluginAPI.databaseHandlers.containsKey(botId)){
+            System.out.println("The given bot is not registered as an active bot");
+            
+            System.exit(-11);
+        }
+        
+        try {
+            ResultSet rs;
+            try ( // Cerco la chiave data, per restituire il valore associato
+                    PreparedStatement stmt = PluginAPI.databaseHandlers.get(botId).prepareStatement(
+                            "SELECT * FROM \"" + pluginName + "\" WHERE key=?"
+                    )) {
+                stmt.setString(1, key);
+                rs = stmt.executeQuery();
+                // C'e' una coppia chiave-valore con la chiave data e il valore di value va ritornato
+                if (rs.next())
+                    return rs.getString("value");
+            }
+            rs.close();
+        } catch (SQLException ex) {
+            System.out.println("It was impossible to fetch the given data: " + ex.getMessage());
+            
+            System.exit(-10);
+        }
+        
+        return null;
+    }
+    
+    public static synchronized void storeData(String botId, String pluginName, String key, String value) {
+        if (!PluginAPI.databaseHandlers.containsKey(botId)){
+            System.out.println("The given bot is not registered as an active bot");
+            
+            System.exit(-11);
+        }
+        
+        try {
+            // Cerco la chiave data, per sapere se devo eseguire un insert o un update
+            PreparedStatement stmt = PluginAPI.databaseHandlers.get(botId).prepareStatement(
+                    "SELECT * FROM \"" + pluginName + "\" WHERE key=?"
+                );
+            stmt.setString(1, key);
+            ResultSet rs = stmt.executeQuery();
+            
+            // Non c'e' una coppia chiave-valore con la chiave data
+            if (!rs.next()) {
+                // Devo creare la coppia chiave-valore
+                stmt = PluginAPI.databaseHandlers.get(botId).prepareStatement(
+                        "INSERT INTO \"" + pluginName + "\" (value, key) VALUES (?, ?)"
+                    );
+            } else {
+                // Devo aggiornare la coppia chiave-valore
+                stmt = PluginAPI.databaseHandlers.get(botId).prepareStatement(
+                        "UPDATE \"" + pluginName + "\" SET \"value\"=? WHERE \"key\"=?");
+            }
+            
+            // Evito SQLInjection automatizzando l'escape ed eseguo la query
+            stmt.setString(1, value);
+            stmt.setString(2, key);
+            stmt.executeUpdate();
+            
+        } catch (SQLException ex) {
+            System.out.println("It was impossible to save the given data: " + ex.getMessage());
+            
+            System.exit(-10);
         }
     }
     
@@ -68,6 +186,8 @@ public abstract class PluginAPI {
         // Rimuovi il bot
         if (PluginAPI.robotAttivi.containsKey(robot.getBotID())) {
             PluginAPI.robotAttivi.remove(robot.getBotID());
+            try { PluginAPI.databaseHandlers.get(robot.getBotID()).close(); } catch (Exception ex) { }
+            PluginAPI.databaseHandlers.remove(robot.getBotID());
         }
     }
     

@@ -81,7 +81,7 @@ public class Pizza extends PircBot {
      * 
      * @param msg il messaggio da accodare
      */
-    public /*synchronized*/ void enqueueMessage(Message msg) {
+    public void enqueueMessage(Message msg) {
         this.sendMessage(msg.getChannel(), msg.getMessage());
     }
     
@@ -270,7 +270,6 @@ public class Pizza extends PircBot {
         
         // Cambia il nick
         this.setAutoNickChange(true);
-        this.changeNick("PizzaBot");
         
         // Carica il set di plugin "standard"
         this.loadInternalPlugins();
