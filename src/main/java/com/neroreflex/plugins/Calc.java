@@ -59,7 +59,7 @@ public final class Calc extends Trancio {
     }
 
     protected String onHelp() {
-        return "Use !calc <expression> to evaluate an expression; supports integer and decimal numbers, parenthesis and +,-,*,/,^ binary operators. !calc verbose <expression> shows the steps done.";
+        return "[verbose] <expr> - where expr is your expression; if verbose is present, evaluation steps will be sent to you privately.";
     }
     
     @Override
