@@ -18,65 +18,80 @@
 
 package com.neroreflex.plugins;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Vector;
 import com.neroreflex.pizza.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
+import com.github.gianlucanitti.javaexpreval.*;
 
 /**
- * Un plugin per eseguire semplici operazioni matematiche
+ * Un plugin per risolvere espressioni matematiche
  *
  * @author Nitti Gianluca
  */
 public final class Calc extends Trancio {
+
+    private class IrcWriter extends Writer{
+        private String chan;
+        private String buffer;
+
+        public IrcWriter(String chan){
+            this.chan = chan;
+            buffer = "";
+        }
+
+        @Override
+        public void write(char[] cbuf, int off, int len) throws IOException {
+            for(int i = off; i < len; i++)
+                buffer += cbuf[i];
+        }
+
+        @Override
+        public void flush() throws IOException {}
+
+        @Override
+        public void close() throws IOException {
+            if(buffer.length() != 0)
+                for(String s: buffer.split("[\\r\\n]+"))
+                    sendMessage(new Message(chan, s));
+            buffer = "";
+        }
+    }
+
     protected String onHelp() {
-        return "<number1> <operation> <number2> - where operation can either be +, - * or /";
+        return "[verbose] <expr> - where expr is your expression; if verbose is present, evaluation steps will be sent to you privately.";
     }
     
     @Override
     public final void onCall(Request req) {
         String user = req.GetUser(), channel = req.GetChannel();
         Vector<String> args = req.GetBasicParse();
-        
-        if(args.size() != 3)
-            this.sendMessage(new Message(channel, user + " Invalid arguments. Look at the plugin help to understand how to invoke cald"));
-        else{
-            double a;
-            double b;
-            try{
-                a = Double.parseDouble(args.get(0));
-                b = Double.parseDouble(args.get(2));
-            }catch(NumberFormatException e){
-                this.sendMessage(new Message(channel, user + " the given operands aren't numbers"));
-                return;
-            }
-            char op = args.get(1).charAt(0);
-            double r = 0;
-            switch(op){
-                case '+':
-                    r = a + b;
+        String result;
+        IrcWriter w = new IrcWriter(user); //un eventuale log viene mandato in privato all'utente che ha richiesto il calcolo
+        try {
+            Expression expr;
+            switch(args.get(0).toLowerCase()){
+                case "verbose": //risolve l'espressione passata come argomento scrivendo i passaggi
+                    String exprStr = "";
+                    for(int i = 1; i < args.size(); i++) //concatena tutto quello che c'è dopo il comando verbose, in modo da accettare espressioni che contangono spazi
+                        exprStr += args.get(i); //l'input esatto dell'utente si otterrebbe con " " + args.get(i) ma tanto gli spazi non fanno differenza per il parser
+                    expr = Expression.parse(exprStr, w);
+                    result = "res = " + expr.eval(w);
                     break;
-                case '-':
-                    r = a - b;
-                    break;
-                case '*':
-                    r = a * b;
-                    break;
-                case '/':
-                    r = a / b;
-                    break;
+                //qui verranno aggiunti nuovi comandi con le prossime versioni della libreria, ad esempio per definire variabili o funzioni
                 default:
-                    sendMessage(new Message(channel, user + " unknown operator \"" + args.get(1) + "\" :(. Only +,-,*,/ are supported"));
-                    return;
+                    //se il primo argomento non corrisponde ad un comando, allora interpreta tutto come una singola espressione
+                    expr = Expression.parse(req.GetMessage());
+                    result = "res = " + expr.eval();
             }
-            sendMessage(new Message(channel, user + " " + a + op + b + "=" + r));
+        }catch(ExpressionException e){
+            result = e.getMessage();
+        }
+        sendMessage(new Message(channel, user + ", " + result));
+        try {
+            w.close(); //manda l'eventuale log all'utente
+        }catch(IOException e){
+            e.printStackTrace();
         }
     }
 }
