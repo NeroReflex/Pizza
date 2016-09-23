@@ -105,6 +105,13 @@
 <li>
           
             <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../convenzioni/">Convenzioni</a>
+        
+    </li>
+<li>
+          
+            <li>
     <ul class="subnav">
     <li><span>About</span></li>
 
@@ -159,38 +166,31 @@
             <div class="section">
               
                 <h1 id="plugins">Plugins</h1>
-<p>Pizza puo' essere esteso tramite diversi tipi di plugins.</p>
+<p>Pizza puo' essere esteso tramite plugins.</p>
 <p>Ogni plugin e' eseguito in un thread a se: questo significa che se il plugin dovesse interrompersi o generare un errore questo sarebbe interrotto senza
 compromettere la funzionalita' degli altri plugin e del bot stesso!</p>
-<p>Questa architettura rende Pizza estendibile a piacere, senza troppe preoccupazioni relative a plugin malfunzionanti!</p>
+<p>Questa architettura rende Pizza estensibile a piacere, senza troppe preoccupazioni relative a plugin malfunzionanti!</p>
 <h2 id="creazione">Creazione</h2>
-<p>Per creaare un uovo plugin sono necessari due step:</p>
-<ol>
-<li>Creare una classe che erediti dalla classe base pizza.Trancio</li>
-<li>Registrare il plugin come "di sistema" inserendolo nella funzione loadInternalPlugins in Pizza.java</li>
-</ol>
+<p>Per creare un uovo plugin e' necessario creare una classe che erediti dalla classe base <em>com.neroreflex.pizza.Trancio</em>.</p>
 <p>A questo punto il plugin sara' funzionante, anche se non sara' in grado di fare nulla!</p>
 <p>Ogni plugin ha due modi per essere eseguito: il primo e' a comando, il secondo e' a ciclo continuo.</p>
 <p>Ogni plugin puo' presentare entrambi i metodi/componenti di esecuzione.</p>
 <h2 id="estensione">Estensione</h2>
-<p>Facendo l'override di uno o pie' dei metodi descritti di seguito si estendera' il plugin:</p>
+<p>Facendo l'override di uno o piu' dei metodi descritti di seguito si estendera' il plugin:</p>
 <pre><code>- protected void onInitialize(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*
 - protected void onShutdown(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*
-- protected onCall(String user, String channel, Vector&lt;String&gt; args): metodo chiamato nel plugin thread, quando l'utente invoca il plugin
-- protected onPoll(): metodo invocato nel plugin thread continuamente nel minor tempo possibile
+- protected void onCall(Request): metodo chiamato nel onCalls thread, quando l'utente invoca il plugin
+- protected void onPoll(): metodo invocato nel onPolls thread (timer)
+- protected String onHelp(): metodo invocato quando l'utente richiede l'help per lo specifico plugin
 </code></pre>
-<p>In onCall(String user, String channel, Vector<String> args) user e' il nick dell'utente che ha chiamato il plugin, channel e' il
-canale usato per richiedere l'esecuzione del plugin e args e' l'elenco di argomenti passati al plugin.</p>
+<p>In onCall(Request req) req contiene tutto il necessario per identificare la richiesta, il canale nella quale e' stata effettuata e
+l'utente che ha mandato il messaggio.</p>
+<p>Vedere il <a href="../javadoc/">Javadoc</a> per la documentazione sulla classe Request.</p>
 <h2 id="api">API</h2>
 <p>Il plugin dovra' interagire attivamente con gli utenti della chat IRC oltre che a svolgere semplici interrogazioni del tipo:
 che canali occupa il bot? A che server e' connesso?</p>
-<p>Per fare questo TUTTI i plugin hanno accesso ad una serie di metodi che formano l'interfaccia con cui i plugin si rapportano al bot.</p>
-<p>Tali API possono essere consultate nella documentazione della classe pizza.Trancio, ma fornisco qui una lista delle piu' comuni
-funzioni:</p>
-<pre><code>- String[] getChannels()
-- void sendMessage(Message msg)
-- void joinChannel(String channel, String key)
-</code></pre>
+<p>Per fare questo TUTTI i plugin hanno accesso ad una serie di metodi che formano l'interfaccia con la quale i plugin si rapportano al bot.</p>
+<p>Tali API possono essere consultate nella documentazione della classe <em>com.neroreflex.pizza.Trancio</em> (vedere <a href="../javadoc/">Javadoc</a> per una lista completa).</p>
               
             </div>
           </div>
