@@ -67,23 +67,22 @@ public final class Calc extends Trancio {
         String user = req.GetUser(), channel = req.GetChannel();
         Vector<String> args = req.GetBasicParse();
         String result;
-        IrcWriter w = new IrcWriter(user); //un eventuale log viene mandato in provato all'utente che ha richiesto il calcolo
+        IrcWriter w = new IrcWriter(user); //un eventuale log viene mandato in privato all'utente che ha richiesto il calcolo
         try {
-            if(args.size() == 0){
-                result = "please specify an expression or a command (see help for further information)";
-            }else if(args.size() == 1){ //Se viene specificato 1 solo argomento, allora dev'essere un'espresione
-                Expression expr = Expression.parse(args.get(0));
-                result = "res = " + expr.eval();
-            }else{ //Se ci sono più di un argomento, interpreta il primo come comando e i successivi come argomenti per esso
-                switch(args.get(0).toLowerCase()){
-                    case "verbose": //risolve l'espressione passata come argomento scrivendo i passaggi
-                        Expression expr = Expression.parse(args.get(1), w);
-                        result = "res = " + expr.eval(w);
-                        break;
-                    //qui verranno aggiunti nuovi comandi con le prossime versioni della libreria, ad esempio per definire variabili o funzioni
-                    default:
-                        result = "unknown command \"" + args.get(0) + "\"";
-                }
+            Expression expr;
+            switch(args.get(0).toLowerCase()){
+                case "verbose": //risolve l'espressione passata come argomento scrivendo i passaggi
+                    String exprStr = "";
+                    for(int i = 1; i < args.size(); i++) //concatena tutto quello che c'è dopo il comando verbose, in modo da accettare espressioni che contangono spazi
+                        exprStr += args.get(i); //l'input esatto dell'utente si otterrebbe con " " + args.get(i) ma tanto gli spazi non fanno differenza per il parser
+                    expr = Expression.parse(exprStr, w);
+                    result = "res = " + expr.eval(w);
+                    break;
+                //qui verranno aggiunti nuovi comandi con le prossime versioni della libreria, ad esempio per definire variabili o funzioni
+                default:
+                    //se il primo argomento non corrisponde ad un comando, allora interpreta tutto come una singola espressione
+                    expr = Expression.parse(req.GetMessage());
+                    result = "res = " + expr.eval();
             }
         }catch(ExpressionException e){
             result = e.getMessage();
