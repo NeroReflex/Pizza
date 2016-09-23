@@ -67,30 +67,36 @@ public final class Calc extends Trancio {
         String user = req.getUser(), channel = req.getChannel();
         Vector<String> args = req.getBasicParse();
         String result;
-        IrcWriter w = new IrcWriter(user); //un eventuale log viene mandato in privato all'utente che ha richiesto il calcolo
+        
+        // Un eventuale log viene mandato in privato all'utente che ha richiesto il calcolo
+        IrcWriter w = new IrcWriter(user); 
         try {
             Expression expr;
             switch(args.get(0).toLowerCase()){
-                case "verbose": //risolve l'espressione passata come argomento scrivendo i passaggi
+                
+                // Risolve l'espressione passata come argomento scrivendo i passaggi
+                case "verbose":
                     String exprStr = "";
                     for(int i = 1; i < args.size(); i++) //concatena tutto quello che c'è dopo il comando verbose, in modo da accettare espressioni che contangono spazi
                         exprStr += args.get(i); //l'input esatto dell'utente si otterrebbe con " " + args.get(i) ma tanto gli spazi non fanno differenza per il parser
                     expr = Expression.parse(exprStr, w);
                     result = "res = " + expr.eval(w);
                     break;
-                //qui verranno aggiunti nuovi comandi con le prossime versioni della libreria, ad esempio per definire variabili o funzioni
+                    
+                // Qui verranno aggiunti nuovi comandi con le prossime versioni della libreria, ad esempio per definire variabili o funzioni
                 default:
-                    //se il primo argomento non corrisponde ad un comando, allora interpreta tutto come una singola espressione
+                    // Se il primo argomento non corrisponde ad un comando, allora interpreta tutto come una singola espressione
                     expr = Expression.parse(req.getMessage());
                     result = "res = " + expr.eval();
             }
-        }catch(ExpressionException e){
+        } catch(ExpressionException e) {
             result = e.getMessage();
         }
-        sendMessage(new Message(channel, user + ", " + result));
+        sendMessage(new Message(channel, user + " the result is: " + result));
         try {
-            w.close(); //manda l'eventuale log all'utente
-        }catch(IOException e){
+            // Manda l'eventuale log in PM all'utente
+            w.close();
+        } catch(IOException e) {
             e.printStackTrace();
         }
     }

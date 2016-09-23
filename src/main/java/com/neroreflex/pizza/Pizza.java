@@ -43,6 +43,17 @@ import java.util.Map.Entry;
  */
 public class Pizza extends PircBot {
     
+    /**
+     * Crea una nuova istanza del bot e la connette al server specificato,
+     * poi fa il join nel canale dato per rendere il bot disponibile a tutti
+     * gli utenti di quel canale.
+     * 
+     * @param botName il nome che il bot usera' per connettersi al server
+     * @param botServer il server IRC al quale il bot si connettera'
+     * @param botChannel il canale di al quale il bot si unira'
+     * @param botParams i parametri per il bot
+     * @return La istanza del bot creato
+     */
     public static final Pizza Asporto(String botName, String botServer, String botChannel, HashMap<String, String> botParams) {
         // Inizializza le API dei plugin
         PluginAPI.Init();
@@ -124,11 +135,22 @@ public class Pizza extends PircBot {
         }
     }
     
+    /**
+     * Il bot si presenta alla richiesta di informazioni
+     * 
+     * @param helpRequest la richiesta di informazioni
+     */
     public final void Info(Request helpRequest) {
         this.enqueueMessage(new Message(helpRequest.getChannel(), "I'm PizzaBot (https://github.com/NeroReflex/Pizza) a small and modular IRC bot"));
- 
     }
     
+    /**
+     * Il bot alla richiesta di aiuto fornisce la lista dei plugin e il loro
+     * utilizzo.
+     * Si puo' anche richiedere aiuto in uno specifico plugin.
+     * 
+     * @param helpRequest la richiesta di aiuto
+     */
     public final void Help(Request helpRequest) {
         // Dividi la richiesta di aiuto in piu' parti
         Vector<String> args = helpRequest.getBasicParse();
