@@ -1,6 +1,6 @@
 # Convenzioni
 
-Chi vuole contribuire alla espansione del bot dovra' cercare di seguire il più possibile delle convenzioni
+Chi vuole contribuire alla espansione del bot dovra' cercare di seguire il piu' possibile delle convenzioni
 che facilitano la lettura del sorgente da parte di tutti: contributori e semplici curiosi.
 
 Le convenzioni sono le seguenti:
