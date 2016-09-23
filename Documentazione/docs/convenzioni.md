@@ -14,6 +14,7 @@ Le convenzioni sono le seguenti:
 	- I commenti si riferiscono alle righe sottostanti
 	- I commenti iniziano con una lettera maiuscola e sono staccati con uno spazio da //
 	- I commenti sono seguiti da una linea vuota
+	- Le parentesi graffe non vanno aggiunte quando non sono necessarie
 	- Le parentesi si aprono nella stessa riga della dichiarazione della funzione, if, while o for
 	
 Qualora si notassero convenzioni non seguite siete pregati di informare gli sviluppatori oppure di correggere
