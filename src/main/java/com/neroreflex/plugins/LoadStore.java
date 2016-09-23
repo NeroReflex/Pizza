@@ -35,25 +35,34 @@ public final class LoadStore  extends Trancio {
     
     @Override
     public final void onCall(Request req) {
-        Vector<String> args = req.GetBasicParse();
+        Vector<String> args = req.getBasicParse();
         
         if (args.size() == 3) {
             if (args.get(0).compareTo("store") == 0) {
                 // Memorizza la coppia chiave-valore
                 this.storeData(args.get(1), args.get(2));
                 
+                // Informa l'utente dell'esito
+                this.sendMessage(new Message(req.getChannel(), req.getUser() + " the value of '" + args.get(1) + "' has been changed"));
+                
                 return;
             }
         } else if (args.size() == 2) {
             if (args.get(0).compareTo("load") == 0) {
                 // Leggi il valore associato alla chiave
-                this.sendMessage(new Message(req.GetChannel(), req.GetUser() + " " + args.get(1) + "=" + this.loadData(args.get(1))));
+                String key = args.get(1);
+                String value = this.loadData(key);
+                
+                if (value != null)
+                    this.sendMessage(new Message(req.getChannel(), req.getUser() + " " + key + "=" + value));
+                else
+                    this.sendMessage(new Message(req.getChannel(), req.getUser() + " key '" + key + "' not found"));
                 
                 return;
             }
         }
         
-        this.sendMessage(new Message(req.GetChannel(), req.GetUser() + " invalid arguments. Type !help loadstore"));
+        this.sendMessage(new Message(req.getChannel(), req.getUser() + " invalid arguments. Type !help loadstore"));
         
     }
 }

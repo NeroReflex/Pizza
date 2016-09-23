@@ -45,8 +45,8 @@ public final class Convert extends Trancio {
 
     @Override
     public final void onCall(Request req) {
-        String user = req.GetUser(), channel = req.GetChannel();
-        Vector<String> args = req.GetBasicParse();
+        String user = req.getUser(), channel = req.getChannel();
+        Vector<String> args = req.getBasicParse();
         
         if(args.size() != 2){
             sendMessage(new Message(channel, user + " wrong arguments number."));

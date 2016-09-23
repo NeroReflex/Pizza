@@ -64,8 +64,8 @@ public final class Calc extends Trancio {
     
     @Override
     public final void onCall(Request req) {
-        String user = req.GetUser(), channel = req.GetChannel();
-        Vector<String> args = req.GetBasicParse();
+        String user = req.getUser(), channel = req.getChannel();
+        Vector<String> args = req.getBasicParse();
         String result;
         IrcWriter w = new IrcWriter(user); //un eventuale log viene mandato in privato all'utente che ha richiesto il calcolo
         try {
@@ -81,7 +81,7 @@ public final class Calc extends Trancio {
                 //qui verranno aggiunti nuovi comandi con le prossime versioni della libreria, ad esempio per definire variabili o funzioni
                 default:
                     //se il primo argomento non corrisponde ad un comando, allora interpreta tutto come una singola espressione
-                    expr = Expression.parse(req.GetMessage());
+                    expr = Expression.parse(req.getMessage());
                     result = "res = " + expr.eval();
             }
         }catch(ExpressionException e){

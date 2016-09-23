@@ -35,20 +35,20 @@ public final class Request {
         this.user = user;
     }
     
-    public String GetChannel() {
+    public String getChannel() {
         return this.channel;
     }
     
-    public String GetUser() {
+    public String getUser() {
         return this.user;
     }
     
-    public String GetMessage() {
+    public String getMessage() {
         return this.message;
     }
     
-    public Vector<String> GetBasicParse() {
-        String[] params = this.GetMessage().split("([\\s]+)");
+    public Vector<String> getBasicParse() {
+        String[] params = this.getMessage().split("([\\s]+)");
         Vector<String> args = new Vector<>();
         
         for (int i = 0; i < params.length; i++)

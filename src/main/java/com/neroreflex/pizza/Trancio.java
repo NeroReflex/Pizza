@@ -349,7 +349,7 @@ public abstract class Trancio {
     protected String onHelp() { return ""; }
     
     public void onCall(Request req) {
-        this.sendMessage(new Message(req.GetChannel(), "the '" + this.getName() + "' plugin isn't meant to be actively called."));
+        this.sendMessage(new Message(req.getChannel(), "the '" + this.getName() + "' plugin isn't meant to be actively called."));
     }
     
     public void onPoll() {}

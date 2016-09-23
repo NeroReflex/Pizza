@@ -86,7 +86,7 @@ public final class HackerNews extends Trancio {
         int tops = 5;
         
         try {
-            Vector<String> args = req.GetBasicParse();
+            Vector<String> args = req.getBasicParse();
             if (!args.isEmpty())
                 tops = Integer.parseInt(args.get(0));
         } catch (NumberFormatException ex) {
@@ -94,7 +94,7 @@ public final class HackerNews extends Trancio {
         }
         
         // Stampa le news in PM a chi le ha richieste
-        this.sendHackerNews(tops, req.GetUser());
+        this.sendHackerNews(tops, req.getUser());
     }
     
     @Override

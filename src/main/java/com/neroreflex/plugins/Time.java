@@ -132,8 +132,8 @@ public final class Time extends Trancio {
     
     @Override
     public final void onCall(Request req) {
-        String user = req.GetUser(), channel = req.GetChannel();
-        Vector<String> args = req.GetBasicParse();
+        String user = req.getUser(), channel = req.getChannel();
+        Vector<String> args = req.getBasicParse();
         
         // Stabilisci la zona del mondo richiesta
         String timezone = ((args.size() > 0) && (args.get(0).length() > 2))? args.get(0) : Time.DEFAULT_TIMEZONE;

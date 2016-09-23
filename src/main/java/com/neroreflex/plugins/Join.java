@@ -33,8 +33,8 @@ public final class Join extends Trancio {
     
     @Override
     public final void onCall(Request req) {
-        String user = req.GetUser(), channel = req.GetChannel();
-        Vector<String> args = req.GetBasicParse();
+        String user = req.getUser(), channel = req.getChannel();
+        Vector<String> args = req.getBasicParse();
         
         if (args.size() > 0) {
             // A che canale deve fare il join?
