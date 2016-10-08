@@ -19,8 +19,8 @@
 package com.neroreflex.plugins;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.Writer;
-import java.util.Vector;
 import com.neroreflex.pizza.*;
 import com.github.gianlucanitti.javaexpreval.*;
 
@@ -58,46 +58,47 @@ public final class Calc extends Trancio {
         }
     }
 
+    private InteractiveExpressionContext ctx;
+
+    @Override
+    protected void onInitialize(){
+        ctx = new InteractiveExpressionContext();
+        ctx.setHelpVerbose(true);
+        //Disabilita i comandi help e exit
+        ctx.setCommands("context", "clear", "", "");
+    }
+
     protected String onHelp() {
-        return "[verbose] <expr> - where expr is your expression; if verbose is present, evaluation steps will be sent to you privately.";
+        return "[verbose] <expression>|<assignment>|<command> - where expression can be an expression containing numbers, variables, parenthesis and binary operators;"
+                + " assignment is in the form <variable>=<expression>, or <variable>= to delete <variable>;"
+                + " command can be \"context\" (print all defined variables) or \"clear\" (delete all the defined variables)."
+                + " if \"verbose\" is specified before any other argument, detailed parsing/evaluation steps will be sent to you as PM.";
     }
     
     @Override
     public final void onCall(Request req) {
-        String user = req.getUser(), channel = req.getChannel();
-        Vector<String> args = req.getBasicParse();
-        String result;
-        
+        Writer chWriter = new IrcWriter(req.getChannel());
+        Writer userWriter = NullOutputStream.getWriter();
+        String msg = req.getMessage();
         // Un eventuale log viene mandato in privato all'utente che ha richiesto il calcolo
-        IrcWriter w = new IrcWriter(user); 
-        try {
-            Expression expr;
-            switch(args.get(0).toLowerCase()){
-                
-                // Risolve l'espressione passata come argomento scrivendo i passaggi
-                case "verbose":
-                    String exprStr = "";
-                    for(int i = 1; i < args.size(); i++) //concatena tutto quello che c'è dopo il comando verbose, in modo da accettare espressioni che contangono spazi
-                        exprStr += args.get(i); //l'input esatto dell'utente si otterrebbe con " " + args.get(i) ma tanto gli spazi non fanno differenza per il parser
-                    expr = Expression.parse(exprStr, w);
-                    result = "res = " + expr.eval(w);
-                    break;
-                    
-                // Qui verranno aggiunti nuovi comandi con le prossime versioni della libreria, ad esempio per definire variabili o funzioni
-                default:
-                    // Se il primo argomento non corrisponde ad un comando, allora interpreta tutto come una singola espressione
-                    expr = Expression.parse(req.getMessage());
-                    result = "res = " + expr.eval();
-            }
-        } catch(ExpressionException e) {
-            result = e.getMessage();
+        if(msg.startsWith(" verbose ")) {
+            userWriter = new IrcWriter(req.getUser());
+            msg = msg.substring(9);
+        }else if(msg.startsWith(" ")){
+            //Rimuovi lo spazio in modo che i comandi vengano riconosciuti
+            msg = msg.substring(1);
         }
-        sendMessage(new Message(channel, user + " the result is: " + result));
+        //Non mi interessa l'autoFlush perchè tanto IrcWriter invia solo quando lo si chiude.
+        ctx.setOutputWriter(chWriter, false);
+        ctx.setErrorOutputWriter(chWriter, false);
+        ctx.setVerboseOutputWriter(userWriter, false);
+        ctx.setInputReader(new StringReader(msg));
         try {
-            // Manda l'eventuale log in PM all'utente
-            w.close();
-        } catch(IOException e) {
-            e.printStackTrace();
+            ctx.update();
+            chWriter.close();
+            userWriter.close();
+        }catch(IOException ex){
+            ex.printStackTrace();
         }
     }
 }
