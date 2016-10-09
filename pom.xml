@@ -92,7 +92,7 @@
         <dependency>
             <groupId>com.github.gianluca-nitti</groupId>
             <artifactId>java-expr-eval</artifactId>
-            <version>v1.1</version>
+            <version>v2.0</version>
         </dependency>
     </dependencies>
     <properties>
