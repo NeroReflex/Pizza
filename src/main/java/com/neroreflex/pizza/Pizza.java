@@ -41,7 +41,27 @@ import java.util.Map.Entry;
  * 
  * @author Benato Denis
  */
-public class Pizza extends PircBot {
+public class Pizza extends PircBot implements Runnable {
+    
+    /**
+     * Il nickname del bot.
+     */
+    private String connectedWithName;
+
+    /**
+     * Il server IRC per il bot.
+     */
+    private IRCServer connectedToHost;
+    
+    /**
+     * La lista di parametri passati al bot.
+     */
+    private HashMap<String, String> connectedWithParams;
+
+    /**
+     * Il timer che riconnette il bot.
+     */
+    private Timer reconnectTimer;
     
     /**
      * Crea una nuova istanza del bot e la connette al server specificato,
@@ -243,36 +263,18 @@ public class Pizza extends PircBot {
     }
     
     /**
-     * Inizializza una nuova istanza del bot e la connette al server dato.
-     * 
-     * @param botName il nome del bot
-     * @param botServer il server IRC
-     * @param botParams i parametri passati al bot al momento dell'avvio
+     * Connette o riconnette il bot al server.
      */
-    public Pizza(String botName, IRCServer botServer, HashMap<String, String> botParams) {
-        // Inizializza la lista di tranci e la lista di esecutori
-        this.tranci = new HashMap<>();
-        
-        // Inizializza le API dei plugin
-        PluginAPI.Init();
-        
+    public void connectOrReconnect() {
         // Imposta il nome del bot
-        this.setName(botName);
-        
-        // Abilita l'output di debug (se richiesto), spento di default
-        String verbose = botParams.get("--verbose");
-        if (verbose.compareTo("on") == 0) {
-            this.setVerbose(true);
-        } else if (verbose.compareTo("off") == 0) {
-            this.setVerbose(false);
-        }
+        this.setName(this.connectedWithName);
         
         try {
             // Connetti il bot al server
-            this.connect(botServer.getAddress(), botServer.getPort());
+            this.connect(this.connectedToHost.getAddress(), this.connectedToHost.getPort());
 
             // identifica il bot tramite NickServ
-            String password = botParams.get("--identify");
+            String password = this.connectedWithParams.get("--identify");
             if (password.length() > 0)
                 this.identify(password);
         } catch (IOException ex) {
@@ -282,6 +284,45 @@ public class Pizza extends PircBot {
             System.err.println("Errore nella connessione al server IRC: " + ex);
             System.exit(-3);
         }
+    }
+    
+    @Override
+    public void run() {
+        if (!this.isConnected()) {
+            this.connectOrReconnect();
+        }
+    }
+    
+    
+    /**
+     * Inizializza una nuova istanza del bot e la connette al server dato.
+     * 
+     * @param botName il nome del bot
+     * @param botServer il server IRC
+     * @param botParams i parametri passati al bot al momento dell'avvio
+     */
+    public Pizza(String botName, IRCServer botServer, HashMap<String, String> botParams) {
+        // Salva cio che serve per connettersi (e riconnettersi)
+        this.connectedWithName = botName;
+        this.connectedToHost = botServer;
+        this.connectedWithParams = botParams;
+        
+        // Inizializza la lista di tranci e la lista di esecutori
+        this.tranci = new HashMap<>();
+        
+        // Inizializza le API dei plugin
+        PluginAPI.Init();
+        
+        // Abilita l'output di debug (se richiesto), spento di default
+        String verbose = this.connectedWithParams.get("--verbose");
+        if (verbose.compareTo("on") == 0) {
+            this.setVerbose(true);
+        } else if (verbose.compareTo("off") == 0) {
+            this.setVerbose(false);
+        }
+        
+        // conenct or reconnect
+        this.connectOrReconnect();
         
         // Ottieni un ID univoco per il bot attuale
         SecureRandom random = new SecureRandom();
@@ -295,6 +336,16 @@ public class Pizza extends PircBot {
         
         // Carica il set di plugin "standard"
         this.loadInternalPlugins();
+        
+        // Preparo tutto il necessario per controllare ogni minuto se il bot è disconnesso
+        GregorianCalendar startingTime = new GregorianCalendar();
+        startingTime.add(Calendar.SECOND, 60);
+        this.reconnectTimer = new Timer();
+        this.reconnectTimer.scheduleAtFixedRate(
+            this,
+            startingTime.getTime(),
+            1000 * 60 // Controlla ogni minuto
+        );
     }
     
     /**

@@ -77,15 +77,18 @@ public abstract class Trancio {
      */
     private final Thread requestManager;
     
+    /**
+     * La prima volta che il plugin sara' attivato.
+     */
     protected final GregorianCalendar firstSheduledPoll;
     
     /**
-     * Il timer che chiama onPoll ad intervalli di tempo regolari
+     * Il timer che chiama onPoll ad intervalli di tempo regolari.
      */
     private final Timer autoCaller;
     
     /**
-     * La coda di richieste fatte al plugin
+     * La coda di richieste fatte al plugin.
      */
     protected final ArrayBlockingQueue<Request> requests;
     
