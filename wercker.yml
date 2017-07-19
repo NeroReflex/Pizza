@@ -54,8 +54,9 @@ deploy :
     - script:
         name: Upload su github pages
         code: |-
-          cd Pizza
-          git add .
+          ll
+          #cd Pizza
+          git add *
           git commit -m "[ci skip]deploy commit from $WERCKER_STARTED_BY" #--quiet &> /dev/null
           git push #--quiet &> /dev/null
 #Webhook-Deploy:
