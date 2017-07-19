@@ -35,13 +35,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.Map.Entry;
+import java.util.TimerTask;
+import java.util.Timer;
 
 /**
  * La classe che, una volta istanziata identificherà un bot connesso ad un server
  * 
  * @author Benato Denis
  */
-public class Pizza extends PircBot implements Runnable {
+public class Pizza extends PircBot {
     
     /**
      * Il nickname del bot.
@@ -263,9 +265,9 @@ public class Pizza extends PircBot implements Runnable {
     }
     
     /**
-     * Connette o riconnette il bot al server.
+     * Connette il bot al server.
      */
-    public void connectOrReconnect() {
+    public void connectBot() {
         // Imposta il nome del bot
         this.setName(this.connectedWithName);
         
@@ -279,20 +281,10 @@ public class Pizza extends PircBot implements Runnable {
                 this.identify(password);
         } catch (IOException ex) {
             System.err.println("Errore nella connessione al server IRC: " + ex);
-            System.exit(-2);
         } catch (IrcException ex) {
             System.err.println("Errore nella connessione al server IRC: " + ex);
-            System.exit(-3);
         }
     }
-    
-    @Override
-    public void run() {
-        if (!this.isConnected()) {
-            this.connectOrReconnect();
-        }
-    }
-    
     
     /**
      * Inizializza una nuova istanza del bot e la connette al server dato.
@@ -320,9 +312,8 @@ public class Pizza extends PircBot implements Runnable {
         } else if (verbose.compareTo("off") == 0) {
             this.setVerbose(false);
         }
-        
-        // conenct or reconnect
-        this.connectOrReconnect();
+
+        this.connectBot();
         
         // Ottieni un ID univoco per il bot attuale
         SecureRandom random = new SecureRandom();
@@ -342,7 +333,14 @@ public class Pizza extends PircBot implements Runnable {
         startingTime.add(Calendar.SECOND, 60);
         this.reconnectTimer = new Timer();
         this.reconnectTimer.scheduleAtFixedRate(
-            this,
+            new TimerTask() {
+                @Override
+                public void run() {
+                    if (!Pizza.this.isConnected()) {
+                        Pizza.this.connectBot();
+                    }
+                }
+            },
             startingTime.getTime(),
             1000 * 60 // Controlla ogni minuto
         );
