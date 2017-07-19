@@ -45,22 +45,13 @@ deploy :
           git config --global user.name "werckerbot"
           git config --global push.default matching
     - script:
-        name: Preparazione Pagine
+        name: Deploy to github pages
         code: |-
           cd Documentazione
           git clone -b gh-pages $GIT_REMOTE
           sudo chmod 0777 -R site
           sudo rsync -avh ./site/ ./Pizza/
-    - script:
-        name: Upload su github pages
-        code: |-
-          git add *
-          git commit -m "[ci skip]deploy commit from $WERCKER_STARTED_BY" #--quiet &> /dev/null
-          git push #--quiet &> /dev/null
-#Webhook-Deploy:
-#  steps :
-#    - install-packages:
-#        packages: curl wget
-#    - script:
-#        name: Deploy
-#        code: wget -qO- $URL &> /dev/null
+          cd Pizza
+          git add .
+          git commit -m "[ci skip]deploy commit from $WERCKER_STARTED_BY"
+          git push
