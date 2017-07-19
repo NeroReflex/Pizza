@@ -1,0 +1,124 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "Pizza\n\n\nPizza\n e' un piccolo bot estremamente modulare per \ntutte\n le chat IRC!\n\n\nIl progetto e' mantenuto dai volontari della community di \npierotofy.it",
+            "title": "Home"
+        },
+        {
+            "location": "/#pizza",
+            "text": "Pizza  e' un piccolo bot estremamente modulare per  tutte  le chat IRC!  Il progetto e' mantenuto dai volontari della community di  pierotofy.it",
+            "title": "Pizza"
+        },
+        {
+            "location": "/compilazione/",
+            "text": "Compilazione\n\n\nLa compilazione di Pizza richiede 3 semplicissime fasi descritte di seguito.\n\n\nParadossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro -.-\"\n\n\nPreparazione\n\n\nL'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto.\n\n\nLa versione utilizzata al momento della creazione del progetto e': \njdk 1.8\n\n\nIl processo di compilazione e' automatizzato da \nmaven\n:\ne' altamente consigliato aggiungere la directory bin alla variabile d'ambiente PATH,\nin caso contrario dovrete ogni volta far riferimento al percorso completo.\n\n\nPer scaricare il progetto e' necessario installare \ngit\n o scaricare il progetto come zip da GitHub!\n\n\nOttenere il codice sorgente\n\n\nL'utilizzo di git e' altamente consigliato per scaricare il codice sorgente:\n\n\ngit clone https://github.com/NeroReflex/Pizza.git\ncd Pizza\n\n\n\n\nOra e' possibile passare alla compilazione vera e propria!\n\n\nCompilazione\n\n\nIl processo di compilazione e' descritto nel file bom.xml, destinato al build system maven,\ne va azionato con il comando:\n\n\nmvn compile && mvn package\n\n\n\n\nUna corretta compilazione produrra' una directory \"target\" contenente un file chiamato \"PizzaBot-1.0-SNAPSHOT.jar\".",
+            "title": "Compilazione"
+        },
+        {
+            "location": "/compilazione/#compilazione",
+            "text": "La compilazione di Pizza richiede 3 semplicissime fasi descritte di seguito.  Paradossalmente la fase piu' complicata e' la preparazione dell'ambiente di lavoro -.-\"",
+            "title": "Compilazione"
+        },
+        {
+            "location": "/compilazione/#preparazione",
+            "text": "L'installazione del compilatore e runtime java e' necessaria per lavorare con il progetto.  La versione utilizzata al momento della creazione del progetto e':  jdk 1.8  Il processo di compilazione e' automatizzato da  maven :\ne' altamente consigliato aggiungere la directory bin alla variabile d'ambiente PATH,\nin caso contrario dovrete ogni volta far riferimento al percorso completo.  Per scaricare il progetto e' necessario installare  git  o scaricare il progetto come zip da GitHub!",
+            "title": "Preparazione"
+        },
+        {
+            "location": "/compilazione/#ottenere-il-codice-sorgente",
+            "text": "L'utilizzo di git e' altamente consigliato per scaricare il codice sorgente:  git clone https://github.com/NeroReflex/Pizza.git\ncd Pizza  Ora e' possibile passare alla compilazione vera e propria!",
+            "title": "Ottenere il codice sorgente"
+        },
+        {
+            "location": "/compilazione/#compilazione_1",
+            "text": "Il processo di compilazione e' descritto nel file bom.xml, destinato al build system maven,\ne va azionato con il comando:  mvn compile && mvn package  Una corretta compilazione produrra' una directory \"target\" contenente un file chiamato \"PizzaBot-1.0-SNAPSHOT.jar\".",
+            "title": "Compilazione"
+        },
+        {
+            "location": "/utilizzo/",
+            "text": "Utilizzo\n\n\nPrima di poter interagire con il bot e' necessario avviarlo :)\n\n\nQuando il bot viene avviato si unira' in maniera automatica ad un solo canale:\nquello specificato dopo l'host\n\n\ncd target\njava -jar PizzaBot-1.0-SNAPSHOT.jar \"BotName\" \"server[:port]\" \"#channel\"\n\n\n\n\nE' possibile specificare se si vuole un pesante output su console riguardo lo stato di funzionamento\ndel bot nel seguente modo:\n\n\njava -jar PizzaBot-1.0-SNAPSHOT.jar \"BotName\" \"server[:port]\" \"#channel\" \"--verbose\" \"on\"\n\n\n\n\nE' altrettanto possibile specificare come verificare l'identita' del bot tramite NickSrv:\n\n\njava -jar PizzaBot-1.0-SNAPSHOT.jar \"BotName\" \"server[:port]\" \"#channel\" \"--verbose\" \"off\" \"--identity\" \"password\"\n\n\n\n\nEsempio\n\n\nPerche' non provare il bot in una stanza sperduta di freenode?\n\n\njava -jar PizzaBot-1.0-SNAPSHOT.jar \"my_bot\" \"irc.freenode.net\" \"#pizzabot\" \"--verbose\" \"off\"\n\n\n\n\nQuando il bot sara' avviato potremmo interagire con esso tramite la chat, ovvero come\nfaranno \nTUTTI\n gli altri utenti della chat!",
+            "title": "Utilizzo"
+        },
+        {
+            "location": "/utilizzo/#utilizzo",
+            "text": "Prima di poter interagire con il bot e' necessario avviarlo :)  Quando il bot viene avviato si unira' in maniera automatica ad un solo canale:\nquello specificato dopo l'host  cd target\njava -jar PizzaBot-1.0-SNAPSHOT.jar \"BotName\" \"server[:port]\" \"#channel\"  E' possibile specificare se si vuole un pesante output su console riguardo lo stato di funzionamento\ndel bot nel seguente modo:  java -jar PizzaBot-1.0-SNAPSHOT.jar \"BotName\" \"server[:port]\" \"#channel\" \"--verbose\" \"on\"  E' altrettanto possibile specificare come verificare l'identita' del bot tramite NickSrv:  java -jar PizzaBot-1.0-SNAPSHOT.jar \"BotName\" \"server[:port]\" \"#channel\" \"--verbose\" \"off\" \"--identity\" \"password\"",
+            "title": "Utilizzo"
+        },
+        {
+            "location": "/utilizzo/#esempio",
+            "text": "Perche' non provare il bot in una stanza sperduta di freenode?  java -jar PizzaBot-1.0-SNAPSHOT.jar \"my_bot\" \"irc.freenode.net\" \"#pizzabot\" \"--verbose\" \"off\"  Quando il bot sara' avviato potremmo interagire con esso tramite la chat, ovvero come\nfaranno  TUTTI  gli altri utenti della chat!",
+            "title": "Esempio"
+        },
+        {
+            "location": "/plugin/",
+            "text": "Plugins\n\n\nPizza puo' essere esteso tramite plugins.\n\n\nOgni plugin e' eseguito in un thread a se: questo significa che se il plugin dovesse interrompersi o generare un errore questo sarebbe interrotto senza\ncompromettere la funzionalita' degli altri plugin e del bot stesso!\n\n\nQuesta architettura rende Pizza estensibile a piacere, senza troppe preoccupazioni relative a plugin malfunzionanti!\n\n\nCreazione\n\n\nPer creare un uovo plugin e' necessario creare una classe che erediti dalla classe base \ncom.neroreflex.pizza.Trancio\n.\n\n\nA questo punto il plugin sara' funzionante, anche se non sara' in grado di fare nulla!\n\n\nOgni plugin ha due modi per essere eseguito: il primo e' a comando, il secondo e' a ciclo continuo.\n\n\nOgni plugin puo' presentare entrambi i metodi/componenti di esecuzione.\n\n\nEstensione\n\n\nFacendo l'override di uno o piu' dei metodi descritti di seguito si estendera' il plugin:\n\n\n- protected void onInitialize(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*\n- protected void onShutdown(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*\n- protected void onCall(Request): metodo chiamato nel onCalls thread, quando l'utente invoca il plugin\n- protected void onPoll(): metodo invocato nel onPolls thread (timer)\n- protected String onHelp(): metodo invocato quando l'utente richiede l'help per lo specifico plugin\n\n\n\nIn onCall(Request req) req contiene tutto il necessario per identificare la richiesta, il canale nella quale e' stata effettuata e\nl'utente che ha mandato il messaggio.\n\n\nVedere il \nJavadoc\n per la documentazione sulla classe Request.\n\n\nAPI\n\n\nIl plugin dovra' interagire attivamente con gli utenti della chat IRC oltre che a svolgere semplici interrogazioni del tipo:\nche canali occupa il bot? A che server e' connesso?\n\n\nPer fare questo TUTTI i plugin hanno accesso ad una serie di metodi che formano l'interfaccia con la quale i plugin si rapportano al bot.\n\n\nTali API possono essere consultate nella documentazione della classe \ncom.neroreflex.pizza.Trancio\n (vedere \nJavadoc\n per una lista completa).",
+            "title": "Plugins"
+        },
+        {
+            "location": "/plugin/#plugins",
+            "text": "Pizza puo' essere esteso tramite plugins.  Ogni plugin e' eseguito in un thread a se: questo significa che se il plugin dovesse interrompersi o generare un errore questo sarebbe interrotto senza\ncompromettere la funzionalita' degli altri plugin e del bot stesso!  Questa architettura rende Pizza estensibile a piacere, senza troppe preoccupazioni relative a plugin malfunzionanti!",
+            "title": "Plugins"
+        },
+        {
+            "location": "/plugin/#creazione",
+            "text": "Per creare un uovo plugin e' necessario creare una classe che erediti dalla classe base  com.neroreflex.pizza.Trancio .  A questo punto il plugin sara' funzionante, anche se non sara' in grado di fare nulla!  Ogni plugin ha due modi per essere eseguito: il primo e' a comando, il secondo e' a ciclo continuo.  Ogni plugin puo' presentare entrambi i metodi/componenti di esecuzione.",
+            "title": "Creazione"
+        },
+        {
+            "location": "/plugin/#estensione",
+            "text": "Facendo l'override di uno o piu' dei metodi descritti di seguito si estendera' il plugin:  - protected void onInitialize(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*\n- protected void onShutdown(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*\n- protected void onCall(Request): metodo chiamato nel onCalls thread, quando l'utente invoca il plugin\n- protected void onPoll(): metodo invocato nel onPolls thread (timer)\n- protected String onHelp(): metodo invocato quando l'utente richiede l'help per lo specifico plugin  In onCall(Request req) req contiene tutto il necessario per identificare la richiesta, il canale nella quale e' stata effettuata e\nl'utente che ha mandato il messaggio.  Vedere il  Javadoc  per la documentazione sulla classe Request.",
+            "title": "Estensione"
+        },
+        {
+            "location": "/plugin/#api",
+            "text": "Il plugin dovra' interagire attivamente con gli utenti della chat IRC oltre che a svolgere semplici interrogazioni del tipo:\nche canali occupa il bot? A che server e' connesso?  Per fare questo TUTTI i plugin hanno accesso ad una serie di metodi che formano l'interfaccia con la quale i plugin si rapportano al bot.  Tali API possono essere consultate nella documentazione della classe  com.neroreflex.pizza.Trancio  (vedere  Javadoc  per una lista completa).",
+            "title": "API"
+        },
+        {
+            "location": "/javadoc/",
+            "text": "Javadoc\n\n\nIl progetto e' configurato per la generazione della documentazione partendo dal codice sorgente.\n\n\nMaven per svolgere il compito si affida a javadoc:\n\n\nmvn javadoc:javadoc\n\n\n\n\nTuttavia ad ogni push nel branch master la documentazione javadoc viene aggiornata \nAUTOMATICAMENTE\n da\nwercker.\n\n\nPotete visualizzare il risultato dell'analisi automatica del sorgente da parte di javadoc online a \nquesto indirizzo\n.\n\n\nUlteriori opzioni\n\n\nPer chi ha specifiche necessita' riguardo alla generazione della documentazione il plugin maven utilizzato e'\nil seguente: \njavadoc for mvn\n.",
+            "title": "Javadoc"
+        },
+        {
+            "location": "/javadoc/#javadoc",
+            "text": "Il progetto e' configurato per la generazione della documentazione partendo dal codice sorgente.  Maven per svolgere il compito si affida a javadoc:  mvn javadoc:javadoc  Tuttavia ad ogni push nel branch master la documentazione javadoc viene aggiornata  AUTOMATICAMENTE  da\nwercker.  Potete visualizzare il risultato dell'analisi automatica del sorgente da parte di javadoc online a  questo indirizzo .",
+            "title": "Javadoc"
+        },
+        {
+            "location": "/javadoc/#ulteriori-opzioni",
+            "text": "Per chi ha specifiche necessita' riguardo alla generazione della documentazione il plugin maven utilizzato e'\nil seguente:  javadoc for mvn .",
+            "title": "Ulteriori opzioni"
+        },
+        {
+            "location": "/convenzioni/",
+            "text": "Convenzioni\n\n\nChi vuole contribuire alla espansione del bot dovra' cercare di seguire il piu' possibile delle convenzioni\nche facilitano la lettura del sorgente da parte di tutti: contributori e semplici curiosi.\n\n\nLe convenzioni sono le seguenti:\n\n\n- I nomi delle funzioni sono in *camelCase*\n- I nomi delle funzioni iniziano con una lettera __minuscola__\n- I nomi delle classi dei plugin sono in *CamelCase*\n- I nomi delle classi dei plugin iniziano con una lettera __MAIUSCOLA__\n- I nomi delle variabili sono in *camelCase*\n- I nomi delle variabili iniziano con una lettera __minuscola__\n- I commenti si riferiscono alle righe sottostanti\n- I commenti iniziano con una lettera maiuscola e sono staccati con uno spazio da //\n- I commenti sono seguiti da una linea vuota\n- Le parentesi graffe non vanno aggiunte quando non sono necessarie\n- Le parentesi si aprono nella stessa riga della dichiarazione della funzione, if, while o for\n\n\n\nQualora si notassero convenzioni non seguite siete pregati di informare gli sviluppatori oppure di correggere\ned inviare un pull request al progetto.",
+            "title": "Convenzioni"
+        },
+        {
+            "location": "/convenzioni/#convenzioni",
+            "text": "Chi vuole contribuire alla espansione del bot dovra' cercare di seguire il piu' possibile delle convenzioni\nche facilitano la lettura del sorgente da parte di tutti: contributori e semplici curiosi.  Le convenzioni sono le seguenti:  - I nomi delle funzioni sono in *camelCase*\n- I nomi delle funzioni iniziano con una lettera __minuscola__\n- I nomi delle classi dei plugin sono in *CamelCase*\n- I nomi delle classi dei plugin iniziano con una lettera __MAIUSCOLA__\n- I nomi delle variabili sono in *camelCase*\n- I nomi delle variabili iniziano con una lettera __minuscola__\n- I commenti si riferiscono alle righe sottostanti\n- I commenti iniziano con una lettera maiuscola e sono staccati con uno spazio da //\n- I commenti sono seguiti da una linea vuota\n- Le parentesi graffe non vanno aggiunte quando non sono necessarie\n- Le parentesi si aprono nella stessa riga della dichiarazione della funzione, if, while o for  Qualora si notassero convenzioni non seguite siete pregati di informare gli sviluppatori oppure di correggere\ned inviare un pull request al progetto.",
+            "title": "Convenzioni"
+        },
+        {
+            "location": "/pierotofy/",
+            "text": "Community\n\n\nLa community dietro a Pizza e' quella di \npierotofy.it\n!\n\n\npierotofy.it e' una community italiana di programmatori dove sono il benvenuto gli esperti tanto quanto i novizi.",
+            "title": "Community"
+        },
+        {
+            "location": "/pierotofy/#community",
+            "text": "La community dietro a Pizza e' quella di  pierotofy.it !  pierotofy.it e' una community italiana di programmatori dove sono il benvenuto gli esperti tanto quanto i novizi.",
+            "title": "Community"
+        },
+        {
+            "location": "/license/",
+            "text": "Licenza\n\n\nPizza\n e' un programma rilasciato sotto licenza \nGPL v3\n, leggere il file LICENSE all'interno del reposotory\nper ulteriori informazioni.",
+            "title": "Licenza"
+        },
+        {
+            "location": "/license/#licenza",
+            "text": "Pizza  e' un programma rilasciato sotto licenza  GPL v3 , leggere il file LICENSE all'interno del reposotory\nper ulteriori informazioni.",
+            "title": "Licenza"
+        }
+    ]
+}
