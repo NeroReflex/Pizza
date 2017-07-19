@@ -6,9 +6,11 @@ Quando il bot viene avviato si unira' in maniera automatica ad un solo canale:
 quello specificato dopo l'host
 
 ```sh
-cd dist
+cd target
 java -jar PizzaBot-1.0-SNAPSHOT.jar "BotName" "server[:port]" "#channel"
 ```
+
+Alle volte il nome della directory target puo' variare. Ad esempio potrebbe essere dist.
 
 E' possibile specificare se si vuole un pesante output su console riguardo lo stato di funzionamento
 del bot nel seguente modo:
