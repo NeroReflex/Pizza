@@ -45,7 +45,7 @@ deploy :
           git config --global user.name "werckerbot"
           git config --global push.default matching
     - script:
-        name: Deploy to github pages
+        name: Preparazione Pagine
         code: |-
           cd Documentazione
           git clone -b gh-pages $GIT_REMOTE
@@ -53,8 +53,11 @@ deploy :
           sudo rsync -avh ./site/ ./Pizza/
           cd Pizza
           git add .
-          git commit -m "[ci skip]deploy commit from $WERCKER_STARTED_BY" --quiet &> /dev/null
-          git push --quiet &> /dev/null
+    - script:
+        name: Upload su github pages
+        code: |-
+          git commit -m "[ci skip]deploy commit from $WERCKER_STARTED_BY" #--quiet &> /dev/null
+          git push #--quiet &> /dev/null
 #Webhook-Deploy:
 #  steps :
 #    - install-packages:
