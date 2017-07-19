@@ -117,6 +117,7 @@
 							<!--<classpathLayoutType>repository</classpathLayoutType>-->
 						</manifest>
 					</archive>
+					<outputDirectory>target</outputDirectory>
 				</configuration>
 			</plugin>
 			<plugin>
