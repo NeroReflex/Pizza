@@ -15,19 +15,19 @@ build:
 deploy :
   steps :
     - install-packages:
-        packages: git openssl pkg-config libssl-dev python wget zlib1g-dev unzip openssh-client rsync maven mkdocs
+        packages: git openssl pkg-config libssl-dev python wget zlib1g-dev unzip openssh-client rsync maven
     - script:
         name: Downloading PIP
         code: |-
            curl -O https://bootstrap.pypa.io/get-pip.py
            sudo python get-pip.py
-     - script:
+    - script:
         name: Testing Python
         code: python --version
-     - script:
+    - script:
         name: Testing PIP
         code: pip --version
-     - script:
+    - script:
         name: Installing MkDocs
         code: sudo pip install mkdocs
     - script:
