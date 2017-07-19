@@ -8,20 +8,21 @@ build:
         packages: git openssl pkg-config libssl-dev wget zlib1g-dev unzip openssh-client unzip tar maven
     - script:
         name: Building Project
-        code: mvn compile && mvn javadoc:javadoc
+        code: mvn compile
     - script:
         name: Executing tests
         code: mvn test
 deploy :
   steps :
     - install-packages:
-        packages: git openssl pkg-config libssl-dev python wget zlib1g-dev unzip openssh-client rsync
+        packages: git openssl pkg-config libssl-dev python wget zlib1g-dev unzip openssh-client rsync maven
     - script:
         name: Installing MkDocs
         code: sudo apt install mkdocs
     - script:
         name: Building Documentation
         code: |-
+          mvn javadoc:javadoc
           rsync -avh --progress target/site/apidocs Documentazione/docs/javadoc
           cd Documentazione
           mkdocs build
