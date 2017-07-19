@@ -6,7 +6,7 @@ Quando il bot viene avviato si unira' in maniera automatica ad un solo canale:
 quello specificato dopo l'host
 
 ```sh
-cd dist
+cd target # o dist.... non ho capito perche'....
 java -jar PizzaBot-1.0-SNAPSHOT.jar "BotName" "server[:port]" "#channel"
 ```
 
