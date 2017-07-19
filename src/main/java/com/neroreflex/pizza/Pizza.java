@@ -64,7 +64,7 @@ public class Pizza extends PircBot {
      * Il timer che riconnette il bot.
      */
     private Timer reconnectTimer;
-    
+   
     /**
      * Crea una nuova istanza del bot e la connette al server specificato,
      * poi fa il join nel canale dato per rendere il bot disponibile a tutti
@@ -367,11 +367,18 @@ public class Pizza extends PircBot {
     @Override
     protected void onJoin(String channel, String sender, String login, String hostname) {
         // Saluta il nuovo utente o presentati
-        if ((sender.compareTo(this.getNick()) == 0) || (sender.compareTo(this.getName()) == 0) || (sender.compareTo(this.getLogin()) == 0)) {
+        if (!sender.equals(this.getNick()) || !sender.equals(this.getName()) || sender.equals(this.getLogin())) {
             this.enqueueMessage(new Message(channel, "Salve ragazzi, sono PizzaBot: https://github.com/NeroReflex/Pizza :D"));
         } else {
             this.enqueueMessage(new Message(channel, "Welcome " + sender + " :)"));
         }
+    }
+
+    @Override
+    protected void onKick(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
+        if (!kickerNick.equals(connectedWithName)) { // Nel caso una vecchia istanza di PizzaBot venga cacciata? va implementato il ghost
+        	this.joinChannel(channel);
+        }	
     }
     
     /**
