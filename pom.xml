@@ -1,155 +1,151 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.neroreflex</groupId>
-    <artifactId>PizzaBot</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-    <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>19.0</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.21</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.20.0-GA</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.json</groupId>
-            <artifactId>javax.json-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.0.4</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.7</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.jvnet.hudson.dom4j/dom4j -->
-        <dependency>
-            <groupId>org.jvnet.hudson.dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>1.6.1-hudson-3</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-        </dependency>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.neroreflex</groupId>
+	<artifactId>PizzaBot</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>19.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.21</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.20.0-GA</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.json</groupId>
+			<artifactId>javax.json-api</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.json</artifactId>
+			<version>1.0.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.7</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jvnet.hudson.dom4j/dom4j -->
+		<dependency>
+			<groupId>org.jvnet.hudson.dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1-hudson-3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
 
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.0</version>
-        </dependency>   
-        <!-- https://mvnrepository.com/artifact/org.json/json -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20160212</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.python/jython -->
-        <dependency>
-            <groupId>org.python</groupId>
-            <artifactId>jython</artifactId>
-            <version>2.7.1b3</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.8.11.2</version>
-            <type>jar</type>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/pircbot/pircbot -->
-        <dependency>
-            <groupId>pircbot</groupId>
-            <artifactId>pircbot</artifactId>
-            <version>1.5.0</version>
-        </dependency>
-        <!-- https://jitpack.io/#gianluca-nitti/java-expr-eval -->
-        <dependency>
-            <groupId>com.github.gianluca-nitti</groupId>
-            <artifactId>java-expr-eval</artifactId>
-            <version>v2.0</version>
-        </dependency>
-    </dependencies>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-    
-    <build>
-	<plugins>
-            <plugin>
-		<!-- Build an executable JAR -->
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-jar-plugin</artifactId>
-		<version>2.4</version>
-		<configuration>
-                    <archive>
-                    <manifest>
-			<mainClass>com.neroreflex.pizza.Pizza</mainClass>
-                        
-                        <addClasspath>true</addClasspath>
-                        <classpathPrefix>lib/</classpathPrefix>
-                        <!--<classpathLayoutType>repository</classpathLayoutType>-->
-                    </manifest>
-                                        
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
-                <configuration>
-                    <excludePackageNames>org.*</excludePackageNames>
-              </configuration>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>false</overWriteSnapshots>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            
-        </plugins>
-    </build>
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>3.0.0</version>
+		</dependency>   
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160212</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.python/jython -->
+		<dependency>
+			<groupId>org.python</groupId>
+			<artifactId>jython</artifactId>
+			<version>2.7.1b3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.8.11.2</version>
+			<type>jar</type>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/pircbot/pircbot -->
+		<dependency>
+			<groupId>pircbot</groupId>
+			<artifactId>pircbot</artifactId>
+			<version>1.5.0</version>
+		</dependency>
+		<!-- https://jitpack.io/#gianluca-nitti/java-expr-eval -->
+		<dependency>
+			<groupId>com.github.gianluca-nitti</groupId>
+			<artifactId>java-expr-eval</artifactId>
+			<version>v2.0</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<!-- Build an executable JAR -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>com.neroreflex.pizza.Pizza</mainClass>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<!--<classpathLayoutType>repository</classpathLayoutType>-->
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.4</version>
+				<configuration>
+					<excludePackageNames>org.*</excludePackageNames>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
