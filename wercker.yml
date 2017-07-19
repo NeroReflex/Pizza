@@ -17,19 +17,8 @@ deploy :
     - install-packages:
         packages: git openssl pkg-config libssl-dev python wget zlib1g-dev unzip openssh-client rsync
     - script:
-        name: Downloading PIP
-        code: |-
-          curl -O https://bootstrap.pypa.io/get-pip.py
-          sudo python get-pip.py
-    - script:
-        name: Testing Python
-        code: python --version
-    - script:
-        name: Testing PIP
-        code: pip --version
-    - script:
         name: Installing MkDocs
-        code: sudo pip install mkdocs
+        code: sudo apt install mkdocs
     - script:
         name: Building Documentation
         code: |-
@@ -54,10 +43,10 @@ deploy :
           git add .
           git commit -m "[ci skip]deploy commit from $WERCKER_STARTED_BY" --quiet &> /dev/null
           git push --quiet &> /dev/null
-Webhook-Deploy:
-  steps :
-    - install-packages:
-        packages: curl wget
-    - script:
-        name: Deploy
-        code: wget -qO- $URL &> /dev/null
+#Webhook-Deploy:
+#  steps :
+#    - install-packages:
+#        packages: curl wget
+#    - script:
+#        name: Deploy
+#        code: wget -qO- $URL &> /dev/null
