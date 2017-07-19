@@ -17,8 +17,19 @@ deploy :
     - install-packages:
         packages: git openssl pkg-config libssl-dev python wget zlib1g-dev unzip openssh-client rsync maven
     - script:
+        name: Downloading PIP
+        code: |-
+           curl -O https://bootstrap.pypa.io/get-pip.py
+           sudo python get-pip.py
+     - script:
+        name: Testing Python
+        code: python --version
+     - script:
+        name: Testing PIP
+        code: pip --version
+     - script:
         name: Installing MkDocs
-        code: sudo apt install mkdocs
+        code: sudo pip install mkdocs
     - script:
         name: Building Documentation
         code: |-
