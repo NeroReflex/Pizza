@@ -48,7 +48,7 @@ deploy :
         name: Deploy to github pages
         code: |-
           cd Documentazione
-          git clone -b gh-pages $GIT_REMOTE
+          git clone $GIT_REMOTE --branch=gh-pages
           sudo chmod 0777 -R site
           sudo rsync -avh ./site/ ./Pizza/
           cd Pizza
