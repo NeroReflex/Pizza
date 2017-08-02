@@ -10,7 +10,7 @@ Un semplice bot IRC basato sui tranci di pizza a cura della community [pierotofy
 
 La documentazione viene compilata da un bot a partire dalla directory Documentazione del repository.
 
-Potete prendere visione della docuentazione aggiornata [qui](https://neroreflex.github.io/Pizza/).
+Potete prendere visione della documentazione aggiornata [qui](https://neroreflex.github.io/Pizza/).
 
 
 ## Compilazione

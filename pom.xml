@@ -102,6 +102,8 @@
 	</properties>
 	
 	<build>
+	    <!-- name of the jar package -->
+	    <finalName>PizzaBot</finalName>
 		<plugins>
 			<plugin>
 				<!-- Build an executable JAR -->
