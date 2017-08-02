@@ -14,15 +14,14 @@ Potete prendere visione della docuentazione aggiornata [qui](https://neroreflex.
 
 
 ## Compilazione
+
 Per compilare Pizza sono necessarie due dipendenze: [jdk 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 e [maven](https://maven.apache.org/).
 
-Per la compilazione da terminale è sufficiente il comando
+Per la compilazione da terminale è sufficiente il comando:
 ```
 mvn package
 ```
-che creera un .jar nella cartella `target/`
-
 
 ## Licenza
 
