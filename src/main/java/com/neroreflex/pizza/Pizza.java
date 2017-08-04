@@ -365,8 +365,7 @@ public class Pizza extends PircBot {
 
     @Override
     protected void onJoin(String channel, String sender, String login, String hostname) {
-        // Saluta il nuovo utente o presentati
-        if (!sender.equals(this.getNick()) || !sender.equals(this.getName()) || sender.equals(this.getLogin())) {
+        if (sender.equals(this.getNick()) || sender.equals(this.getName()) || sender.equals(this.getLogin())) {
             this.enqueueMessage(new Message(channel, "Salve ragazzi, sono PizzaBot: https://github.com/NeroReflex/Pizza :D"));
         } else {
             this.enqueueMessage(new Message(channel, "Welcome " + sender + " :)"));
