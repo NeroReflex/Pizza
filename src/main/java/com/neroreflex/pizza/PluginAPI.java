@@ -61,7 +61,6 @@ public abstract class PluginAPI {
      * @param robot il bot da registrare
      */
     public static synchronized void addBot(Pizza robot) {
-        // Registra il bot
         if (!PluginAPI.robotAttivi.containsKey(robot.getBotID())) {
             // Registra il robot
             PluginAPI.robotAttivi.put(robot.getBotID(), robot);
@@ -201,8 +200,6 @@ public abstract class PluginAPI {
         // Ritorna la lista di canali a cui il bot e' connesso
         if (PluginAPI.robotAttivi.containsKey(botId))
             return PluginAPI.robotAttivi.get(botId).getChannels();
-        
-        // Se il bot non esiste e l'ID e' fittizzio ritorna null
         return null;
     }
     
@@ -216,8 +213,7 @@ public abstract class PluginAPI {
         // Ritorna la lista di canali a cui il bot e' connesso
         if (PluginAPI.robotAttivi.containsKey(botId))
             return PluginAPI.robotAttivi.get(botId).getPort();
-        
-        // Se il bot non esiste e l'ID e' fittizzio ritorna null
+
         return -1;
     }
     
@@ -231,8 +227,7 @@ public abstract class PluginAPI {
         // Ritorna la lista di canali a cui il bot e' connesso
         if (PluginAPI.robotAttivi.containsKey(botId))
             return PluginAPI.robotAttivi.get(botId).getServer();
-        
-        // Se il bot non esiste e l'ID e' fittizzio ritorna null
+
         return null;
     }
     
@@ -246,8 +241,7 @@ public abstract class PluginAPI {
         // Ritorna la lista di canali a cui il bot e' connesso
         if (PluginAPI.robotAttivi.containsKey(botId))
             return PluginAPI.robotAttivi.get(botId).getNick();
-        
-        // Se il bot non esiste e l'ID e' fittizzio ritorna null
+
         return null;
     }
     

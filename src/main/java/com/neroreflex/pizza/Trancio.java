@@ -344,16 +344,33 @@ public abstract class Trancio {
     
     
     /*      BUON DIVERTIMENTO      */
-    
+
+    /**
+     * Callback eseguita alla inizializzazione del bot.
+     */
     protected void onInitialize() {}
-    
+
+    /**
+     * Callback eseguita allo spegnimento del bot o allo spegnimento del plugin
+     */
     protected void onShutdown() {}
 
+    protected void onUserConnection(String nickname) {}
+
+    /**
+     * Questa funzione specifica il messaggio di istruzioni da mostrare
+     * all'utente quando viene chiesto aiuto al bot.
+     *
+     * @return il messaggio di aiuto
+     */
     protected String onHelp() { return ""; }
     
     public void onCall(Request req) {
         this.sendMessage(new Message(req.getChannel(), "the '" + this.getName() + "' plugin isn't meant to be actively called."));
     }
-    
+
+    /**
+     * Callback eseguita ogni this.delay dopo this.firstSheduledPoll
+     */
     public void onPoll() {}
 }

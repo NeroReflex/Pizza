@@ -117,6 +117,8 @@ public class Pizza extends PircBot {
         this.sendMessage(msg.getChannel(), msg.getMessage());
     }
 
+
+
     @Override
     protected void onMessage(String channel, String sender, String login, String hostname, String message) {
         // Evito di fare controlli su un messaggio vuoto e evito di stampare il messaggio di help se l'utente scrive solo: "!"
