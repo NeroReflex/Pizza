@@ -17,9 +17,7 @@
  */
 package com.neroreflex.plugins;
 
-import com.neroreflex.pizza.Message;
-import com.neroreflex.pizza.Request;
-import com.neroreflex.pizza.Trancio;
+import com.neroreflex.pizza.*;
 import java.util.Vector;
 
 /**
@@ -34,8 +32,12 @@ public final class LoadStore  extends Trancio {
     }
     
     @Override
-    public final void onCall(Request req) {
-        Vector<String> args = req.getBasicParse();
+    public final void onCall(String channel, String user, String msg) {
+        // Che bello reinventare la ruota!
+        String[] params = msg.split("([\\s]+)");
+        Vector<String> args = new Vector<>();
+        for (int i = 0; i < params.length; i++)
+            if (params[i].length() > 0) args.add(params[i]);
         
         if (args.size() == 3) {
             if (args.get(0).compareTo("store") == 0) {
@@ -43,7 +45,7 @@ public final class LoadStore  extends Trancio {
                 this.storeData(args.get(1), args.get(2));
                 
                 // Informa l'utente dell'esito
-                this.sendMessage(new Message(req.getChannel(), req.getUser() + " the value of '" + args.get(1) + "' has been changed"));
+                this.sendMessage(new Message(channel, user + " the value of '" + args.get(1) + "' has been changed"));
                 
                 return;
             }
@@ -54,15 +56,15 @@ public final class LoadStore  extends Trancio {
                 String value = this.loadData(key);
                 
                 if (value != null)
-                    this.sendMessage(new Message(req.getChannel(), req.getUser() + " " + key + "=" + value));
+                    this.sendMessage(new Message(channel, user + " " + key + "=" + value));
                 else
-                    this.sendMessage(new Message(req.getChannel(), req.getUser() + " key '" + key + "' not found"));
+                    this.sendMessage(new Message(channel, user + " key '" + key + "' not found"));
                 
                 return;
             }
         }
         
-        this.sendMessage(new Message(req.getChannel(), req.getUser() + " invalid arguments. Type !help loadstore"));
+        this.sendMessage(new Message(channel, user + " invalid arguments. Type !help loadstore"));
         
     }
 }

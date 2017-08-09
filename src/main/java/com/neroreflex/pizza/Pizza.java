@@ -39,7 +39,7 @@ import java.util.TimerTask;
 import java.util.Timer;
 
 /**
- * La classe che, una volta istanziata identificherà un bot connesso ad un server
+ * La classe che, una volta istanziata identifichera' un bot connesso ad un server
  *
  * @author Benato Denis
  */
@@ -139,17 +139,25 @@ public class Pizza extends PircBot {
             // Questa e' la stringa con ulteriori dettagli sulla operazione da eseguire
             String rawParamsString = message.substring(firstSpacePos);
 
+            // Questo vettore mi servira' al momento della generazione dell'evento
+            Vector<String> args = new Vector<>();
+            args.add(channel);
+            args.add(sender);
+            args.add(rawParamsString);
+
             // Controlla se il trancio e' presente e registrato
             if (this.tranci.containsKey(command)) {
                 // E se lo e' piazza la richiesta che dovra' prendere in carico
-                if (this.tranci.get(command).isLoaded())
-                    this.tranci.get(command).enqueueRequest(new Request(channel, sender, rawParamsString));
-                else
-                    this.sendMessage(channel, sender + " sorry but the requested plugin is not loaded (yet)");
-            } else if (command.compareTo("help") == 0) {// E se non lo e' invia l'errore
-                this.Help(new Request(channel, sender, rawParamsString));
-            } else if (command.compareTo("info") == 0) {// E se non lo e' invia l'errore
-                this.Info(new Request(channel, sender, rawParamsString));
+                if (this.tranci.get(command).isLoaded()) {
+                    this.tranci.get(command).enqueueEvent(new Event(EventType.UserCall, args));
+                }
+                else {
+                    this.sendMessage(channel, sender + " unavailable plugin.");
+                }
+            } else if (command.compareTo("help") == 0) {
+                this.Help(new Event(EventType.HelpRequest, args));
+            } else if (command.compareTo("info") == 0) {
+                this.enqueueMessage(new Message(channel, "I'm PizzaBot (https://github.com/NeroReflex/Pizza) a small and modular IRC bot"));
             } else {
                 this.enqueueMessage(new Message(channel, "The request '" + command + "' cannot be resolved"));
             }
@@ -159,22 +167,13 @@ public class Pizza extends PircBot {
     }
 
     /**
-     * Il bot si presenta alla richiesta di informazioni
-     *
-     * @param helpRequest la richiesta di informazioni
-     */
-    public final void Info(Request helpRequest) {
-        this.enqueueMessage(new Message(helpRequest.getChannel(), "I'm PizzaBot (https://github.com/NeroReflex/Pizza) a small and modular IRC bot"));
-    }
-
-    /**
      * Il bot alla richiesta di aiuto fornisce la lista dei plugin e il loro
      * utilizzo.
      * Si puo' anche richiedere aiuto in uno specifico plugin.
      *
      * @param helpRequest la richiesta di aiuto
      */
-    public final void Help(Request helpRequest) {
+    public final void Help(Event helpRequest) {
         // Dividi la richiesta di aiuto in piu' parti
         Vector<String> args = helpRequest.getBasicParse();
 
@@ -189,7 +188,7 @@ public class Pizza extends PircBot {
 
                         // Stampo la guida solo se ha senso (la stringa della guida NON E' vuota)
                         if (!help.isEmpty())
-                            this.enqueueMessage(new Message(helpRequest.getUser(), "!" + name + " " + help));
+                            this.enqueueMessage(new Message(helpRequest.getInfo().get(1), "!" + name + " " + help));
                     });
         } else {
             // Ottengo il nome del plugin
@@ -202,12 +201,12 @@ public class Pizza extends PircBot {
 
                 // Stampo la guida solo se ha senso (la stringa della guida NON E' vuota)
                 if (!help.isEmpty())
-                    this.enqueueMessage(new Message(helpRequest.getUser(), "!" + name + " " + help));
+                    this.enqueueMessage(new Message(helpRequest.getInfo().get(1), "!" + name + " " + help));
                 else
-                    this.enqueueMessage(new Message(helpRequest.getUser(), "No help is provided by the '" + name + "' plugin."));
+                    this.enqueueMessage(new Message(helpRequest.getInfo().get(1), "No help is provided by the '" + name + "' plugin."));
             } // Se non lo ho avverto l'utente
             else {
-                this.enqueueMessage(new Message(helpRequest.getUser(), "A plugin with name '" + name + "' doesn't exist."));
+                this.enqueueMessage(new Message(helpRequest.getInfo().get(1), "A plugin with name '" + name + "' doesn't exist."));
             }
         }
 
@@ -371,6 +370,17 @@ public class Pizza extends PircBot {
             this.enqueueMessage(new Message(channel, "Salve ragazzi, sono PizzaBot: https://github.com/NeroReflex/Pizza :D"));
         } else {
             this.enqueueMessage(new Message(channel, "Welcome " + sender + " :)"));
+
+            Vector<String> args = new Vector<>();
+            args.add(channel);
+            args.add(sender);
+            args.add(login);
+            args.add(hostname);
+
+            Event currentEvent = new Event(EventType.UserEnter, args);
+
+            for (Trancio plugin : this.tranci.values())
+                plugin.enqueueEvent(currentEvent);
         }
     }
 

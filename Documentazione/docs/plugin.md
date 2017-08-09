@@ -23,16 +23,14 @@ Ogni plugin puo' presentare entrambi i metodi/componenti di esecuzione.
 
 Facendo l'override di uno o piu' dei metodi descritti di seguito si estendera' il plugin:
 
-    - protected void onInitialize(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*
-	- protected void onShutdown(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*
+    - protected void onInitialize(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi _*PERICOLOSO*_
+	- protected void onShutdown(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi _*PERICOLOSO*_
 	- protected void onCall(Request): metodo chiamato nel onCalls thread, quando l'utente invoca il plugin
 	- protected void onPoll(): metodo invocato nel onPolls thread (timer)
-	- protected String onHelp(): metodo invocato quando l'utente richiede l'help per lo specifico plugin
-	
-In onCall(Request req) req contiene tutto il necessario per identificare la richiesta, il canale nella quale e' stata effettuata e
-l'utente che ha mandato il messaggio.
+	- protected String onHelp(): metodo invocato quando l'utente richiede l'help per lo specifico plugin ed invocato dal thread principale, quindi _*PERICOLOSO*_
 
-Vedere il [Javadoc](javadoc.md) per la documentazione sulla classe Request.
+
+Vedere il [Javadoc](javadoc.md) per maggiorni informazioni.
 
 
 ## API

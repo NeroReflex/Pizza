@@ -77,16 +77,27 @@ public final class HackerNews extends Trancio {
     
     @Override
     public final void onPoll() {
+        Vector<String> joinedChannels = this.getChannels();
+
+        // Ottengo la lista di canali in cui informare gli utenti
+        String[] channels = new String[joinedChannels.size()];
+        joinedChannels.copyInto(channels);
+
         // Stampa le news su tutti i canali
-        this.sendHackerNews(5, this.getChannels());
+        this.sendHackerNews(5, channels);
     }
 
     @Override
-    public final void onCall(Request req) {
+    public final void onCall(String channel, String user, String msg) {
         int tops = 5;
         
         try {
-            Vector<String> args = req.getBasicParse();
+            // Che bello reinventare la ruota!
+            String[] params = msg.split("([\\s]+)");
+            Vector<String> args = new Vector<>();
+            for (int i = 0; i < params.length; i++)
+                if (params[i].length() > 0) args.add(params[i]);
+
             if (!args.isEmpty())
                 tops = Integer.parseInt(args.get(0));
         } catch (NumberFormatException ex) {
@@ -94,7 +105,7 @@ public final class HackerNews extends Trancio {
         }
         
         // Stampa le news in PM a chi le ha richieste
-        this.sendHackerNews(tops, req.getUser());
+        this.sendHackerNews(tops, user);
     }
     
     @Override

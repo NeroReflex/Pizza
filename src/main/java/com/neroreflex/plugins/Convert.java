@@ -44,9 +44,12 @@ public final class Convert extends Trancio {
     }
 
     @Override
-    public final void onCall(Request req) {
-        String user = req.getUser(), channel = req.getChannel();
-        Vector<String> args = req.getBasicParse();
+    public final void onCall(String channel, String user, String msg) {
+        // Che bello reinventare la ruota!
+        String[] params = msg.split("([\\s]+)");
+        Vector<String> args = new Vector<>();
+        for (int i = 0; i < params.length; i++)
+            if (params[i].length() > 0) args.add(params[i]);
         
         if(args.size() != 2){
             sendMessage(new Message(channel, user + " wrong arguments number."));

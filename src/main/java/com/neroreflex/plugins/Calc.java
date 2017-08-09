@@ -76,13 +76,13 @@ public final class Calc extends Trancio {
     }
     
     @Override
-    public final void onCall(Request req) {
-        Writer chWriter = new IrcWriter(req.getChannel());
+    public final void onCall(String channel, String user, String msg) {
+        Writer chWriter = new IrcWriter(channel);
         Writer userWriter = NullOutputStream.getWriter();
-        String msg = req.getMessage();
+
         // Un eventuale log viene mandato in privato all'utente che ha richiesto il calcolo
         if(msg.startsWith(" verbose ")) {
-            userWriter = new IrcWriter(req.getUser());
+            userWriter = new IrcWriter(user);
             msg = msg.substring(9);
         }else if(msg.startsWith(" ")){
             //Rimuovi lo spazio in modo che i comandi vengano riconosciuti

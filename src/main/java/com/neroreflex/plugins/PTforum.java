@@ -31,18 +31,21 @@ import java.time.Duration;
  */
 public final class PTforum extends Trancio {
 
-    String apiEndpoint = "http://www.pierotofy.it/pages/extras/forum/api/last_topics.php";
+    static String apiEndpoint = "http://www.pierotofy.it/pages/extras/forum/api/last_topics.php";
 
     HashMap<String, Integer> topics = new HashMap<>(); //chiave=url, valore=numero risposte
 
     @Override
     public final void onPoll(){
         try {
+            Vector<String> joinedChannels = this.getChannels();
+
             // Ottengo la lista di canali in cui informare gli utenti
-            String[] channels = this.getChannels();
+            String[] channels = new String[joinedChannels.size()];
+            joinedChannels.copyInto(channels);
 
             // Mi connetto all'endpoint per le API del sito pierotofy.it
-            InputStream is = new URL(apiEndpoint).openStream();
+            InputStream is = new URL(PTforum.apiEndpoint).openStream();
             JsonArray topicList = Json.createReader(is).readArray();
             boolean firstFetch = (topics.size() == 0);
             for(JsonValue v: topicList){
