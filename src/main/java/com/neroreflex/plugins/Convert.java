@@ -28,8 +28,11 @@ import java.util.*;
  */
 public final class Convert extends Trancio {
 
-    protected String onHelp() {
-        return "<op> <number> - where op is the name of two notations separed by a 2, like bin2dec, oct2bin, hex2bin, an so on....";
+    @Override
+    protected void onHelp(String sender) {
+        String help = "<op> <number> - where op is the name of two notations separed by a 2, like bin2dec, oct2bin, hex2bin, an so on....";
+
+        this.sendMessage(new Message(sender, "!" + this.getClass().getSimpleName().toLowerCase() + " " + help));
     }
     
     private Map<String, Integer> baseList;
@@ -44,9 +47,9 @@ public final class Convert extends Trancio {
     }
 
     @Override
-    public final void onCall(Request req) {
-        String user = req.getUser(), channel = req.getChannel();
-        Vector<String> args = req.getBasicParse();
+    public final void onCall(String channel, String user, String msg) {
+        Vector<String> args = new Vector<>(Arrays.asList(msg.split("\\s+")));
+        args.removeIf(i -> i.isEmpty());
         
         if(args.size() != 2){
             sendMessage(new Message(channel, user + " wrong arguments number."));

@@ -88,13 +88,13 @@ public abstract class Trancio {
     private final Timer autoCaller;
     
     /**
-     * La coda di richieste fatte al plugin.
+     * La coda di eventi che il plugin dovra' gestire.
      */
-    protected final ArrayBlockingQueue<Request> requests;
+    protected final ArrayBlockingQueue<Event> events;
     
     public Trancio() {
-        // Prepara la coda di richieste da esaudire
-        this.requests = new ArrayBlockingQueue<>(250, true);
+        // Prepara la coda di richieste da esaudire e quella di eventi da processare
+        this.events = new ArrayBlockingQueue<Event>(75, true);
         
         // Definisco le strutture dei gestori di chiamate al plugin
         RequestRunner requestRunner = new RequestRunner(this) {
@@ -102,10 +102,10 @@ public abstract class Trancio {
             public void run() {
                 while (!Thread.currentThread().isInterrupted()) {
                     // Ottiene la richiesta da esaudire
-                    Request request = this.plugin.unqueueRequest();
+                    Event request = this.plugin.unqueueEvent();
 
                     // Chiama il gestore dell'evento
-                    this.plugin.onCall(request);
+                    this.plugin.processEvent(request);
                 }
             }
         };
@@ -162,7 +162,18 @@ public abstract class Trancio {
         // Aggiungi il messaggio alla coda di messaggi da inviare
         PluginAPI.sendMessage(this.getBotID(), msg);
     }
-    
+
+    /**
+     * Ottiene la lista di utenti espressa come vettore di nickname.
+     *
+     * @param channel il canale di cui si ricercano informazioni sugli utenti
+     * @return il vettore di nickname
+     */
+    protected final Vector<String> getUsers(String channel) {
+        // Ottengo la lista di utenti nel canale
+        return PluginAPI.getUsers(this.getBotID(), channel);
+    }
+
     /**
      * Ottiene la lista di canali ai quali il bot e' connesso.
      * Se una variazione dei canali occupati dal bot e' appena
@@ -170,7 +181,7 @@ public abstract class Trancio {
      * 
      * @return la lista di canali a cui il bot e' connesso 
      */
-    protected final String[] getChannels() {
+    protected final Vector<String> getChannels() {
         return PluginAPI.getChannels(this.getBotID());
     }
     
@@ -266,22 +277,22 @@ public abstract class Trancio {
         
         super.finalize();
     }
-    
+
     /**
-     * Inserisce una richeista nella coda FIFO di richieste da gestire.
+     * SOLO USO INTERNO: Inserisce una richeista nella coda FIFO di eventi da processare.
      * 
      * Questa funzione e' chiamata in un thread diverso di quello che chiama
      * unqueueRequest, precisamente dal thread principale del bot.
      * 
-     * Se unqueueRequest ed enqueueRequest dovessero essere synchronized
+     * Se unqueueEvent ed enqueueEvent dovessero essere entrambi synchronized
      * l'architettura dei plugins non funzionerebbe!
      * 
-     * @param action la richiesta fatta da un utente che il plugin dovra' esaudire
+     * @param event la richiesta fatta da un utente che il plugin dovra' esaudire
      */
-    public final void enqueueRequest(Request action) {
+    public final void enqueueEvent(Event event) {
         try {
             // Inserisci la richiesta nella coda
-            this.requests.put(action);
+            this.events.put(event);
         } catch (InterruptedException ex) {
             System.err.println("The " + this.getName() + "plugin is interrupted, but a new request was enqueued");
             
@@ -290,22 +301,22 @@ public abstract class Trancio {
     }
     
     /**
-     * Rimuove dalla coda FIFO l'ultimo elemento inserito, ovvero l'ultima
-     * richiesta effettuata (da un utente).
+     * SOLO USO INTERNO: Rimuove dalla coda FIFO l'ultimo elemento inserito, ovvero l'ultima
+     * evento sollevato.
      * 
      * Grazie alla coda usata il thread viene messo in sleep dalla JVM se NON
      * sono presenti richieste.
      * 
-     * Se unqueueRequest ed enqueueRequest dovessero essere synchronized
+     * Se unqueueEvent ed enqueueEvent dovessero essere entrambi synchronized
      * l'architettura dei plugins non funzionerebbe!
      * 
-     * @return la richiesta da esaudire
+     * @return l'evento da processare
      */
-    protected final Request unqueueRequest() {
+    protected final Event unqueueEvent() {
         // Cerco il prossimo lavoro da svolgere
         try {
             // Rimango in attesa di ricevere la richiesta (se la lista è vuota)
-            return this.requests.take();
+            return this.events.take();
             // Grazie lumo_e per il suggerimento sulla BlockingQueue.
             // Ora il thread viene messo a dormire in caso di coda vuota
         } catch (InterruptedException ex) {
@@ -315,6 +326,70 @@ public abstract class Trancio {
         }
         
         return null;
+    }
+
+    /**
+     * SOLO USO INTERNO: processa un evento rimosso dalla coda degli eventi.
+     * L'unico scopo di questa funzione e' chiamare la corretta funzione,
+     * quindi di fatto questa funzione ha la sola funzione di smistare le richieste.
+     *
+     * @param event l'evento da processare
+     */
+    protected final void processEvent(Event event) {
+        EventType type = event.getType();
+        Vector<String> args = event.getInfo();
+        
+        switch (type) {
+            case UserRequest:
+                this.onCall(
+                    args.elementAt(0),
+                    args.elementAt(1),
+                    args.elementAt(2)
+                );
+                break;
+                
+            case UserEnter:
+                this.onUserEnterChannel(
+                    args.elementAt(0),
+                    args.elementAt(1),
+                    args.elementAt(2),
+                    args.elementAt(3)
+                );
+                break;
+                
+            case UserExit:
+                this.onUserLeaveChannel(
+                    args.elementAt(0),
+                    args.elementAt(1),
+                    args.elementAt(2),
+                    args.elementAt(3)
+                );
+                break;
+                
+            case UserKicked:
+                this.onUserKicked(
+                    args.elementAt(0),
+                    args.elementAt(1),
+                    args.elementAt(2),
+                    args.elementAt(3),
+                    args.elementAt(4),
+                    args.elementAt(5)
+                );
+                break;
+                
+            case UserQuit:
+                this.onUserLeaveServer(
+                    args.elementAt(0),
+                    args.elementAt(1),
+                    args.elementAt(2),
+                    args.elementAt(3)
+                );
+                break;
+                
+            case HelpRequest:
+                this.onHelp(args.elementAt(1));
+                break;
+        }
     }
     
     /**
@@ -341,9 +416,20 @@ public abstract class Trancio {
         return PluginAPI.loadData(this.getBotID(), this.getName(), key);
     }
     
-    
+
+
+
     
     /*      BUON DIVERTIMENTO      */
+
+    /**
+     * Callback eseguita alla richiesta di aiuto nei confronti del plugin.
+     * Dovrebbe mostrare qualcosa tipo !pluginname &lt;param1&gt; [&lt;optional param&gt;]
+     * nella chat privata di chi ha inviato la richiesta di aiuto
+     *
+     * @param sender il nickname di chi ha inviato la richiesta di aiuto
+     */
+    protected void onHelp(String sender) { }
 
     /**
      * Callback eseguita alla inizializzazione del bot.
@@ -355,22 +441,64 @@ public abstract class Trancio {
      */
     protected void onShutdown() {}
 
-    protected void onUserConnection(String nickname) {}
+    /**
+     * Callback eseguita alla connessione di un nuovo utente a uno dei canali occupati dal bot
+     *
+     * @param channel il canale al quale l'utente si e' unito
+     * @param sender il nickname dell'utente appena entrato
+     * @param login il login dell'utente appena entrato
+     * @param hostname l'hostname dell'utente appena entrato
+     */
+    protected void onUserEnterChannel(String channel, String sender, String login, String hostname) {}
 
     /**
-     * Questa funzione specifica il messaggio di istruzioni da mostrare
-     * all'utente quando viene chiesto aiuto al bot.
+     * Callback eseguita alla disconnessione di un utente da uno dei canali occupati dal bot
      *
-     * @return il messaggio di aiuto
+     * @param channel il canale dal quale l'utente si e' disconnesso
+     * @param sender il nickname dell'utente appena uscito
+     * @param login il login dell'utente appena uscito
+     * @param hostname l'hostname dell'utente appena uscito
      */
-    protected String onHelp() { return ""; }
-    
-    public void onCall(Request req) {
-        this.sendMessage(new Message(req.getChannel(), "the '" + this.getName() + "' plugin isn't meant to be actively called."));
+    protected void onUserLeaveChannel(String channel, String sender, String login, String hostname) {}
+
+    /**
+     * Callback eseguita alla disconnessione da un utente dal server occupato dal bot.
+     * Un evento di disconnessione e' catturabile se e solo se l'utente era unito ad
+     * un canale occupato anche dal bot.
+     *
+     * @param sourceNick il nickname dell'utente appena uscito
+     * @param sourceLogin il login dell'utente appena uscito
+     * @param sourceHostname l'hostname dell'utente appena uscito
+     * @param reason la ragione dell'uscita dell'utente
+     */
+    protected void onUserLeaveServer(String sourceNick, String sourceLogin, String sourceHostname, String reason) { }
+
+    /**
+     * Callback eseguita al kick di un utente da uno dei canali occupati dal bot
+     *
+     * @param channel il canale dal quale l'utente e' stato cacciato
+     * @param kickerNick il nickname dell'utente che ha eseguito il kick
+     * @param kickerLogin il login dell'utente che ha eseguito il kick
+     * @param kickerHostname l'hostname dell'utente che ha eseguito il kick
+     * @param recipientNick il nick dell'utente che e' stato cacciato
+     * @param reason la ragione del kick
+     */
+    protected void onUserKicked(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {}
+
+    /**
+     * Callback eseguita quando un utente richiede l'esecuzione di uno specifico plugin
+     *
+     * @param channel il canale usato per eseguire il plugin
+     * @param user il nickname dell'utente che intende eseguire il plugin
+     * @param msg il messaggio usato per eseguire il plugin
+     */
+    public void onCall(String channel, String user, String msg) {
+        this.sendMessage(new Message(channel, "the '" + this.getName() + "' plugin isn't meant to be actively called."));
     }
 
     /**
-     * Callback eseguita ogni this.delay dopo this.firstSheduledPoll
+     * Callback eseguita a intervalli regolari di this.delay
+     * a partire da this.firstSheduledPoll
      */
     public void onPoll() {}
 }

@@ -69,24 +69,34 @@ public final class HackerNews extends Trancio {
              e.printStackTrace();
         }
     }
-    
+
     @Override
-    public final String onHelp() {
-        return "[<tops>] - where tops is the number of news you want to read, can be omitted, default is 5";
-    }
-    
-    @Override
-    public final void onPoll() {
-        // Stampa le news su tutti i canali
-        this.sendHackerNews(5, this.getChannels());
+    protected void onHelp(String sender) {
+        String help = "[<tops>] - where tops is the number of news you want to read, can be omitted, default is 5";
+
+        this.sendMessage(new Message(sender, "!" + this.getClass().getSimpleName().toLowerCase() + " " + help));
     }
 
     @Override
-    public final void onCall(Request req) {
+    public final void onPoll() {
+        Vector<String> joinedChannels = this.getChannels();
+
+        // Ottengo la lista di canali in cui informare gli utenti
+        String[] channels = new String[joinedChannels.size()];
+        joinedChannels.copyInto(channels);
+
+        // Stampa le news su tutti i canali
+        this.sendHackerNews(5, channels);
+    }
+
+    @Override
+    public final void onCall(String channel, String user, String msg) {
         int tops = 5;
         
         try {
-            Vector<String> args = req.getBasicParse();
+            Vector<String> args = new Vector<>(Arrays.asList(msg.split("\\s+"))); 
+            args.removeIf(i -> i.isEmpty());
+
             if (!args.isEmpty())
                 tops = Integer.parseInt(args.get(0));
         } catch (NumberFormatException ex) {
@@ -94,7 +104,7 @@ public final class HackerNews extends Trancio {
         }
         
         // Stampa le news in PM a chi le ha richieste
-        this.sendHackerNews(tops, req.getUser());
+        this.sendHackerNews(tops, user);
     }
     
     @Override

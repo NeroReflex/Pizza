@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 import com.neroreflex.pizza.*;
+import java.util.Arrays;
 
 
 /**
@@ -38,11 +39,14 @@ import com.neroreflex.pizza.*;
  * @author Benato Denis
  */
 public final class Time extends Trancio {
-    
-    protected String onHelp() {
-        return "[<timezone>] - where timezone can be omitted, the default will be '"+ Time.DEFAULT_TIMEZONE + "'";
+
+    @Override
+    protected void onHelp(String sender) {
+        String help = "[<timezone>] - where timezone can be omitted, the default will be '"+ Time.DEFAULT_TIMEZONE + "'";
+
+        this.sendMessage(new Message(sender, "!" + this.getClass().getSimpleName().toLowerCase() + " " + help));
     }
-    
+
     public static final String DEFAULT_TIMEZONE = "Europe/Rome";
     public static final int ATOMICTIME_PORT = 13;
     public static final String ATOMICTIME_SERVER = "time-c.nist.gov";
@@ -98,7 +102,7 @@ public final class Time extends Trancio {
 
             String atomicTime;
             while (true) {
-               if ( (atomicTime = in.readLine()).indexOf("*") > -1) {
+               if ((atomicTime = in.readLine()).contains("*")) {
                   break;
                }
             }
@@ -131,10 +135,10 @@ public final class Time extends Trancio {
     }
     
     @Override
-    public final void onCall(Request req) {
-        String user = req.getUser(), channel = req.getChannel();
-        Vector<String> args = req.getBasicParse();
-        
+    public final void onCall(String channel, String user, String msg) {
+        Vector<String> args = new Vector<>(Arrays.asList(msg.split("\\s+")));
+        args.removeIf(i -> i.isEmpty());
+
         // Stabilisci la zona del mondo richiesta
         String timezone = ((args.size() > 0) && (args.get(0).length() > 2))? args.get(0) : Time.DEFAULT_TIMEZONE;
         

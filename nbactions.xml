@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath com.neroreflex.pizza.Pizza testbot irc.pierotofy.it:6669 #pizzabot</exec.args>
+                <exec.args>-classpath %classpath com.neroreflex.pizza.Pizza "PizzaBot_local" "irc.pierotofy.it" "#pierotofy.it" "--verbose" "on"</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath com.neroreflex.pizza.Pizza testbot irc.pierotofy.it:6669 #pizzabot</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath com.neroreflex.pizza.Pizza "PizzaBot_local" "irc.pierotofy.it" "#pierotofy.it" "--verbose" "on"</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath com.neroreflex.pizza.Pizza testbot irc.pierotofy.it:6669 #pizzabot</exec.args>
+                <exec.args>-classpath %classpath com.neroreflex.pizza.Pizza "PizzaBot_local" "irc.pierotofy.it" "#pierotofy.it" "--verbose" "on"</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

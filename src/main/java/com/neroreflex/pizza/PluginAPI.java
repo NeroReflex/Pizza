@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jibble.pircbot.User;
 
 /**
  * Una classe che Permette ai plugin di accedere alle funzioni esclusive del bot.
@@ -194,13 +195,17 @@ public abstract class PluginAPI {
      * Ottiene la lista di canali a cui il bot specificato e' connesso.
      * 
      * @param botId l'ID univoco del bot con cui interagire
-     * @return la lista di canali
+     * @return il vettore di nomi di canali
      */
-    public static String[] getChannels(String botId) {
+    public static Vector<String> getChannels(String botId) {
+        Vector<String> channels = new Vector<>();
+
         // Ritorna la lista di canali a cui il bot e' connesso
         if (PluginAPI.robotAttivi.containsKey(botId))
-            return PluginAPI.robotAttivi.get(botId).getChannels();
-        return null;
+            for (String channel : PluginAPI.robotAttivi.get(botId).getChannels())
+                channels.add(channel);
+
+        return channels;
     }
     
     /**
@@ -260,10 +265,34 @@ public abstract class PluginAPI {
      * Connetti il bot al nuovo canale.
      * 
      * @param botId l'ID univoco del bot con cui interagire
+     * @param channel il nome del nuovo canale
+     * @param key la chiave da usare nella connessione del canale
      */
     public static void joinChannel(String botId, String channel, String key) {
         // Unisci il bot al canale
         if (PluginAPI.robotAttivi.containsKey(botId))
             PluginAPI.robotAttivi.get(botId).joinChannel(channel, key);
+    }
+
+    /**
+     * Ottiene la lista di utenti espressa come vettore di nick.
+     *
+     * @param botId l'ID univoco del bot con cui interagire
+     * @param channel il canale di cui si ricercano informazioni sugli utenti
+     * @return il vettore di nickname
+     */
+    public static Vector<String> getUsers(String botId, String channel) {
+        Vector<String> users = new Vector<>();
+
+        // Ottieni la lista di utenti
+        if (PluginAPI.robotAttivi.containsKey(botId)) {
+
+            // Inserisci nel vettore il nickname completo di ogni utente
+            for (User user : PluginAPI.robotAttivi.get(botId).getUsers(channel)) {
+                users.add(user.getNick()); // o e' meglio .toString() ?
+            }
+        }
+
+        return users;
     }
 }
