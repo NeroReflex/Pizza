@@ -352,8 +352,6 @@ public class Pizza extends PircBot {
             this.enqueueMessage(new Message(channel, "Salve ragazzi, sono PizzaBot: https://github.com/NeroReflex/Pizza :D"));
         }
 
-        this.enqueueMessage(new Message(channel, "Welcome " + sender + " :)"));
-
         this.sendEventToAllPlugins(new UserEnterEvent(channel, sender, login, hostname));
     }
 

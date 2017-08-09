@@ -18,44 +18,11 @@
 package com.neroreflex.plugins;
 
 import com.neroreflex.pizza.*;
-import java.util.HashMap;
-import java.lang.String;
-import java.lang.Integer;
 
-/**
- * Un plugin per contare gli utenti nei diversi canali e
- * eseguire periodicamente un report verso l'url specificato.
- *
- * @author Benato Denis
- */
-public class UserCounter extends Trancio {
-
-    static String apiEndpoint = "";
-
-    protected HashMap<String, Integer> users;
-
-    @Override
-    protected final void onInitialize() {
-        this.users = new HashMap<>();
-    }
-
+public class Hello extends Trancio {
     @Override
     protected void onUserEnterChanel(String channel, String sender, String login, String hostname) {
-
-    }
-
-    @Override
-    protected void onUserLeaveChanel(String channel, String sender, String login, String hostname) {
-
-    }
-
-    @Override
-    protected void onUserKicked(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
-
-    }
-
-    @Override
-    protected void onUserLeaveServer(String sourceNick, String sourceLogin, String sourceHostname, String reason) {
-        
+        if (this.getName().compareTo(sender) != 0)
+            this.sendMessage(new Message(channel, "Welcome " + sender + " :)"));
     }
 }
