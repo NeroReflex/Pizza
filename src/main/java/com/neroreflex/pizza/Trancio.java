@@ -379,6 +379,9 @@ public abstract class Trancio {
                     args.elementAt(3)
             );
         }
+        else if (type == EventType.HelpRequest) {
+            this.onHelp(args.elementAt(1));
+        }
     }
     
     /**
@@ -405,9 +408,20 @@ public abstract class Trancio {
         return PluginAPI.loadData(this.getBotID(), this.getName(), key);
     }
     
-    
+
+
+
     
     /*      BUON DIVERTIMENTO      */
+
+    /**
+     * Callback eseguita alla richiesta di aiuto nei confronti del plugin.
+     * Dovrebbe mostrare qualcosa tipo !pluginname &lt;param1&gt; [&lt;optional param&gt;]
+     * nella chat privata di chi ha inviato la richiesta di aiuto
+     *
+     * @param sender il nickname di chi ha inviato la richiesta di aiuto
+     */
+    protected void onHelp(String sender) { }
 
     /**
      * Callback eseguita alla inizializzazione del bot.
@@ -462,14 +476,6 @@ public abstract class Trancio {
      * @param reason la ragione del kick
      */
     protected void onUserKicked(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {}
-
-    /**
-     * Questa funzione specifica il messaggio di istruzioni da mostrare
-     * all'utente quando viene chiesto aiuto al bot.
-     *
-     * @return il messaggio di aiuto
-     */
-    protected String onHelp() { return ""; }
 
     /**
      * Callback eseguita quando un utente richiede l'esecuzione di uno specifico plugin

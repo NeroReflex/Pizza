@@ -174,17 +174,7 @@ public class Pizza extends PircBot {
 
         // Non e' stato specificato un plugin
         if (args.isEmpty()) {
-            this.tranci.entrySet().stream().forEach((entry) -> {
-                        String name = entry.getKey();
-                        Trancio trancio = entry.getValue();
-
-                        // Ottengo la stringa della guida
-                        String help = trancio.onHelp();
-
-                        // Stampo la guida solo se ha senso (la stringa della guida NON E' vuota)
-                        if (!help.isEmpty())
-                            this.enqueueMessage(new Message(helpRequest.getInfo().get(1), "!" + name + " " + help));
-                    });
+            this.sendEventToAllPlugins(helpRequest);
         } else {
             // Ottengo il nome del plugin
             String name = args.get(0);
@@ -192,20 +182,12 @@ public class Pizza extends PircBot {
             // Ho caricato un plugin che si chiama con quel nome?
             if (this.tranci.containsKey(name)) {
                 // Ottengo la stringa della guida
-                String help = this.tranci.get(name).onHelp();
-
-                // Stampo la guida solo se ha senso (la stringa della guida NON E' vuota)
-                if (!help.isEmpty())
-                    this.enqueueMessage(new Message(helpRequest.getInfo().get(1), "!" + name + " " + help));
-                else
-                    this.enqueueMessage(new Message(helpRequest.getInfo().get(1), "No help is provided by the '" + name + "' plugin."));
+                this.tranci.get(name).enqueueEvent(helpRequest);
             } // Se non lo ho avverto l'utente
             else {
                 this.enqueueMessage(new Message(helpRequest.getInfo().get(1), "A plugin with name '" + name + "' doesn't exist."));
             }
         }
-
-
     }
 
     /**

@@ -26,11 +26,14 @@ import com.neroreflex.pizza.*;
  * @author Benato Denis
  */
 public final class Join extends Trancio {
+
     @Override
-    protected String onHelp() {
-        return "<channel> <key> - where <channel> is the channel name and <key> the channel password";
+    protected void onHelp(String sender) {
+        String help = "<channel> [<key>] - where <channel> is the channel name and <key> the channel password";
+
+        this.sendMessage(new Message(sender, "!" + this.getClass().getSimpleName().toLowerCase() + " " + help));
     }
-    
+
     @Override
     public final void onCall(String channel, String user, String msg) {
         // Che bello reinventare la ruota!

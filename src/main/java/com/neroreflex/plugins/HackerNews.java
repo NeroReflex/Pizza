@@ -69,12 +69,14 @@ public final class HackerNews extends Trancio {
              e.printStackTrace();
         }
     }
-    
+
     @Override
-    public final String onHelp() {
-        return "[<tops>] - where tops is the number of news you want to read, can be omitted, default is 5";
+    protected void onHelp(String sender) {
+        String help = "[<tops>] - where tops is the number of news you want to read, can be omitted, default is 5";
+
+        this.sendMessage(new Message(sender, "!" + this.getClass().getSimpleName().toLowerCase() + " " + help));
     }
-    
+
     @Override
     public final void onPoll() {
         Vector<String> joinedChannels = this.getChannels();

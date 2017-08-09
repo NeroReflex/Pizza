@@ -26,11 +26,14 @@ import java.util.Vector;
  * @author Benato Denis
  */
 public final class LoadStore  extends Trancio {
+
     @Override
-    protected String onHelp() {
-        return "<load|store> <key> [<value>] - where load or store is the action and value is needed only on store";
+    protected void onHelp(String sender) {
+        String help = "<load|store> <key> [<value>] - where load or store is the action and value is needed only on store";
+
+        this.sendMessage(new Message(sender, "!" + this.getClass().getSimpleName().toLowerCase() + " " + help));
     }
-    
+
     @Override
     public final void onCall(String channel, String user, String msg) {
         // Che bello reinventare la ruota!
