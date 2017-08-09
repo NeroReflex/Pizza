@@ -19,31 +19,18 @@ package com.neroreflex.pizza.Events;
 
 import com.neroreflex.pizza.Event;
 import com.neroreflex.pizza.EventType;
-import java.util.Vector;
 
 /**
- * Identifica una richiesta di utilizzo plugin,
- * che verrà "esaudita" da un plugin della
- * chat in un diverso thread.
+ * Rappresenta un evento di uscita di un utente dal server,
+ * puo' essere catturato da un canale al quale il bot si e' unito.
  *
  * @author Benato Denis
  */
-public class UserCallEvent extends Event {
+public class UserQuitEvent extends Event {
 
-    public UserCallEvent(String ... channels) {
-        this.type = EventType.UserCall;
+    public UserQuitEvent(String ... eInfo) {
+        super(eInfo);
+
+        this.type = EventType.UserQuit;
     }
-
-    public Vector<String> getBasicParse() {
-        String message = this.info[2];
-
-        String[] params = message.split("([\\s]+)");
-        Vector<String> args = new Vector<>();
-
-        for (int i = 0; i < params.length; i++)
-            if (params[i].length() > 0) args.add(params[i]);
-
-        return args;
-    }
-
 }

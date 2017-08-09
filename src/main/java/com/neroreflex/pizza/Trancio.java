@@ -339,14 +339,14 @@ public abstract class Trancio {
         EventType type = event.getType();
         Vector<String> args = event.getInfo();
 
-        if (type == EventType.UserCall) {
+        if (type == EventType.UserRequest) {
             this.onCall(
                     args.elementAt(0),
                     args.elementAt(1),
                     args.elementAt(2)
                 );
         } else if (type == EventType.UserEnter) {
-            this.onUserConnection(
+            this.onUserEnterChanel(
                     args.elementAt(0),
                     args.elementAt(1),
                     args.elementAt(2),
@@ -354,7 +354,30 @@ public abstract class Trancio {
                 );
         }
         else if (type == EventType.UserExit) {
-
+            this.onUserLeaveChanel(
+                    args.elementAt(0),
+                    args.elementAt(1),
+                    args.elementAt(2),
+                    args.elementAt(3)
+                );
+        }
+        else if (type == EventType.UserKicked) {
+            this.onUserKicked(
+                    args.elementAt(0),
+                    args.elementAt(1),
+                    args.elementAt(2),
+                    args.elementAt(3),
+                    args.elementAt(4),
+                    args.elementAt(5)
+                );
+        }
+        else if (type == EventType.UserQuit) {
+            this.onUserLeaveServer(
+                    args.elementAt(0),
+                    args.elementAt(1),
+                    args.elementAt(2),
+                    args.elementAt(3)
+            );
         }
     }
     
@@ -404,7 +427,41 @@ public abstract class Trancio {
      * @param login il login dell'utente appena entrato
      * @param hostname l'hostname dell'utente appena entrato
      */
-    protected void onUserConnection(String channel, String sender, String login, String hostname) {}
+    protected void onUserEnterChanel(String channel, String sender, String login, String hostname) {}
+
+    /**
+     * Callback eseguita alla disconnessione di un utente da uno dei canali occupati dal bot
+     *
+     * @param channel il canale dal quale l'utente si e' disconnesso
+     * @param sender il nickname dell'utente appena uscito
+     * @param login il login dell'utente appena uscito
+     * @param hostname l'hostname dell'utente appena uscito
+     */
+    protected void onUserLeaveChanel(String channel, String sender, String login, String hostname) {}
+
+    /**
+     * Callback eseguita alla disconnessione da un utente dal server occupato dal bot.
+     * Un evento di disconnessione e' catturabile se e solo se l'utente era unito ad
+     * un canale occupato anche dal bot.
+     *
+     * @param sourceNick il nickname dell'utente appena uscito
+     * @param sourceLogin il login dell'utente appena uscito
+     * @param sourceHostname l'hostname dell'utente appena uscito
+     * @param reason la ragione dell'uscita dell'utente
+     */
+    protected void onUserLeaveServer(String sourceNick, String sourceLogin, String sourceHostname, String reason) { }
+
+    /**
+     * Callback eseguita al kick di un utente da uno dei canali occupati dal bot
+     *
+     * @param channel il canale dal quale l'utente e' stato cacciato
+     * @param kickerNick il nickname dell'utente che ha eseguito il kick
+     * @param kickerLogin il login dell'utente che ha eseguito il kick
+     * @param kickerHostname l'hostname dell'utente che ha eseguito il kick
+     * @param recipientNick il nick dell'utente che e' stato cacciato
+     * @param reason la ragione del kick
+     */
+    protected void onUserKicked(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {}
 
     /**
      * Questa funzione specifica il messaggio di istruzioni da mostrare

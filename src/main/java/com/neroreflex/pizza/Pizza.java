@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.neroreflex.pizza.Events.*;
 import org.jibble.pircbot.*;
 import java.util.regex.*;
 import java.security.SecureRandom;
@@ -139,23 +140,17 @@ public class Pizza extends PircBot {
             // Questa e' la stringa con ulteriori dettagli sulla operazione da eseguire
             String rawParamsString = message.substring(firstSpacePos);
 
-            // Questo vettore mi servira' al momento della generazione dell'evento
-            Vector<String> args = new Vector<>();
-            args.add(channel);
-            args.add(sender);
-            args.add(rawParamsString);
-
             // Controlla se il trancio e' presente e registrato
             if (this.tranci.containsKey(command)) {
                 // E se lo e' piazza la richiesta che dovra' prendere in carico
                 if (this.tranci.get(command).isLoaded()) {
-                    this.tranci.get(command).enqueueEvent(new Event(EventType.UserCall, args));
+                    this.tranci.get(command).enqueueEvent(new UserRequestEvent(channel, sender, rawParamsString));
                 }
                 else {
                     this.sendMessage(channel, sender + " unavailable plugin.");
                 }
             } else if (command.compareTo("help") == 0) {
-                this.Help(new Event(EventType.HelpRequest, args));
+                this.Help(new HelpRequestEvent(channel, sender, rawParamsString));
             } else if (command.compareTo("info") == 0) {
                 this.enqueueMessage(new Message(channel, "I'm PizzaBot (https://github.com/NeroReflex/Pizza) a small and modular IRC bot"));
             } else {
@@ -173,7 +168,7 @@ public class Pizza extends PircBot {
      *
      * @param helpRequest la richiesta di aiuto
      */
-    public final void Help(Event helpRequest) {
+    public final void Help(HelpRequestEvent helpRequest) {
         // Dividi la richiesta di aiuto in piu' parti
         Vector<String> args = helpRequest.getBasicParse();
 
@@ -364,31 +359,39 @@ public class Pizza extends PircBot {
         }
     }
 
+    protected void sendEventToAllPlugins(Event currentEvent) {
+        for (Trancio plugin : this.tranci.values())
+            plugin.enqueueEvent(currentEvent);
+    }
+
     @Override
     protected void onJoin(String channel, String sender, String login, String hostname) {
         if (sender.equals(this.getNick()) || sender.equals(this.getName()) || sender.equals(this.getLogin())) {
             this.enqueueMessage(new Message(channel, "Salve ragazzi, sono PizzaBot: https://github.com/NeroReflex/Pizza :D"));
-        } else {
-            this.enqueueMessage(new Message(channel, "Welcome " + sender + " :)"));
-
-            Vector<String> args = new Vector<>();
-            args.add(channel);
-            args.add(sender);
-            args.add(login);
-            args.add(hostname);
-
-            Event currentEvent = new Event(EventType.UserEnter, args);
-
-            for (Trancio plugin : this.tranci.values())
-                plugin.enqueueEvent(currentEvent);
         }
+
+        this.enqueueMessage(new Message(channel, "Welcome " + sender + " :)"));
+
+        this.sendEventToAllPlugins(new UserEnterEvent(channel, sender, login, hostname));
+    }
+
+    @Override
+    protected void onPart(String channel, String sender, String login, String hostname) {
+        this.sendEventToAllPlugins(new UserExitEvent(channel, sender, login, hostname));
     }
 
     @Override
     protected void onKick(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
         if (!kickerNick.equals(connectedWithName)) { // Nel caso una vecchia istanza di PizzaBot venga cacciata? va implementato il ghost
         	this.joinChannel(channel);
-        }	
+        }
+
+        this.sendEventToAllPlugins(new UserExitEvent(channel, kickerNick, kickerLogin, kickerHostname, recipientNick, reason));
+    }
+
+    @Override
+    protected void onQuit(String sourceNick, String sourceLogin, String sourceHostname, String reason) {
+        this.sendEventToAllPlugins(new UserQuitEvent(sourceNick, sourceLogin, sourceHostname, reason));
     }
 
     /**

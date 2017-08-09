@@ -40,8 +40,22 @@ public class UserCounter extends Trancio {
     }
 
     @Override
-    protected void onUserConnection(String channel, String sender, String login, String hostname) {
-
+    protected void onUserEnterChanel(String channel, String sender, String login, String hostname) {
+        System.out.println("Utente " + sender + " si e' connesso!");
     }
 
+    @Override
+    protected void onUserLeaveChanel(String channel, String sender, String login, String hostname) {
+        System.out.println("Utente " + sender + " si e' disconnesso!");
+    }
+
+    @Override
+    protected void onUserKicked(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
+        System.out.println("Utente " + recipientNick + " e' stato cacciato!");
+    }
+
+    @Override
+    protected void onUserLeaveServer(String sourceNick, String sourceLogin, String sourceHostname, String reason) {
+        System.out.println("Utente " + sourceNick + "e' morto: " + reason);
+    }
 }

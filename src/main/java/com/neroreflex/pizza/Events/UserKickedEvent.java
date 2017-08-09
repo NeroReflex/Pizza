@@ -15,14 +15,22 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.neroreflex.pizza;
+package com.neroreflex.pizza.Events;
 
-public enum EventType {
-    Unknown,
-    HelpRequest,
-    UserRequest,
-    UserKicked,
-    UserEnter,
-    UserExit,
-    UserQuit,
+import com.neroreflex.pizza.Event;
+import com.neroreflex.pizza.EventType;
+
+/**
+ * Rappresenta un evento di kick di un utente da
+ * un canale al quale il bot si e' unito.
+ *
+ * @author Benato Denis
+ */
+public class UserKickedEvent extends Event {
+
+    public UserKickedEvent(String ... eInfo) {
+        super(eInfo);
+
+        this.type = EventType.UserExit;
+    }
 }
