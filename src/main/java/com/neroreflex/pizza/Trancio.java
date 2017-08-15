@@ -88,7 +88,7 @@ public abstract class Trancio {
     private final Timer autoCaller;
     
     /**
-     * La coda di eventi che il plugin dovra' risolvere.
+     * La coda di eventi che il plugin dovra' gestire.
      */
     protected final ArrayBlockingQueue<Event> events;
     
@@ -338,7 +338,7 @@ public abstract class Trancio {
     protected final void processEvent(Event event) {
         EventType type = event.getType();
         Vector<String> args = event.getInfo();
-
+        
         if (type == EventType.UserRequest) {
             this.onCall(
                     args.elementAt(0),
