@@ -24,7 +24,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.neroreflex.pizza.Events.*;
 import org.jibble.pircbot.*;
 import java.util.regex.*;
 import java.security.SecureRandom;
@@ -144,19 +143,19 @@ public class Pizza extends PircBot {
             if (this.tranci.containsKey(command)) {
                 // E se lo e' piazza la richiesta che dovra' prendere in carico
                 if (this.tranci.get(command).isLoaded()) {
-                    this.tranci.get(command).enqueueEvent(new UserRequestEvent(channel, sender, rawParamsString));
+                    this.tranci.get(command).enqueueEvent(new Event(EventType.UserRequest, channel, sender, rawParamsString));
                 }
                 else {
                     this.sendMessage(channel, sender + " unavailable plugin.");
                 }
-            } else if (command.compareTo("help") == 0) {
-                this.Help(new HelpRequestEvent(channel, sender, rawParamsString));
-            } else if (command.compareTo("info") == 0) {
+            } else if (command.equals("help")) {
+                this.Help(new Event(EventType.HelpRequest, channel, sender, rawParamsString));
+            } else if (command.equals("info")) {
                 this.enqueueMessage(new Message(channel, "I'm PizzaBot (https://github.com/NeroReflex/Pizza) a small and modular IRC bot"));
             } else {
                 this.enqueueMessage(new Message(channel, "The request '" + command + "' cannot be resolved"));
             }
-        } else if (message.substring(0, nickLength).compareTo(this.getNick()) == 0) {
+        } else if (message.substring(0, nickLength).equals(this.getNick())) {
             this.enqueueMessage(new Message(channel, "type !help to get started"));
         }
     }
@@ -168,9 +167,10 @@ public class Pizza extends PircBot {
      *
      * @param helpRequest la richiesta di aiuto
      */
-    public final void Help(HelpRequestEvent helpRequest) {
+    public final void Help(Event helpRequest) {
         // Dividi la richiesta di aiuto in piu' parti
-        Vector<String> args = helpRequest.getBasicParse();
+        Vector<String> args = new Vector<>(Arrays.asList(helpRequest.getInfo().get(2).split("\\s+"))); 
+        args.removeIf(i -> i.equals(""));
 
         // Non e' stato specificato un plugin
         if (args.isEmpty()) {
@@ -284,9 +284,9 @@ public class Pizza extends PircBot {
 
         // Abilita l'output di debug (se richiesto), spento di default
         String verbose = this.connectedWithParams.get("--verbose");
-        if (verbose.compareTo("on") == 0) {
+        if (verbose.equals("on")) {
             this.setVerbose(true);
-        } else if (verbose.compareTo("off") == 0) {
+        } else if (verbose.equals("off")) {
             this.setVerbose(false);
         }
 
@@ -352,12 +352,12 @@ public class Pizza extends PircBot {
             this.enqueueMessage(new Message(channel, "Salve ragazzi, sono PizzaBot: https://github.com/NeroReflex/Pizza :D"));
         }
 
-        this.sendEventToAllPlugins(new UserEnterEvent(channel, sender, login, hostname));
+        this.sendEventToAllPlugins(new Event(EventType.UserEnter, channel, sender, login, hostname));
     }
 
     @Override
     protected void onPart(String channel, String sender, String login, String hostname) {
-        this.sendEventToAllPlugins(new UserExitEvent(channel, sender, login, hostname));
+        this.sendEventToAllPlugins(new Event(EventType.UserExit, channel, sender, login, hostname));
     }
 
     @Override
@@ -366,12 +366,12 @@ public class Pizza extends PircBot {
         	this.joinChannel(channel);
         }
 
-        this.sendEventToAllPlugins(new UserExitEvent(channel, kickerNick, kickerLogin, kickerHostname, recipientNick, reason));
+        this.sendEventToAllPlugins(new Event(EventType.UserKicked, channel, kickerNick, kickerLogin, kickerHostname, recipientNick, reason));
     }
 
     @Override
     protected void onQuit(String sourceNick, String sourceLogin, String sourceHostname, String reason) {
-        this.sendEventToAllPlugins(new UserQuitEvent(sourceNick, sourceLogin, sourceHostname, reason));
+        this.sendEventToAllPlugins(new Event(EventType.UserQuit, sourceNick, sourceLogin, sourceHostname, reason));
     }
 
     /**
@@ -425,7 +425,7 @@ public class Pizza extends PircBot {
         if (!botParams.containsKey("--verbose")) {
             System.out.println("You can add verbose output adding \"--verbose\" \"on\" to the arguments list");
             botParams.put("--verbose", "off");
-        } else if ((botParams.get("--verbose").compareTo("off") != 0) && (botParams.get("--verbose").compareTo("on") != 0)) {
+        } else if ((botParams.get("--verbose").equals("off")) && (botParams.get("--verbose").equals("on"))) {
             System.err.println("The value of the \"--verbose\" argument is not valid");
             System.exit(-1);
         }

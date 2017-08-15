@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 import com.neroreflex.pizza.*;
+import java.util.Arrays;
 
 
 /**
@@ -101,7 +102,7 @@ public final class Time extends Trancio {
 
             String atomicTime;
             while (true) {
-               if ( (atomicTime = in.readLine()).indexOf("*") > -1) {
+               if ((atomicTime = in.readLine()).contains("*")) {
                   break;
                }
             }
@@ -135,13 +136,9 @@ public final class Time extends Trancio {
     
     @Override
     public final void onCall(String channel, String user, String msg) {
-        // Che bello reinventare la ruota!
-        String[] params = msg.split("([\\s]+)");
-        Vector<String> args = new Vector<>();
-        for (int i = 0; i < params.length; i++)
-            if (params[i].length() > 0) args.add(params[i]);
+        Vector<String> args = new Vector<>(Arrays.asList(msg.split("\\s+")));
+        args.removeIf(i -> i.equals(""));
 
-        
         // Stabilisci la zona del mondo richiesta
         String timezone = ((args.size() > 0) && (args.get(0).length() > 2))? args.get(0) : Time.DEFAULT_TIMEZONE;
         

@@ -21,8 +21,8 @@ import com.neroreflex.pizza.*;
 
 public class Hello extends Trancio {
     @Override
-    protected void onUserEnterChanel(String channel, String sender, String login, String hostname) {
-        if (this.getName().compareTo(sender) != 0)
+    protected void onUserEnterChannel(String channel, String sender, String login, String hostname) {
+        if (this.getName().equals(sender))
             this.sendMessage(new Message(channel, "Welcome " + sender + " :)"));
     }
 }

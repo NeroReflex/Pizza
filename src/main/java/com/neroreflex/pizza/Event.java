@@ -33,8 +33,8 @@ public class Event {
 
     protected String[] info;
     
-    public Event(String ... eInfo) {
-        this.type = EventType.Unknown;
+    public Event(EventType eType, String ... eInfo) {
+        this.type = eType;
         this.info = eInfo;
     }
 

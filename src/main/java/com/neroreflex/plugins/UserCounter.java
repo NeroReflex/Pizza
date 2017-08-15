@@ -30,22 +30,24 @@ import java.lang.Integer;
  */
 public class UserCounter extends Trancio {
 
-    static String apiEndpoint = "";
+    private String apiEndpoint = "";
 
     protected HashMap<String, Integer> users;
 
     @Override
     protected final void onInitialize() {
         this.users = new HashMap<>();
+        
+        this.apiEndpoint = System.getenv("");
     }
 
     @Override
-    protected void onUserEnterChanel(String channel, String sender, String login, String hostname) {
+    protected void onUserEnterChannel(String channel, String sender, String login, String hostname) {
 
     }
 
     @Override
-    protected void onUserLeaveChanel(String channel, String sender, String login, String hostname) {
+    protected void onUserLeaveChannel(String channel, String sender, String login, String hostname) {
 
     }
 

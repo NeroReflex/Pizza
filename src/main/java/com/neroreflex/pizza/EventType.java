@@ -18,7 +18,6 @@
 package com.neroreflex.pizza;
 
 public enum EventType {
-    Unknown,
     HelpRequest,
     UserRequest,
     UserKicked,

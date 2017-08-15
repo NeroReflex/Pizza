@@ -346,7 +346,7 @@ public abstract class Trancio {
                     args.elementAt(2)
                 );
         } else if (type == EventType.UserEnter) {
-            this.onUserEnterChanel(
+            this.onUserEnterChannel(
                     args.elementAt(0),
                     args.elementAt(1),
                     args.elementAt(2),
@@ -354,7 +354,7 @@ public abstract class Trancio {
                 );
         }
         else if (type == EventType.UserExit) {
-            this.onUserLeaveChanel(
+            this.onUserLeaveChannel(
                     args.elementAt(0),
                     args.elementAt(1),
                     args.elementAt(2),
@@ -441,7 +441,7 @@ public abstract class Trancio {
      * @param login il login dell'utente appena entrato
      * @param hostname l'hostname dell'utente appena entrato
      */
-    protected void onUserEnterChanel(String channel, String sender, String login, String hostname) {}
+    protected void onUserEnterChannel(String channel, String sender, String login, String hostname) {}
 
     /**
      * Callback eseguita alla disconnessione di un utente da uno dei canali occupati dal bot
@@ -451,7 +451,7 @@ public abstract class Trancio {
      * @param login il login dell'utente appena uscito
      * @param hostname l'hostname dell'utente appena uscito
      */
-    protected void onUserLeaveChanel(String channel, String sender, String login, String hostname) {}
+    protected void onUserLeaveChannel(String channel, String sender, String login, String hostname) {}
 
     /**
      * Callback eseguita alla disconnessione da un utente dal server occupato dal bot.

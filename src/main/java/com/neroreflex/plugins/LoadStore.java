@@ -18,6 +18,7 @@
 package com.neroreflex.plugins;
 
 import com.neroreflex.pizza.*;
+import java.util.Arrays;
 import java.util.Vector;
 
 /**
@@ -36,14 +37,11 @@ public final class LoadStore  extends Trancio {
 
     @Override
     public final void onCall(String channel, String user, String msg) {
-        // Che bello reinventare la ruota!
-        String[] params = msg.split("([\\s]+)");
-        Vector<String> args = new Vector<>();
-        for (int i = 0; i < params.length; i++)
-            if (params[i].length() > 0) args.add(params[i]);
+        Vector<String> args = new Vector<>(Arrays.asList(msg.split("\\s+")));
+        args.removeIf(i -> i.equals(""));
         
         if (args.size() == 3) {
-            if (args.get(0).compareTo("store") == 0) {
+            if (args.get(0).equals("store")) {
                 // Memorizza la coppia chiave-valore
                 this.storeData(args.get(1), args.get(2));
                 
@@ -53,7 +51,7 @@ public final class LoadStore  extends Trancio {
                 return;
             }
         } else if (args.size() == 2) {
-            if (args.get(0).compareTo("load") == 0) {
+            if (args.get(0).equals("load")) {
                 // Leggi il valore associato alla chiave
                 String key = args.get(1);
                 String value = this.loadData(key);

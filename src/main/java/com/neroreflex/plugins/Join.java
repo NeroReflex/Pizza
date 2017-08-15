@@ -19,6 +19,7 @@ package com.neroreflex.plugins;
 
 import java.util.Vector;
 import com.neroreflex.pizza.*;
+import java.util.Arrays;
 
 /**
  * Un plugin per connettere il bot ad un altro canale
@@ -36,13 +37,10 @@ public final class Join extends Trancio {
 
     @Override
     public final void onCall(String channel, String user, String msg) {
-        // Che bello reinventare la ruota!
-        String[] params = msg.split("([\\s]+)");
-        Vector<String> args = new Vector<>();
-        for (int i = 0; i < params.length; i++)
-            if (params[i].length() > 0) args.add(params[i]);
+        Vector<String> args = new Vector<>(Arrays.asList(msg.split("\\s+")));
+        args.removeIf(i -> i.equals(""));
         
-        if (args.size() > 0) {
+        if (!args.isEmpty()) {
             // A che canale deve fare il join?
             String newChannel = args.get(0);
             newChannel = (newChannel.charAt(0) != '#') ? "#" + newChannel : newChannel;
