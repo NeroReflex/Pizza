@@ -94,11 +94,8 @@ public final class HackerNews extends Trancio {
         int tops = 5;
         
         try {
-            // Che bello reinventare la ruota!
-            String[] params = msg.split("([\\s]+)");
-            Vector<String> args = new Vector<>();
-            for (int i = 0; i < params.length; i++)
-                if (params[i].length() > 0) args.add(params[i]);
+            Vector<String> args = new Vector<>(Arrays.asList(msg.split("\\s+"))); 
+            args.removeIf(i -> i.isEmpty());
 
             if (!args.isEmpty())
                 tops = Integer.parseInt(args.get(0));

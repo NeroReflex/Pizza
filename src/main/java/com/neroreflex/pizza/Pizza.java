@@ -170,7 +170,7 @@ public class Pizza extends PircBot {
     public final void Help(Event helpRequest) {
         // Dividi la richiesta di aiuto in piu' parti
         Vector<String> args = new Vector<>(Arrays.asList(helpRequest.getInfo().get(2).split("\\s+"))); 
-        args.removeIf(i -> i.equals(""));
+        args.removeIf(i -> i.isEmpty());
 
         // Non e' stato specificato un plugin
         if (args.isEmpty()) {

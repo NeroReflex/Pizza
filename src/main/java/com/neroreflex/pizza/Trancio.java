@@ -339,30 +339,35 @@ public abstract class Trancio {
         EventType type = event.getType();
         Vector<String> args = event.getInfo();
         
-        if (type == EventType.UserRequest) {
-            this.onCall(
+        switch (type) {
+            case UserRequest:
+                this.onCall(
                     args.elementAt(0),
                     args.elementAt(1),
                     args.elementAt(2)
                 );
-        } else if (type == EventType.UserEnter) {
-            this.onUserEnterChannel(
+                break;
+                
+            case UserEnter:
+                this.onUserEnterChannel(
                     args.elementAt(0),
                     args.elementAt(1),
                     args.elementAt(2),
                     args.elementAt(3)
                 );
-        }
-        else if (type == EventType.UserExit) {
-            this.onUserLeaveChannel(
+                break;
+                
+            case UserExit:
+                this.onUserLeaveChannel(
                     args.elementAt(0),
                     args.elementAt(1),
                     args.elementAt(2),
                     args.elementAt(3)
                 );
-        }
-        else if (type == EventType.UserKicked) {
-            this.onUserKicked(
+                break;
+                
+            case UserKicked:
+                this.onUserKicked(
                     args.elementAt(0),
                     args.elementAt(1),
                     args.elementAt(2),
@@ -370,17 +375,20 @@ public abstract class Trancio {
                     args.elementAt(4),
                     args.elementAt(5)
                 );
-        }
-        else if (type == EventType.UserQuit) {
-            this.onUserLeaveServer(
+                break;
+                
+            case UserQuit:
+                this.onUserLeaveServer(
                     args.elementAt(0),
                     args.elementAt(1),
                     args.elementAt(2),
                     args.elementAt(3)
-            );
-        }
-        else if (type == EventType.HelpRequest) {
-            this.onHelp(args.elementAt(1));
+                );
+                break;
+                
+            case HelpRequest:
+                this.onHelp(args.elementAt(1));
+                break;
         }
     }
     

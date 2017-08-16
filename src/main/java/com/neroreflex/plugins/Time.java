@@ -137,7 +137,7 @@ public final class Time extends Trancio {
     @Override
     public final void onCall(String channel, String user, String msg) {
         Vector<String> args = new Vector<>(Arrays.asList(msg.split("\\s+")));
-        args.removeIf(i -> i.equals(""));
+        args.removeIf(i -> i.isEmpty());
 
         // Stabilisci la zona del mondo richiesta
         String timezone = ((args.size() > 0) && (args.get(0).length() > 2))? args.get(0) : Time.DEFAULT_TIMEZONE;

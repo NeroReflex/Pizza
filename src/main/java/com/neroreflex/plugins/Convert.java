@@ -49,7 +49,7 @@ public final class Convert extends Trancio {
     @Override
     public final void onCall(String channel, String user, String msg) {
         Vector<String> args = new Vector<>(Arrays.asList(msg.split("\\s+")));
-        args.removeIf(i -> i.equals(""));
+        args.removeIf(i -> i.isEmpty());
         
         if(args.size() != 2){
             sendMessage(new Message(channel, user + " wrong arguments number."));
