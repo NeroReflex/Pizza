@@ -153,15 +153,14 @@ compromettere la funzionalita' degli altri plugin e del bot stesso!</p>
 <p>Ogni plugin puo' presentare entrambi i metodi/componenti di esecuzione.</p>
 <h2 id="estensione">Estensione</h2>
 <p>Facendo l'override di uno o piu' dei metodi descritti di seguito si estendera' il plugin:</p>
-<pre><code>- protected void onInitialize(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*
-- protected void onShutdown(): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi *PERICOLOSO*
-- protected void onCall(Request): metodo chiamato nel onCalls thread, quando l'utente invoca il plugin
-- protected void onPoll(): metodo invocato nel onPolls thread (timer)
-- protected String onHelp(): metodo invocato quando l'utente richiede l'help per lo specifico plugin
-</code></pre>
-<p>In onCall(Request req) req contiene tutto il necessario per identificare la richiesta, il canale nella quale e' stata effettuata e
-l'utente che ha mandato il messaggio.</p>
-<p>Vedere il <a href="../javadoc/">Javadoc</a> per la documentazione sulla classe Request.</p>
+<ul>
+<li>protected void onInitialize(...): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi <em><em>PERICOLOSO</em></em></li>
+<li>protected void onShutdown(...): metodo chiamato nel main thread, al momento della attivazione del plugin, quindi <em><em>PERICOLOSO</em></em></li>
+<li>protected void onCall(...): metodo chiamato nel onCalls thread, quando l'utente invoca il plugin</li>
+<li>protected void onPoll(): metodo invocato nel onPolls thread (timer)</li>
+<li>protected void onHelp(...): metodo invocato quando l'utente richiede l'help per lo specifico plugin</li>
+</ul>
+<p>Vedere il <a href="../javadoc/">Javadoc</a> per una lista completa e maggiorni informazioni.</p>
 <h2 id="api">API</h2>
 <p>Il plugin dovra' interagire attivamente con gli utenti della chat IRC oltre che a svolgere semplici interrogazioni del tipo:
 che canali occupa il bot? A che server e' connesso?</p>
