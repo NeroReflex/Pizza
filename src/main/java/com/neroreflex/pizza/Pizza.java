@@ -39,7 +39,7 @@ import java.util.TimerTask;
 import java.util.Timer;
 
 /**
- * La classe che, una volta istanziata identifichera' un bot connesso ad un server
+ * La classe che, una volta istanziata identificherà un bot connesso ad un server
  *
  * @author Benato Denis
  */
