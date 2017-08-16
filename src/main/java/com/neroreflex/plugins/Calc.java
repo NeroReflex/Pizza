@@ -68,21 +68,22 @@ public final class Calc extends Trancio {
         ctx.setCommands("context", "clear", "", "");
     }
 
-    protected String onHelp() {
-        return "[verbose] <expression>|<assignment>|<command> - where expression can be an expression containing numbers, variables, parenthesis and binary operators;"
-                + " assignment is in the form <variable>=<expression>, or <variable>= to delete <variable>;"
-                + " command can be \"context\" (print all defined variables) or \"clear\" (delete all the defined variables)."
-                + " if \"verbose\" is specified before any other argument, detailed parsing/evaluation steps will be sent to you as PM.";
-    }
-    
     @Override
-    public final void onCall(Request req) {
-        Writer chWriter = new IrcWriter(req.getChannel());
+    protected void onHelp(String sender) {
+        this.sendMessage(new Message(sender, "!" + this.getClass().getSimpleName().toLowerCase() + " [verbose] <expression>|<assignment>|<command> - where expression can be an expression containing numbers, variables, parenthesis and binary operators;"));
+        this.sendMessage(new Message(sender, "       assignment is in the form <variable>=<expression>, or <variable>= to delete <variable>;"));
+        this.sendMessage(new Message(sender, "       command can be \"context\" (print all defined variables) or \"clear\" (delete all the defined variables)."));
+        this.sendMessage(new Message(sender, "       if \"verbose\" is specified before any other argument, detailed parsing/evaluation steps will be sent to you as a PM."));
+    }
+
+    @Override
+    public final void onCall(String channel, String user, String msg) {
+        Writer chWriter = new IrcWriter(channel);
         Writer userWriter = NullOutputStream.getWriter();
-        String msg = req.getMessage();
+
         // Un eventuale log viene mandato in privato all'utente che ha richiesto il calcolo
         if(msg.startsWith(" verbose ")) {
-            userWriter = new IrcWriter(req.getUser());
+            userWriter = new IrcWriter(user);
             msg = msg.substring(9);
         }else if(msg.startsWith(" ")){
             //Rimuovi lo spazio in modo che i comandi vengano riconosciuti

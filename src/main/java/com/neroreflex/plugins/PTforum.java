@@ -31,18 +31,17 @@ import java.time.Duration;
  */
 public final class PTforum extends Trancio {
 
-    String apiEndpoint = "http://www.pierotofy.it/pages/extras/forum/api/last_topics.php";
+    static String apiEndpoint = "http://www.pierotofy.it/pages/extras/forum/api/last_topics.php";
 
     HashMap<String, Integer> topics = new HashMap<>(); //chiave=url, valore=numero risposte
 
     @Override
     public final void onPoll(){
         try {
-            // Ottengo la lista di canali in cui informare gli utenti
-            String[] channels = this.getChannels();
+            Vector<String> joinedChannels = new Vector<>(this.getChannels());
 
             // Mi connetto all'endpoint per le API del sito pierotofy.it
-            InputStream is = new URL(apiEndpoint).openStream();
+            InputStream is = new URL(PTforum.apiEndpoint).openStream();
             JsonArray topicList = Json.createReader(is).readArray();
             boolean firstFetch = (topics.size() == 0);
             for(JsonValue v: topicList){
@@ -53,12 +52,12 @@ public final class PTforum extends Trancio {
                     // Se non è già in elenco, lo aggiungo...
                     topics.put(obj.getString("url"), obj.getInt("replies"));
                     if(!firstFetch)
-                        for (String chan : channels) {
+                        for (String chan : joinedChannels) {
                             sendMessage(new Message(chan, "New message(s) on topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
                     }
                 } else if(obj.getInt("replies") > oldReplies) {
                     // Se il numero di risposte è maggiore, allora ci sono stati nuovi post
-                    for (String chan : channels) {
+                    for (String chan : joinedChannels) {
                         sendMessage(new Message(chan, "New message(s) on topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
                     }
                 }

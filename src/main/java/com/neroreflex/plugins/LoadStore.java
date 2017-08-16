@@ -17,9 +17,8 @@
  */
 package com.neroreflex.plugins;
 
-import com.neroreflex.pizza.Message;
-import com.neroreflex.pizza.Request;
-import com.neroreflex.pizza.Trancio;
+import com.neroreflex.pizza.*;
+import java.util.Arrays;
 import java.util.Vector;
 
 /**
@@ -28,41 +27,45 @@ import java.util.Vector;
  * @author Benato Denis
  */
 public final class LoadStore  extends Trancio {
+
     @Override
-    protected String onHelp() {
-        return "<load|store> <key> [<value>] - where load or store is the action and value is needed only on store";
+    protected void onHelp(String sender) {
+        String help = "<load|store> <key> [<value>] - where load or store is the action and value is needed only on store";
+
+        this.sendMessage(new Message(sender, "!" + this.getClass().getSimpleName().toLowerCase() + " " + help));
     }
-    
+
     @Override
-    public final void onCall(Request req) {
-        Vector<String> args = req.getBasicParse();
+    public final void onCall(String channel, String user, String msg) {
+        Vector<String> args = new Vector<>(Arrays.asList(msg.split("\\s+")));
+        args.removeIf(i -> i.isEmpty());
         
         if (args.size() == 3) {
-            if (args.get(0).compareTo("store") == 0) {
+            if (args.get(0).equals("store")) {
                 // Memorizza la coppia chiave-valore
                 this.storeData(args.get(1), args.get(2));
                 
                 // Informa l'utente dell'esito
-                this.sendMessage(new Message(req.getChannel(), req.getUser() + " the value of '" + args.get(1) + "' has been changed"));
+                this.sendMessage(new Message(channel, user + " the value of '" + args.get(1) + "' has been changed"));
                 
                 return;
             }
         } else if (args.size() == 2) {
-            if (args.get(0).compareTo("load") == 0) {
+            if (args.get(0).equals("load")) {
                 // Leggi il valore associato alla chiave
                 String key = args.get(1);
                 String value = this.loadData(key);
                 
                 if (value != null)
-                    this.sendMessage(new Message(req.getChannel(), req.getUser() + " " + key + "=" + value));
+                    this.sendMessage(new Message(channel, user + " " + key + "=" + value));
                 else
-                    this.sendMessage(new Message(req.getChannel(), req.getUser() + " key '" + key + "' not found"));
+                    this.sendMessage(new Message(channel, user + " key '" + key + "' not found"));
                 
                 return;
             }
         }
         
-        this.sendMessage(new Message(req.getChannel(), req.getUser() + " invalid arguments. Type !help loadstore"));
+        this.sendMessage(new Message(channel, user + " invalid arguments. Type !help loadstore"));
         
     }
 }

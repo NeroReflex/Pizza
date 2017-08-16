@@ -17,7 +17,9 @@
  */
 package com.neroreflex.pizza;
 
+import java.lang.String;
 import java.util.Vector;
+import java.util.Arrays;
 
 /**
  * Identifica una richiesta che verrà "esaudita" da un plugin della
@@ -25,36 +27,35 @@ import java.util.Vector;
  * 
  * @author Benato Denis
  */
-public final class Request {
+public class Event {
+
+    protected EventType type;
+
+    protected String[] info;
     
-    private final String channel, user, message;
-    
-    public Request(String channel, String user, String msg) {
-        this.message = msg;
-        this.channel = channel;
-        this.user = user;
+    public Event(EventType eType, String ... eInfo) {
+        this.type = eType;
+        this.info = eInfo;
     }
-    
-    public String getChannel() {
-        return this.channel;
+
+    /**
+     * Restituisce il tipo di evento corrente.
+     *
+     * @return il tipo di evento
+     */
+    public EventType getType() {
+        return this.type;
     }
-    
-    public String getUser() {
-        return this.user;
-    }
-    
-    public String getMessage() {
-        return this.message;
-    }
-    
-    public Vector<String> getBasicParse() {
-        String[] params = this.getMessage().split("([\\s]+)");
-        Vector<String> args = new Vector<>();
-        
-        for (int i = 0; i < params.length; i++)
-            if (params[i].length() > 0) args.add(params[i]);
-        
-        return args;
+
+    /**
+     * Restituisce un vettore di informazioni relative
+     * all'evento strutturate in maniera fissa rispetto
+     * al tipo di evento.
+     *
+     * @return le informazioni sull'evento
+     */
+    public Vector<String> getInfo() {
+        return new Vector(Arrays.asList(this.info));
     }
     
 }
