@@ -38,11 +38,7 @@ public final class PTforum extends Trancio {
     @Override
     public final void onPoll(){
         try {
-            Vector<String> joinedChannels = this.getChannels();
-
-            // Ottengo la lista di canali in cui informare gli utenti
-            String[] channels = new String[joinedChannels.size()];
-            joinedChannels.copyInto(channels);
+            Vector<String> joinedChannels = new Vector<>(this.getChannels());
 
             // Mi connetto all'endpoint per le API del sito pierotofy.it
             InputStream is = new URL(PTforum.apiEndpoint).openStream();
@@ -56,12 +52,12 @@ public final class PTforum extends Trancio {
                     // Se non è già in elenco, lo aggiungo...
                     topics.put(obj.getString("url"), obj.getInt("replies"));
                     if(!firstFetch)
-                        for (String chan : channels) {
+                        for (String chan : joinedChannels) {
                             sendMessage(new Message(chan, "New message(s) on topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
                     }
                 } else if(obj.getInt("replies") > oldReplies) {
                     // Se il numero di risposte è maggiore, allora ci sono stati nuovi post
-                    for (String chan : channels) {
+                    for (String chan : joinedChannels) {
                         sendMessage(new Message(chan, "New message(s) on topic \"" + obj.getString("subject") + "\": http://pierotofy.it" + obj.getString("url")));
                     }
                 }
